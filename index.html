@@ -813,17 +813,44 @@
 
                 const tableBody = document.getElementById('monthly-data-table-body');
                 tableBody.innerHTML = ''; 
-                [...processedData].reverse().forEach((item, index, arr) => {
-                    const prev = arr[index + 1];
+                
+                const startData = processedData[0];
+                const startMonth = new Date(startData.month);
+                const reversedData = [...processedData].reverse();
+                
+                reversedData.forEach((item, index) => {
+                    const prev = reversedData[index + 1];
                     const diff = prev ? item.netWorth - prev.netWorth : 0;
+                    
+                    // 1. Calculate MoM Growth
+                    let growthHtml = '<span class="text-gray-400">-</span>';
+                    if (prev && prev.netWorth !== 0) {
+                        const growth = (diff / Math.abs(prev.netWorth)) * 100;
+                        const sign = growth >= 0 ? '+' : '';
+                        const colorClass = growth >= 0 ? 'text-green-600' : 'text-red-600';
+                        growthHtml = `<span class="${colorClass} font-semibold">${sign}${growth.toFixed(1)}%</span>`;
+                    }
+
+                    // 2. Calculate CAGR (Annualized Rate)
+                    let cagrHtml = '<span class="text-gray-400">-</span>';
+                    const currentMonth = new Date(item.month);
+                    const monthsDiff = (currentMonth.getFullYear() - startMonth.getFullYear()) * 12 + (currentMonth.getMonth() - startMonth.getMonth());
+                    
+                    if (monthsDiff > 0 && startData.netWorth > 0 && item.netWorth > 0) {
+                        const cagr = (Math.pow(item.netWorth / startData.netWorth, 12 / monthsDiff) - 1) * 100;
+                        const sign = cagr >= 0 ? '+' : '';
+                        const colorClass = cagr >= 0 ? 'text-blue-600' : 'text-orange-600';
+                        cagrHtml = `<span class="${colorClass}">${sign}${cagr.toFixed(1)}%</span>`;
+                    }
+
                     const row = document.createElement('tr');
                     row.className = 'border-b hover:bg-gray-50';
                     row.innerHTML = `
                         <td class="px-2 py-3 font-medium">${item.month}</td>
                         <td class="px-2 py-3 text-right text-blue-600 font-bold">$${item.netWorth.toLocaleString()}</td>
                         <td class="px-2 py-3 text-right ${diff >= 0 ? 'text-green-600' : 'text-red-600'}">${prev ? (diff >= 0 ? '+' : '') + diff.toLocaleString() : '-'}</td>
-                        <td class="px-2 py-3 text-center">-</td>
-                        <td class="px-2 py-3 text-center">-</td>
+                        <td class="px-2 py-3 text-center">${growthHtml}</td>
+                        <td class="px-2 py-3 text-center">${cagrHtml}</td>
                     `;
                     tableBody.appendChild(row);
                 });
