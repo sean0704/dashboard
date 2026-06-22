@@ -181,8 +181,7 @@
                                             <th class="px-2 py-2">標的</th>
                                             <th class="px-2 py-2">大類</th>
                                             <th class="px-2 py-2 text-right">市值金額</th>
-                                            <th class="px-2 py-2 text-right">佔大類%</th>
-                                            <th class="px-2 py-2 text-right">佔總資產%</th>
+                                            <th class="px-2 py-2 text-right">佔當下資產%</th>
                                         </tr>
                                     </thead>
                                     <tbody id="holdings-table-body">
@@ -885,7 +884,7 @@
             tableBody.innerHTML = '';
 
             if (!latestData) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="px-2 py-4 text-center text-gray-400">尚未載入數據...</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="4" class="px-2 py-4 text-center text-gray-400">尚未載入數據...</td></tr>';
                 return;
             }
 
@@ -963,13 +962,12 @@
             holdings.sort((a, b) => b.value - a.value);
 
             if (holdings.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="px-2 py-4 text-center text-gray-400">目前無部位明細</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="4" class="px-2 py-4 text-center text-gray-400">目前無部位明細</td></tr>';
                 return;
             }
 
             holdings.forEach(item => {
-                const pctOfCategory = ((item.value / (item.categoryTotal || 1)) * 100).toFixed(1);
-                const pctOfTotal = ((item.value / totalAssets) * 100).toFixed(1);
+                const pctOfCurrent = ((item.value / totalAssets) * 100).toFixed(1);
 
                 const row = document.createElement('tr');
                 row.className = 'border-b hover:bg-gray-50';
@@ -977,11 +975,10 @@
                     <td class="px-2 py-3 font-semibold text-gray-800">${item.name}</td>
                     <td class="px-2 py-3 text-gray-500">${item.categoryLabel}</td>
                     <td class="px-2 py-3 text-right text-green-600 font-bold">$${item.value.toLocaleString()}</td>
-                    <td class="px-2 py-3 text-right font-medium text-gray-700">${pctOfCategory}%</td>
                     <td class="px-2 py-3 text-right">
-                        <span class="inline-block text-blue-600 font-bold w-10">${pctOfTotal}%</span>
+                        <span class="inline-block text-blue-600 font-bold w-10">${pctOfCurrent}%</span>
                         <div class="w-16 bg-gray-200 rounded-full h-1.5 inline-block ml-1 align-middle">
-                            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pctOfTotal}%"></div>
+                            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pctOfCurrent}%"></div>
                         </div>
                     </td>
                 `;
