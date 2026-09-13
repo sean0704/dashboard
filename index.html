@@ -37,8 +37,6 @@
         </div>
     </div>
 
-    </div>
-
     <!-- Asset Detail Modal -->
     <div id="detail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-40">
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
@@ -264,32 +262,25 @@
                                     <input type="number" id="asset-cash-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1 flex items-center gap-1">
-                                        國內股票
-                                        <button type="button" class="text-blue-500 hover:text-blue-700 btn-edit-detail" data-category="domesticStocks" title="編輯明細">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
-                                    </label>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member3"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member4"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <label class="col-span-1">國內股票</label>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member3"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member4"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
                                     <label class="col-span-1">複委託</label>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member3"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member4"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member3"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member4"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
                                     <label class="col-span-1">海外券商</label>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member3"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member4"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member3"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member4"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center">
                                     <label class="col-span-1">房產</label>
@@ -362,6 +353,18 @@
         let netWorthGrowthChart;
         let rawData = []; // To store the original decrypted data
         let encryptedDataStr = null; // Store the original encrypted string from server
+        let currentSessionPassword = ''; // Retain verified password in session to avoid accidental lockout
+
+        // --- Helper: Timezone-safe year/month parser ---
+        function parseYearMonth(ymStr) {
+            if (!ymStr || typeof ymStr !== 'string') return null;
+            const parts = ymStr.split('-').map(Number);
+            if (parts.length < 2 || isNaN(parts[0]) || isNaN(parts[1])) return null;
+            return { year: parts[0], month: parts[1] };
+        }
+        function getMonthsDiff(startYM, currentYM) {
+            return (currentYM.year - startYM.year) * 12 + (currentYM.month - startYM.month);
+        }
 
         // --- Global State for Input Form Details ---
         let tempDetails = {}; // Structure: { "domesticStocks": { "member1": [{name, value}, ...], ... }, ... }
@@ -516,7 +519,8 @@
                         // Handle new structure: { total, details: [...] }
                         el.value = val.total || 0;
                         if (!tempDetails[type]) tempDetails[type] = {};
-                        tempDetails[type][member] = val.details || [];
+                        // Deep clone to prevent mutating original data
+                        tempDetails[type][member] = JSON.parse(JSON.stringify(val.details || []));
                     } else {
                         // Handle legacy structure: number
                         el.value = val;
@@ -550,7 +554,7 @@
                 alert('目前沒有歷史資料可供帶入！');
                 return;
             }
-            const sortedData = [...rawData].sort((a, b) => new Date(b.month) - new Date(a.month));
+            const sortedData = [...rawData].sort((a, b) => b.month.localeCompare(a.month));
             const latestEntry = sortedData[0];
             
             if (confirm(`是否要從「${latestEntry.month}」的紀錄帶入資料？這將會覆蓋您目前的輸入。`)) {
@@ -561,12 +565,40 @@
         // --- Data Input and JSON Generation ---
         assetInputForm.addEventListener('submit', (e) => {
             e.preventDefault();
+
+            const selectedMonth = monthSelect.value ? monthSelect.value.trim() : '';
+            if (!selectedMonth || !/^\d{4}-\d{2}$/.test(selectedMonth)) {
+                alert("請選擇有效的月份 (格式為 YYYY-MM)！");
+                monthSelect.focus();
+                return;
+            }
+
+            let updatedDatabase = [...rawData];
+            const existingIndex = updatedDatabase.findIndex(item => item.month === selectedMonth);
+            if (existingIndex !== -1) {
+                if (!confirm(`已存在「${selectedMonth}」的歷史紀錄，確定要覆蓋此月份的數據嗎？`)) {
+                    return;
+                }
+            }
             
-            const password = prompt("請設置「家庭金庫密碼」以進行加密儲存：\n(此密碼將用於下次載入資料，請務必記住！)");
+            const promptMsg = currentSessionPassword
+                ? "請確認或輸入「家庭金庫密碼」以進行加密儲存："
+                : "請設置「家庭金庫密碼」以進行加密儲存：\n(此密碼將用於下次載入資料，請務必記住！)";
+            const password = prompt(promptMsg, currentSessionPassword || "");
             if (!password) {
                 alert("取消儲存：必須設置密碼才能保護您的數據。");
                 return;
             }
+
+            // Confirm password on first setup or if password was changed
+            if (password !== currentSessionPassword) {
+                const confirmPassword = prompt("請「再次輸入」相同的家庭金庫密碼以確認：");
+                if (password !== confirmPassword) {
+                    alert("兩次輸入的密碼不一致，儲存已取消以避免數據鎖死，請重新操作。");
+                    return;
+                }
+            }
+            currentSessionPassword = password;
 
             const getAssetValue = (type, member) => {
                 const val = parseFloat(document.getElementById(`asset-${type}-${member}`).value) || 0;
@@ -581,7 +613,7 @@
             const getDebtValue = (type, member) => parseFloat(document.getElementById(`debt-${type}-${member}`).value) || 0;
 
             const newData = {
-                month: monthSelect.value,
+                month: selectedMonth,
                 assets: {
                     cash: {}, domesticStocks: {}, subBrokerage: {}, overseasBrokerage: {}, realEstate: {}
                 },
@@ -600,9 +632,6 @@
                 newData.debts.mortgage[memberId] = getDebtValue('mortgage', memberId);
                 newData.debts.creditCard[memberId] = getDebtValue('creditCard', memberId);
             }
-
-            let updatedDatabase = [...rawData];
-            const existingIndex = updatedDatabase.findIndex(item => item.month === newData.month);
             
             if (existingIndex !== -1) {
                 updatedDatabase[existingIndex] = newData;
@@ -610,7 +639,7 @@
                 updatedDatabase.push(newData);
             }
 
-            updatedDatabase.sort((a, b) => new Date(a.month) - new Date(b.month));
+            updatedDatabase.sort((a, b) => a.month.localeCompare(b.month));
 
             const encryptedStr = encrypt(updatedDatabase, password);
             const blob = new Blob([encryptedStr], { type: 'text/plain' });
@@ -642,6 +671,7 @@
                     return { type: 'encrypted', data: text.trim() };
                 }
             } catch (error) {
+                console.warn('載入 database.json 失敗 (若在本地直接開啟 HTML，請透過網頁伺服器或 GitHub Pages 存取):', error);
                 return { type: 'empty', data: [] };
             }
         }
@@ -695,7 +725,7 @@
                     netWorth: totalAssets - totalLiabilities,
                     originalAssets: item.assets // Keep for detail view
                 };
-            }).sort((a, b) => new Date(a.month) - new Date(b.month));
+            }).sort((a, b) => a.month.localeCompare(b.month));
         }
 
         function updateUI() {
@@ -748,17 +778,23 @@
                     });
                     
                     if (detailsArr.length > 0) {
-                        // Group by name (e.g., combine TSLA from different members)
-                        const groupedDetails = detailsArr.reduce((acc, item) => {
-                            const name = item.name.trim();
-                            acc[name] = (acc[name] || 0) + item.value;
-                            return acc;
-                        }, {});
+                        // Group by normalized uppercase name (case-insensitive merge, PRD requirement)
+                        const groupedDetails = {};
+                        detailsArr.forEach(item => {
+                            const name = (item.name || '').trim();
+                            if (name) {
+                                const normKey = name.toUpperCase();
+                                if (!groupedDetails[normKey]) {
+                                    groupedDetails[normKey] = { name: name, value: 0 };
+                                }
+                                groupedDetails[normKey].value += (item.value || 0);
+                            }
+                        });
 
                         // Sort by value descending and show all
-                        const allDetails = Object.entries(groupedDetails)
-                            .sort((a, b) => b[1] - a[1])
-                            .map(([name, value]) => `${name}($${value.toLocaleString()})`)
+                        const allDetails = Object.values(groupedDetails)
+                            .sort((a, b) => b.value - a.value)
+                            .map(entry => `${entry.name}($${entry.value.toLocaleString()})`)
                             .join(', ');
                             
                         summaryText += ` [${allDetails}]`;
@@ -836,7 +872,7 @@
                 tableBody.innerHTML = ''; 
                 
                 const startData = processedData[0];
-                const startMonth = new Date(startData.month);
+                const startYM = parseYearMonth(startData.month);
                 const reversedData = [...processedData].reverse();
                 
                 reversedData.forEach((item, index) => {
@@ -854,8 +890,8 @@
 
                     // 2. Calculate CAGR (Annualized Rate)
                     let cagrHtml = '<span class="text-gray-400">-</span>';
-                    const currentMonth = new Date(item.month);
-                    const monthsDiff = (currentMonth.getFullYear() - startMonth.getFullYear()) * 12 + (currentMonth.getMonth() - startMonth.getMonth());
+                    const currentYM = parseYearMonth(item.month);
+                    const monthsDiff = (startYM && currentYM) ? getMonthsDiff(startYM, currentYM) : 0;
                     
                     if (monthsDiff > 0 && startData.netWorth > 0 && item.netWorth > 0) {
                         const cagr = (Math.pow(item.netWorth / startData.netWorth, 12 / monthsDiff) - 1) * 100;
@@ -919,21 +955,26 @@
                         }
                     });
 
+                    // Case-insensitive merge of holdings (PRD requirement)
                     const grouped = {};
                     detailsArr.forEach(d => {
-                        const name = d.name.trim();
+                        const name = (d.name || '').trim();
                         if (name) {
-                            grouped[name] = (grouped[name] || 0) + (d.value || 0);
+                            const normKey = name.toUpperCase();
+                            if (!grouped[normKey]) {
+                                grouped[normKey] = { name: name, value: 0 };
+                            }
+                            grouped[normKey].value += (d.value || 0);
                         }
                     });
 
-                    Object.entries(grouped).forEach(([stockName, stockValue]) => {
-                        if (stockValue > 0) {
+                    Object.values(grouped).forEach(entry => {
+                        if (entry.value > 0) {
                             holdings.push({
-                                name: stockName,
+                                name: entry.name,
                                 categoryKey: key,
                                 categoryLabel: categoryLabels[key],
-                                value: stockValue,
+                                value: entry.value,
                                 categoryTotal: categoryValue
                             });
                         }
@@ -990,20 +1031,30 @@
         unlockPasswordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptUnlock(); });
 
         function attemptUnlock() {
+            unlockError.classList.add('hidden');
             const password = unlockPasswordInput.value;
-            if (!password) return;
+            
             if (typeof encryptedDataStr === 'object') {
                 rawData = encryptedDataStr;
                 unlockOverlay.classList.add('hidden');
                 updateUI();
                 return;
             }
+
+            if (!password) {
+                unlockError.textContent = "請輸入密碼";
+                unlockError.classList.remove('hidden');
+                return;
+            }
+
             const decrypted = decrypt(encryptedDataStr, password);
             if (decrypted) {
                 rawData = decrypted;
+                currentSessionPassword = password; // Remember verified password for current session
                 unlockOverlay.classList.add('hidden');
                 updateUI();
             } else {
+                unlockError.textContent = "密碼錯誤，請再試一次";
                 unlockError.classList.remove('hidden');
             }
         }
@@ -1014,7 +1065,15 @@
             const fetchResult = await fetchData();
             if (fetchResult.type !== 'empty') {
                 encryptedDataStr = fetchResult.data;
-                unlockOverlay.classList.remove('hidden');
+                if (fetchResult.type === 'plain') {
+                    // Plaintext data doesn't need decryption
+                    rawData = fetchResult.data;
+                    unlockOverlay.classList.add('hidden');
+                    updateUI();
+                } else {
+                    unlockOverlay.classList.remove('hidden');
+                    setTimeout(() => unlockPasswordInput.focus(), 100);
+                }
             } else {
                 unlockOverlay.classList.add('hidden');
                 updateUI();
