@@ -144,7 +144,27 @@
                             </label>
                             <label class="inline-flex items-center">
                                 <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600 category-checkbox" value="mortgage" checked>
-                                <span class="ml-2 text-red-700">房貸</span>
+                                <span class="ml-2 text-red-700">一般型房貸</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600 category-checkbox" value="refinanceMortgage" checked>
+                                <span class="ml-2 text-red-700">增貸型房貸 (一)</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600 category-checkbox" value="refinanceMortgage2" checked>
+                                <span class="ml-2 text-red-700">增貸型房貸 (二)</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600 category-checkbox" value="revolvingMortgage" checked>
+                                <span class="ml-2 text-red-700">理財型房貸</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600 category-checkbox" value="personalLoan" checked>
+                                <span class="ml-2 text-red-700">信用貸款</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600 category-checkbox" value="stockLoan" checked>
+                                <span class="ml-2 text-red-700">股票質押</span>
                             </label>
                             <label class="inline-flex items-center">
                                 <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600 category-checkbox" value="creditCard" checked>
@@ -311,11 +331,46 @@
                             <div class="p-2 bg-gray-50 rounded-lg">
                                 <h3 class="font-semibold text-lg text-gray-800 mb-2 col-span-5">負債</h3>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">房貸</label>
+                                    <label class="col-span-1">一般型房貸</label>
                                     <input type="number" id="debt-mortgage-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                     <input type="number" id="debt-mortgage-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                     <input type="number" id="debt-mortgage-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                     <input type="number" id="debt-mortgage-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                </div>
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1">增貸型房貸 (一)</label>
+                                    <input type="number" id="debt-refinanceMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-refinanceMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-refinanceMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-refinanceMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                </div>
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1">增貸型房貸 (二)</label>
+                                    <input type="number" id="debt-refinanceMortgage2-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-refinanceMortgage2-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-refinanceMortgage2-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-refinanceMortgage2-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                </div>
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1">理財型房貸</label>
+                                    <input type="number" id="debt-revolvingMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-revolvingMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-revolvingMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-revolvingMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                </div>
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1">信用貸款</label>
+                                    <input type="number" id="debt-personalLoan-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-personalLoan-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-personalLoan-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-personalLoan-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                </div>
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1">股票質押</label>
+                                    <input type="number" id="debt-stockLoan-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-stockLoan-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-stockLoan-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <input type="number" id="debt-stockLoan-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center">
                                     <label class="col-span-1">信用卡費</label>
@@ -393,11 +448,16 @@
             subBrokerage: '複委託',
             overseasBrokerage: '海外券商',
             realEstate: '房產',
-            mortgage: '房貸',
+            mortgage: '一般型房貸',
+            refinanceMortgage: '增貸型房貸 (一)',
+            refinanceMortgage2: '增貸型房貸 (二)',
+            revolvingMortgage: '理財型房貸',
+            personalLoan: '信用貸款',
+            stockLoan: '股票質押',
             creditCard: '信用卡費'
         };
         const assetKeys = ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage', 'realEstate'];
-        const debtKeys = ['mortgage', 'creditCard'];
+        const debtKeys = ['mortgage', 'refinanceMortgage', 'refinanceMortgage2', 'revolvingMortgage', 'personalLoan', 'stockLoan', 'creditCard'];
         const detailSupportedKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
         const marketAssetKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
 
@@ -587,8 +647,13 @@
                 setAssetValue('subBrokerage', memberId, item.assets.subBrokerage[memberId] || 0);
                 setAssetValue('overseasBrokerage', memberId, item.assets.overseasBrokerage[memberId] || 0);
                 setAssetValue('real-estate', memberId, item.assets.realEstate[memberId] || 0);
-                setDebtValue('mortgage', memberId, item.debts.mortgage[memberId] || 0);
-                setDebtValue('creditCard', memberId, item.debts.creditCard[memberId] || 0);
+                setDebtValue('mortgage', memberId, (item.debts.mortgage && item.debts.mortgage[memberId]) || 0);
+                setDebtValue('refinanceMortgage', memberId, (item.debts.refinanceMortgage && item.debts.refinanceMortgage[memberId]) || 0);
+                setDebtValue('refinanceMortgage2', memberId, (item.debts.refinanceMortgage2 && item.debts.refinanceMortgage2[memberId]) || 0);
+                setDebtValue('revolvingMortgage', memberId, (item.debts.revolvingMortgage && item.debts.revolvingMortgage[memberId]) || 0);
+                setDebtValue('personalLoan', memberId, (item.debts.personalLoan && item.debts.personalLoan[memberId]) || 0);
+                setDebtValue('stockLoan', memberId, (item.debts.stockLoan && item.debts.stockLoan[memberId]) || 0);
+                setDebtValue('creditCard', memberId, (item.debts.creditCard && item.debts.creditCard[memberId]) || 0);
             }
         }
 
@@ -661,7 +726,7 @@
                     cash: {}, domesticStocks: {}, subBrokerage: {}, overseasBrokerage: {}, realEstate: {}
                 },
                 debts: {
-                    mortgage: {}, creditCard: {}
+                    mortgage: {}, refinanceMortgage: {}, refinanceMortgage2: {}, revolvingMortgage: {}, personalLoan: {}, stockLoan: {}, creditCard: {}
                 },
             };
 
@@ -673,6 +738,11 @@
                 newData.assets.overseasBrokerage[memberId] = getAssetValue('overseasBrokerage', memberId);
                 newData.assets.realEstate[memberId] = getAssetValue('real-estate', memberId);
                 newData.debts.mortgage[memberId] = getDebtValue('mortgage', memberId);
+                newData.debts.refinanceMortgage[memberId] = getDebtValue('refinanceMortgage', memberId);
+                newData.debts.refinanceMortgage2[memberId] = getDebtValue('refinanceMortgage2', memberId);
+                newData.debts.revolvingMortgage[memberId] = getDebtValue('revolvingMortgage', memberId);
+                newData.debts.personalLoan[memberId] = getDebtValue('personalLoan', memberId);
+                newData.debts.stockLoan[memberId] = getDebtValue('stockLoan', memberId);
                 newData.debts.creditCard[memberId] = getDebtValue('creditCard', memberId);
             }
             
