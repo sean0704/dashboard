@@ -166,10 +166,6 @@
                                 <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600 category-checkbox" value="stockLoan" checked>
                                 <span class="ml-2 text-red-700">股票質押</span>
                             </label>
-                            <label class="inline-flex items-center">
-                                <input type="checkbox" class="form-checkbox h-5 w-5 text-red-600 category-checkbox" value="creditCard" checked>
-                                <span class="ml-2 text-red-700">信用卡費</span>
-                            </label>
                         </div>
                     </div>
                 </div>
@@ -365,19 +361,12 @@
                                     <input type="number" id="debt-personalLoan-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                     <input type="number" id="debt-personalLoan-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="grid grid-cols-5 gap-2 items-center">
                                     <label class="col-span-1">股票質押</label>
                                     <input type="number" id="debt-stockLoan-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                     <input type="number" id="debt-stockLoan-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                     <input type="number" id="debt-stockLoan-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                     <input type="number" id="debt-stockLoan-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                </div>
-                                <div class="grid grid-cols-5 gap-2 items-center">
-                                    <label class="col-span-1">信用卡費</label>
-                                    <input type="number" id="debt-creditCard-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-creditCard-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-creditCard-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-creditCard-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
                                 </div>
                             </div>
                         </div>
@@ -453,11 +442,10 @@
             refinanceMortgage2: '增貸型房貸 (二)',
             revolvingMortgage: '理財型房貸',
             personalLoan: '信用貸款',
-            stockLoan: '股票質押',
-            creditCard: '信用卡費'
+            stockLoan: '股票質押'
         };
         const assetKeys = ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage', 'realEstate'];
-        const debtKeys = ['mortgage', 'refinanceMortgage', 'refinanceMortgage2', 'revolvingMortgage', 'personalLoan', 'stockLoan', 'creditCard'];
+        const debtKeys = ['mortgage', 'refinanceMortgage', 'refinanceMortgage2', 'revolvingMortgage', 'personalLoan', 'stockLoan'];
         const detailSupportedKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
         const marketAssetKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
 
@@ -653,7 +641,6 @@
                 setDebtValue('revolvingMortgage', memberId, (item.debts.revolvingMortgage && item.debts.revolvingMortgage[memberId]) || 0);
                 setDebtValue('personalLoan', memberId, (item.debts.personalLoan && item.debts.personalLoan[memberId]) || 0);
                 setDebtValue('stockLoan', memberId, (item.debts.stockLoan && item.debts.stockLoan[memberId]) || 0);
-                setDebtValue('creditCard', memberId, (item.debts.creditCard && item.debts.creditCard[memberId]) || 0);
             }
         }
 
@@ -726,7 +713,7 @@
                     cash: {}, domesticStocks: {}, subBrokerage: {}, overseasBrokerage: {}, realEstate: {}
                 },
                 debts: {
-                    mortgage: {}, refinanceMortgage: {}, refinanceMortgage2: {}, revolvingMortgage: {}, personalLoan: {}, stockLoan: {}, creditCard: {}
+                    mortgage: {}, refinanceMortgage: {}, refinanceMortgage2: {}, revolvingMortgage: {}, personalLoan: {}, stockLoan: {}
                 },
             };
 
@@ -743,7 +730,6 @@
                 newData.debts.revolvingMortgage[memberId] = getDebtValue('revolvingMortgage', memberId);
                 newData.debts.personalLoan[memberId] = getDebtValue('personalLoan', memberId);
                 newData.debts.stockLoan[memberId] = getDebtValue('stockLoan', memberId);
-                newData.debts.creditCard[memberId] = getDebtValue('creditCard', memberId);
             }
             
             if (existingIndex !== -1) {
