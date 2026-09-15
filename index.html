@@ -273,7 +273,7 @@
                                 <p id="month-status-hint" class="text-xs text-gray-500 mt-1.5"></p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2 pt-1 md:pt-0">
-                                <button type="button" id="btn-reload-current-month" class="hidden bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-3 rounded text-sm focus:outline-none shadow-sm transition-colors whitespace-nowrap inline-flex items-center gap-1.5" title="還原此月份在資料庫中原本儲存的紀錄">
+                                <button type="button" id="btn-reload-current-month" class="hidden bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2 px-3 rounded text-sm focus:outline-none shadow-sm transition-colors whitespace-nowrap inline-flex items-center gap-1.5 border border-yellow-600" title="還原此月份在資料庫中原本儲存的紀錄">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                                     還原此月舊紀錄
                                 </button>
@@ -723,8 +723,8 @@
                 const isCurrent = (item.month === currentSelected);
                 btn.className = `month-pill text-xs px-2.5 py-1 rounded border transition-colors ${
                     isCurrent
-                        ? 'bg-amber-500 text-white border-amber-600 font-bold shadow-sm'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300'
+                        ? 'bg-blue-600 text-white border-blue-600 font-bold shadow-sm'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-400'
                 }`;
                 btn.textContent = item.month;
                 btn.title = `點擊切換並載入 ${item.month} 歷史紀錄`;
@@ -741,9 +741,9 @@
             const pills = historyMonthPills.querySelectorAll('.month-pill');
             pills.forEach(pill => {
                 if (pill.textContent.trim() === selectedMonth) {
-                    pill.className = 'month-pill text-xs px-2.5 py-1 rounded border transition-colors bg-amber-500 text-white border-amber-600 font-bold shadow-sm';
+                    pill.className = 'month-pill text-xs px-2.5 py-1 rounded border transition-colors bg-blue-600 text-white border-blue-600 font-bold shadow-sm';
                 } else {
-                    pill.className = 'month-pill text-xs px-2.5 py-1 rounded border transition-colors bg-white text-gray-700 border-gray-300 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300';
+                    pill.className = 'month-pill text-xs px-2.5 py-1 rounded border transition-colors bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-400';
                 }
             });
         }
@@ -766,16 +766,16 @@
             if (existingEntry) {
                 fillFormWithData(existingEntry);
                 if (monthStatusBadge) {
-                    monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-300';
+                    monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-300';
                     monthStatusBadge.textContent = '📝 編輯歷史紀錄';
                 }
                 if (monthStatusHint) {
-                    monthStatusHint.innerHTML = `<span class="text-amber-700 font-medium">已自動載入「${selectedMonth}」之歷史資產與標的明細</span>，可直接修改數值，下方將執行覆蓋儲存。`;
+                    monthStatusHint.innerHTML = `<span class="text-yellow-800 font-semibold">已自動載入「${selectedMonth}」之歷史資產與標的明細</span>，可直接修改數值，下方將執行覆蓋儲存。`;
                 }
                 if (btnReloadCurrentMonth) btnReloadCurrentMonth.classList.remove('hidden');
                 if (btnSubmitForm) {
                     btnSubmitForm.textContent = `覆蓋儲存「${selectedMonth}」並下載 JSON`;
-                    btnSubmitForm.className = 'bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors';
+                    btnSubmitForm.className = 'bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors border border-yellow-600';
                 }
             } else {
                 if (shouldClearIfNew) {
@@ -1062,7 +1062,7 @@
                         const ratio = ((marketExp / latestData.netWorth) * 100).toFixed(1);
                         elExposureRatio.textContent = `實質曝險率 ${ratio}%`;
                         if (parseFloat(ratio) > 100) {
-                            elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800';
+                            elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-yellow-100 text-yellow-800';
                         } else {
                             elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700';
                         }
@@ -1266,7 +1266,7 @@
                     if (monthsDiff > 0 && startData.netWorth > 0 && item.netWorth > 0) {
                         const cagr = (Math.pow(item.netWorth / startData.netWorth, 12 / monthsDiff) - 1) * 100;
                         const sign = cagr >= 0 ? '+' : '';
-                        const colorClass = cagr >= 0 ? 'text-blue-600' : 'text-orange-600';
+                        const colorClass = cagr >= 0 ? 'text-blue-600' : 'text-red-600';
                         cagrHtml = `<span class="${colorClass}">${sign}${cagr.toFixed(1)}%</span>`;
                     }
 
