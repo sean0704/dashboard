@@ -262,14 +262,38 @@
             <section id="input-page" class="page hidden">
                 <h1 class="text-3xl font-bold mb-6 text-gray-800">資產數據輸入</h1>
                 <form id="asset-input-form" class="bg-white p-6 rounded-lg shadow">
-                    <div class="mb-4 flex items-end gap-4">
-                        <div class="flex-grow">
-                            <label for="month-select" class="block text-gray-700 text-sm font-bold mb-2">月份:</label>
-                            <input type="month" id="month-select" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <div class="mb-6 p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <div class="flex flex-col md:flex-row md:items-end justify-between gap-3">
+                            <div class="flex-grow">
+                                <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                                    <label for="month-select" class="block text-gray-700 text-sm font-bold">月份：</label>
+                                    <span id="month-status-badge" class="hidden text-xs font-semibold px-2.5 py-0.5 rounded-full"></span>
+                                </div>
+                                <input type="month" id="month-select" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <p id="month-status-hint" class="text-xs text-gray-500 mt-1.5"></p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 pt-1 md:pt-0">
+                                <button type="button" id="btn-reload-current-month" class="hidden bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-3 rounded text-sm focus:outline-none shadow-sm transition-colors whitespace-nowrap inline-flex items-center gap-1.5" title="還原此月份在資料庫中原本儲存的紀錄">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    還原此月舊紀錄
+                                </button>
+                                <button type="button" id="btn-import-latest" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3.5 rounded text-sm focus:outline-none shadow-sm transition-colors whitespace-nowrap inline-flex items-center gap-1.5" title="從資料庫中最新一筆紀錄帶入所有資產、負債與股票明細">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+                                    帶入最新一期紀錄
+                                </button>
+                                <button type="button" id="btn-clear-form" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-3 rounded text-sm focus:outline-none transition-colors whitespace-nowrap" title="將表單所有數值歸零">
+                                    清空表單
+                                </button>
+                            </div>
                         </div>
-                        <button type="button" id="btn-import-latest" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline whitespace-nowrap">
-                            帶入最新一期紀錄
-                        </button>
+
+                        <!-- 歷史月份快捷切換列 -->
+                        <div id="history-months-container" class="mt-3 pt-3 border-t border-gray-200 hidden">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-xs font-semibold text-gray-500 whitespace-nowrap mr-1">歷史月份快速載入：</span>
+                                <div id="history-month-pills" class="flex items-center gap-1.5 flex-wrap"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-6">
@@ -372,7 +396,7 @@
                         </div>
                     </div>
                     
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    <button type="submit" id="btn-submit-form" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors">
                         生成 JSON 並下載
                     </button>
                 </form>
@@ -392,7 +416,14 @@
         const dashboardPage = document.getElementById('dashboard-page');
         const inputPage = document.getElementById('input-page');
         const monthSelect = document.getElementById('month-select');
+        const monthStatusBadge = document.getElementById('month-status-badge');
+        const monthStatusHint = document.getElementById('month-status-hint');
+        const btnReloadCurrentMonth = document.getElementById('btn-reload-current-month');
         const btnImportLatest = document.getElementById('btn-import-latest');
+        const btnClearForm = document.getElementById('btn-clear-form');
+        const historyMonthsContainer = document.getElementById('history-months-container');
+        const historyMonthPills = document.getElementById('history-month-pills');
+        const btnSubmitForm = document.getElementById('btn-submit-form');
         const assetInputForm = document.getElementById('asset-input-form');
         const memberCheckboxes = document.querySelectorAll('.member-checkbox');
         const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
@@ -595,9 +626,37 @@
             navInput.classList.remove('text-gray-600');
             navDashboard.classList.remove('font-bold', 'text-blue-500');
             navDashboard.classList.add('text-gray-600');
+            renderHistoryMonthPills();
+            handleMonthChange(false);
         });
 
-        // --- Import Latest Data Logic ---
+        // --- Import & Form Population Logic ---
+        function clearForm(clearHighlight = true) {
+            tempDetails = {};
+            for (let i = 1; i <= 4; i++) {
+                const memberId = `member${i}`;
+                ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage'].forEach(type => {
+                    const el = document.getElementById(`asset-${type}-${memberId}`);
+                    if (el) {
+                        el.value = 0;
+                        if (clearHighlight) el.classList.remove('bg-yellow-50');
+                    }
+                });
+                const reEl = document.getElementById(`asset-real-estate-${memberId}`);
+                if (reEl) {
+                    reEl.value = 0;
+                    if (clearHighlight) reEl.classList.remove('bg-yellow-50');
+                }
+                debtKeys.forEach(type => {
+                    const el = document.getElementById(`debt-${type}-${memberId}`);
+                    if (el) {
+                        el.value = 0;
+                        if (clearHighlight) el.classList.remove('bg-yellow-50');
+                    }
+                });
+            }
+        }
+
         function fillFormWithData(item) {
             if (!item) return;
             
@@ -644,6 +703,118 @@
             }
         }
 
+        // --- History Months Quick Selector & Status ---
+        function renderHistoryMonthPills() {
+            if (!historyMonthPills || !historyMonthsContainer) return;
+            if (!rawData || rawData.length === 0) {
+                historyMonthsContainer.classList.add('hidden');
+                historyMonthPills.innerHTML = '';
+                return;
+            }
+
+            historyMonthsContainer.classList.remove('hidden');
+            const sortedData = [...rawData].sort((a, b) => b.month.localeCompare(a.month));
+            const currentSelected = monthSelect.value ? monthSelect.value.trim() : '';
+
+            historyMonthPills.innerHTML = '';
+            sortedData.forEach(item => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                const isCurrent = (item.month === currentSelected);
+                btn.className = `month-pill text-xs px-2.5 py-1 rounded border transition-colors ${
+                    isCurrent
+                        ? 'bg-amber-500 text-white border-amber-600 font-bold shadow-sm'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300'
+                }`;
+                btn.textContent = item.month;
+                btn.title = `點擊切換並載入 ${item.month} 歷史紀錄`;
+                btn.addEventListener('click', () => {
+                    monthSelect.value = item.month;
+                    handleMonthChange();
+                });
+                historyMonthPills.appendChild(btn);
+            });
+        }
+
+        function updateHistoryMonthPillsActive(selectedMonth) {
+            if (!historyMonthPills) return;
+            const pills = historyMonthPills.querySelectorAll('.month-pill');
+            pills.forEach(pill => {
+                if (pill.textContent.trim() === selectedMonth) {
+                    pill.className = 'month-pill text-xs px-2.5 py-1 rounded border transition-colors bg-amber-500 text-white border-amber-600 font-bold shadow-sm';
+                } else {
+                    pill.className = 'month-pill text-xs px-2.5 py-1 rounded border transition-colors bg-white text-gray-700 border-gray-300 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300';
+                }
+            });
+        }
+
+        function handleMonthChange(shouldClearIfNew = false) {
+            const selectedMonth = monthSelect.value ? monthSelect.value.trim() : '';
+            if (!selectedMonth) {
+                if (monthStatusBadge) monthStatusBadge.className = 'hidden';
+                if (monthStatusHint) monthStatusHint.textContent = '';
+                if (btnReloadCurrentMonth) btnReloadCurrentMonth.classList.add('hidden');
+                if (btnSubmitForm) {
+                    btnSubmitForm.textContent = '生成 JSON 並下載';
+                    btnSubmitForm.className = 'bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors';
+                }
+                updateHistoryMonthPillsActive('');
+                return;
+            }
+
+            const existingEntry = rawData ? rawData.find(item => item.month === selectedMonth) : null;
+            if (existingEntry) {
+                fillFormWithData(existingEntry);
+                if (monthStatusBadge) {
+                    monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-300';
+                    monthStatusBadge.textContent = '📝 編輯歷史紀錄';
+                }
+                if (monthStatusHint) {
+                    monthStatusHint.innerHTML = `<span class="text-amber-700 font-medium">已自動載入「${selectedMonth}」之歷史資產與標的明細</span>，可直接修改數值，下方將執行覆蓋儲存。`;
+                }
+                if (btnReloadCurrentMonth) btnReloadCurrentMonth.classList.remove('hidden');
+                if (btnSubmitForm) {
+                    btnSubmitForm.textContent = `覆蓋儲存「${selectedMonth}」並下載 JSON`;
+                    btnSubmitForm.className = 'bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors';
+                }
+            } else {
+                if (shouldClearIfNew) {
+                    clearForm();
+                }
+                if (monthStatusBadge) {
+                    monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200';
+                    monthStatusBadge.textContent = '✨ 全新月份';
+                }
+                if (monthStatusHint) {
+                    monthStatusHint.innerHTML = `「${selectedMonth}」尚無歷史紀錄，可直接輸入全新數據，或點擊上方「帶入最新一期紀錄」快速填寫。`;
+                }
+                if (btnReloadCurrentMonth) btnReloadCurrentMonth.classList.add('hidden');
+                if (btnSubmitForm) {
+                    btnSubmitForm.textContent = `生成「${selectedMonth}」JSON 並下載`;
+                    btnSubmitForm.className = 'bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors';
+                }
+            }
+            updateHistoryMonthPillsActive(selectedMonth);
+        }
+
+        monthSelect.addEventListener('change', () => handleMonthChange(true));
+
+        btnReloadCurrentMonth.addEventListener('click', () => {
+            const selectedMonth = monthSelect.value ? monthSelect.value.trim() : '';
+            const existingEntry = rawData ? rawData.find(item => item.month === selectedMonth) : null;
+            if (existingEntry) {
+                if (confirm(`確定要將表單重設回「${selectedMonth}」原本儲存的歷史數據嗎？未儲存的修改將會被還原。`)) {
+                    fillFormWithData(existingEntry);
+                }
+            }
+        });
+
+        btnClearForm.addEventListener('click', () => {
+            if (confirm('確定要清空目前表單上的所有數值嗎？')) {
+                clearForm();
+            }
+        });
+
         btnImportLatest.addEventListener('click', () => {
             if (!rawData || rawData.length === 0) {
                 alert('目前沒有歷史資料可供帶入！');
@@ -652,7 +823,7 @@
             const sortedData = [...rawData].sort((a, b) => b.month.localeCompare(a.month));
             const latestEntry = sortedData[0];
             
-            if (confirm(`是否要從「${latestEntry.month}」的紀錄帶入資料？這將會覆蓋您目前的輸入。`)) {
+            if (confirm(`是否要從最新一期「${latestEntry.month}」的紀錄帶入資產、負債與股票明細？這將會覆蓋您目前輸入的內容。`)) {
                 fillFormWithData(latestEntry);
             }
         });
@@ -862,6 +1033,8 @@
             updateTextSummary(latestData, selectedMembers);
             renderCharts(processed);
             renderHoldingsTable(latestData, selectedMembers);
+            renderHistoryMonthPills();
+            handleMonthChange(false);
         }
         
         memberCheckboxes.forEach(checkbox => checkbox.addEventListener('change', updateUI));
