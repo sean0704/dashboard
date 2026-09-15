@@ -50,7 +50,13 @@
                     </button>
                 </div>
                 <div class="mt-4">
-                    <p class="text-sm text-gray-500 mb-4">請輸入各項標的的名稱與帳面價值，系統將自動加總。</p>
+                    <p class="text-sm text-gray-500 mb-3">請輸入各項標的名稱、槓桿倍數（原型為 1，正2填 2，反一填 -1）與帳面價值，系統將自動加總市值並換算實質曝險。</p>
+                    <div class="grid grid-cols-12 gap-2 text-xs font-semibold text-gray-500 px-2 mb-1">
+                        <div class="col-span-5 md:col-span-6">標的名稱</div>
+                        <div class="col-span-3 md:col-span-2 text-center">槓桿倍數</div>
+                        <div class="col-span-3 text-right">帳面價值</div>
+                        <div class="col-span-1 text-center">操作</div>
+                    </div>
                     <div id="detail-items-container" class="space-y-3 max-h-96 overflow-y-auto p-2">
                         <!-- Dynamic rows will be here -->
                     </div>
@@ -63,7 +69,7 @@
                 </div>
                 <div class="mt-6 flex justify-end gap-3">
                     <div class="flex-grow text-left">
-                        <span class="text-gray-600 font-semibold">合計：</span>
+                        <span class="text-gray-600 font-semibold">合計市值：</span>
                         <span id="detail-total-amount" class="text-blue-600 font-bold">$0</span>
                     </div>
                     <button id="btn-save-detail" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition">
@@ -149,7 +155,7 @@
                 </div>
                 
                 <!-- Asset Overview Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h2 class="text-xl font-semibold text-gray-700 mb-2">總資產</h2>
                         <p class="text-3xl font-bold text-green-600">$<span id="total-assets">0</span></p>
@@ -161,6 +167,16 @@
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h2 class="text-xl font-semibold text-gray-700 mb-2">淨資產</h2>
                         <p class="text-3xl font-bold text-blue-600">$<span id="net-worth">0</span></p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h2 class="text-xl font-semibold text-gray-700">市場總曝險</h2>
+                                <span id="market-exposure-ratio" class="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">佔淨資產 0%</span>
+                            </div>
+                            <p class="text-3xl font-bold text-indigo-600">$<span id="market-exposure">0</span></p>
+                        </div>
+                        <p id="market-exposure-subtext" class="text-xs text-gray-400 mt-2">股票、複委託與海外券商投資總額</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -178,7 +194,7 @@
                                         <tr>
                                             <th class="px-2 py-2">標的</th>
                                             <th class="px-2 py-2">大類</th>
-                                            <th class="px-2 py-2 text-right">市值金額</th>
+                                            <th class="px-2 py-2 text-right">帳面市值 (實質曝險)</th>
                                             <th class="px-2 py-2 text-right">佔當下資產%</th>
                                         </tr>
                                     </thead>
@@ -383,6 +399,7 @@
         const assetKeys = ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage', 'realEstate'];
         const debtKeys = ['mortgage', 'creditCard'];
         const detailSupportedKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
+        const marketAssetKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
 
         // --- Encryption Logic ---
         function encrypt(data, password) {
@@ -412,22 +429,26 @@
             if (existingDetails.length === 0) {
                 addDetailRow(); // Add an empty row by default
             } else {
-                existingDetails.forEach(item => addDetailRow(item.name, item.value));
+                existingDetails.forEach(item => addDetailRow(item.name, item.value, item.leverage));
             }
             
             updateDetailTotal();
             detailModal.classList.remove('hidden');
         }
 
-        function addDetailRow(name = '', value = 0) {
+        function addDetailRow(name = '', value = 0, leverage = 1) {
             const row = document.createElement('div');
-            row.className = 'flex items-center gap-2 detail-row';
+            row.className = 'grid grid-cols-12 gap-2 items-center detail-row';
+            const levVal = (leverage !== undefined && leverage !== null) ? leverage : 1;
             row.innerHTML = `
-                <input type="text" placeholder="標的名稱 (如: TSLA)" class="detail-name shadow-sm border rounded flex-grow py-1 px-2" value="${name}">
-                <input type="number" placeholder="帳面價值" class="detail-value shadow-sm border rounded w-32 py-1 px-2" value="${value}">
-                <button type="button" class="text-red-500 hover:text-red-700 btn-remove-detail">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                </button>
+                <input type="text" placeholder="標的 (如: 00631L, TSLA)" class="detail-name col-span-5 md:col-span-6 shadow-sm border rounded py-1.5 px-2 text-sm" value="${name}">
+                <input type="number" step="any" placeholder="倍數" class="detail-leverage col-span-3 md:col-span-2 shadow-sm border rounded py-1.5 px-2 text-sm text-center font-medium text-indigo-700 bg-indigo-50" value="${levVal}" title="槓桿倍數 (原型為 1，正2填 2，反一填 -1)">
+                <input type="number" placeholder="帳面價值" class="detail-value col-span-3 shadow-sm border rounded py-1.5 px-2 text-sm text-right font-medium" value="${value}">
+                <div class="col-span-1 text-center">
+                    <button type="button" class="text-red-500 hover:text-red-700 btn-remove-detail inline-flex justify-center p-1" title="刪除">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                </div>
             `;
             
             row.querySelector('.btn-remove-detail').addEventListener('click', () => {
@@ -436,30 +457,52 @@
             });
             
             row.querySelector('.detail-value').addEventListener('input', updateDetailTotal);
+            row.querySelector('.detail-leverage').addEventListener('input', updateDetailTotal);
             
             detailItemsContainer.appendChild(row);
         }
 
         function updateDetailTotal() {
-            const values = Array.from(detailItemsContainer.querySelectorAll('.detail-value'))
-                .map(input => parseFloat(input.value) || 0);
-            const total = values.reduce((sum, val) => sum + val, 0);
-            detailTotalAmount.textContent = `$${total.toLocaleString()}`;
+            const rows = detailItemsContainer.querySelectorAll('.detail-row');
+            let totalValue = 0;
+            let totalExposure = 0;
+            let hasLeverage = false;
+
+            rows.forEach(row => {
+                const val = parseFloat(row.querySelector('.detail-value').value) || 0;
+                const levInput = row.querySelector('.detail-leverage');
+                const levVal = levInput ? parseFloat(levInput.value) : 1;
+                const leverage = isNaN(levVal) ? 1 : levVal;
+                if (leverage !== 1) hasLeverage = true;
+                totalValue += val;
+                totalExposure += val * leverage;
+            });
+
+            if (hasLeverage) {
+                detailTotalAmount.innerHTML = `$${totalValue.toLocaleString()} <span class="text-xs text-indigo-600 font-semibold ml-1">(實質曝險: $${totalExposure.toLocaleString()})</span>`;
+            } else {
+                detailTotalAmount.textContent = `$${totalValue.toLocaleString()}`;
+            }
         }
 
         btnSaveDetail.addEventListener('click', () => {
             const rows = detailItemsContainer.querySelectorAll('.detail-row');
-            const details = Array.from(rows).map(row => ({
-                name: row.querySelector('.detail-name').value.trim(),
-                value: parseFloat(row.querySelector('.detail-value').value) || 0
-            })).filter(item => item.name !== '');
+            const details = Array.from(rows).map(row => {
+                const levInput = row.querySelector('.detail-leverage');
+                const levVal = levInput ? parseFloat(levInput.value) : 1;
+                return {
+                    name: row.querySelector('.detail-name').value.trim(),
+                    value: parseFloat(row.querySelector('.detail-value').value) || 0,
+                    leverage: isNaN(levVal) ? 1 : levVal
+                };
+            }).filter(item => item.name !== '');
 
             const total = details.reduce((sum, item) => sum + item.value, 0);
             
             if (!tempDetails[currentEditing.category]) tempDetails[currentEditing.category] = {};
             tempDetails[currentEditing.category][currentEditing.member] = details;
 
-            // Update the main input field
+            // Update the main input field (keeps book value)
             const mainInputId = `asset-${currentEditing.category}-${currentEditing.member}`;
             const mainInput = document.getElementById(mainInputId);
             if (mainInput) {
@@ -687,27 +730,50 @@
         function processData(data, selectedMembers, selectedCategories) {
             if (!data || !Array.isArray(data)) return [];
             
-            const getValue = (val, member) => {
+            const getValue = (val) => {
                 if (typeof val === 'object' && val !== null) {
-                    // It's the new structure with details
                     return val.total || 0;
                 }
-                return val || 0; // Legacy number
+                return val || 0;
+            };
+
+            const getExposureValue = (val) => {
+                if (typeof val === 'object' && val !== null) {
+                    if (Array.isArray(val.details) && val.details.length > 0) {
+                        const detailsSum = val.details.reduce((sum, d) => sum + (d.value || 0), 0);
+                        const detailsExposure = val.details.reduce((sum, d) => {
+                            const lev = (d.leverage !== undefined && d.leverage !== null) ? Number(d.leverage) : 1;
+                            return sum + ((d.value || 0) * (isNaN(lev) ? 1 : lev));
+                        }, 0);
+                        const total = val.total || 0;
+                        const unclassified = total > detailsSum ? (total - detailsSum) : 0;
+                        return detailsExposure + unclassified;
+                    }
+                    return val.total || 0;
+                }
+                return val || 0;
             };
 
             const sumForMembers = (obj) => selectedMembers.reduce((sum, member) => sum + getValue(obj[member]), 0);
+            const sumExposureForMembers = (obj) => selectedMembers.reduce((sum, member) => sum + getExposureValue(obj[member]), 0);
 
             return data.map(item => {
                 const assets = {};
                 const debts = {};
                 let totalAssets = 0;
                 let totalLiabilities = 0;
+                let marketExposure = 0;
+                let marketValue = 0;
 
                 for (const category of selectedCategories) {
                     if (assetKeys.includes(category) && item.assets[category]) {
                         const value = sumForMembers(item.assets[category]);
                         assets[category] = value;
                         totalAssets += value;
+                        if (marketAssetKeys.includes(category)) {
+                            marketValue += value;
+                            marketExposure += sumExposureForMembers(item.assets[category]);
+                        }
                     }
                     if (debtKeys.includes(category) && item.debts[category]) {
                         const value = sumForMembers(item.debts[category]);
@@ -723,6 +789,8 @@
                     totalAssets,
                     totalLiabilities,
                     netWorth: totalAssets - totalLiabilities,
+                    marketExposure,
+                    marketValue,
                     originalAssets: item.assets // Keep for detail view
                 };
             }).sort((a, b) => a.month.localeCompare(b.month));
@@ -744,14 +812,63 @@
         categoryCheckboxes.forEach(checkbox => checkbox.addEventListener('change', updateUI));
 
         function updateOverviewCards(latestData) {
+            const elTotalAssets = document.getElementById('total-assets');
+            const elTotalLiabilities = document.getElementById('total-liabilities');
+            const elNetWorth = document.getElementById('net-worth');
+            const elMarketExposure = document.getElementById('market-exposure');
+            const elExposureRatio = document.getElementById('market-exposure-ratio');
+            const elMarketSubtext = document.getElementById('market-exposure-subtext');
+
             if (latestData) {
-                document.getElementById('total-assets').textContent = latestData.totalAssets.toLocaleString();
-                document.getElementById('total-liabilities').textContent = latestData.totalLiabilities.toLocaleString();
-                document.getElementById('net-worth').textContent = latestData.netWorth.toLocaleString();
+                if (elTotalAssets) elTotalAssets.textContent = latestData.totalAssets.toLocaleString();
+                if (elTotalLiabilities) elTotalLiabilities.textContent = latestData.totalLiabilities.toLocaleString();
+                if (elNetWorth) elNetWorth.textContent = latestData.netWorth.toLocaleString();
+
+                const marketExp = latestData.marketExposure || 0;
+                const marketVal = latestData.marketValue || 0;
+                if (elMarketExposure) elMarketExposure.textContent = marketExp.toLocaleString();
+
+                if (elExposureRatio) {
+                    if (latestData.netWorth > 0) {
+                        const ratio = ((marketExp / latestData.netWorth) * 100).toFixed(1);
+                        elExposureRatio.textContent = `實質曝險率 ${ratio}%`;
+                        if (parseFloat(ratio) > 100) {
+                            elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800';
+                        } else {
+                            elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700';
+                        }
+                    } else if (latestData.totalAssets > 0) {
+                        const ratio = ((marketExp / latestData.totalAssets) * 100).toFixed(1);
+                        elExposureRatio.textContent = `佔總資產 ${ratio}%`;
+                        elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-700';
+                    } else {
+                        elExposureRatio.textContent = '實質曝險率 0%';
+                        elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-500';
+                    }
+                }
+
+                if (elMarketSubtext) {
+                    if (marketExp !== marketVal) {
+                        elMarketSubtext.textContent = `含槓桿換算 (帳面市值: $${marketVal.toLocaleString()})`;
+                        elMarketSubtext.className = 'text-xs text-indigo-600 font-medium mt-2';
+                    } else {
+                        elMarketSubtext.textContent = '股票、複委託與海外券商投資總額';
+                        elMarketSubtext.className = 'text-xs text-gray-400 mt-2';
+                    }
+                }
             } else {
-                document.getElementById('total-assets').textContent = '0';
-                document.getElementById('total-liabilities').textContent = '0';
-                document.getElementById('net-worth').textContent = '0';
+                if (elTotalAssets) elTotalAssets.textContent = '0';
+                if (elTotalLiabilities) elTotalLiabilities.textContent = '0';
+                if (elNetWorth) elNetWorth.textContent = '0';
+                if (elMarketExposure) elMarketExposure.textContent = '0';
+                if (elExposureRatio) {
+                    elExposureRatio.textContent = '實質曝險率 0%';
+                    elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-500';
+                }
+                if (elMarketSubtext) {
+                    elMarketSubtext.textContent = '股票、複委託與海外券商投資總額';
+                    elMarketSubtext.className = 'text-xs text-gray-400 mt-2';
+                }
             }
         }
 
@@ -785,16 +902,27 @@
                             if (name) {
                                 const normKey = name.toUpperCase();
                                 if (!groupedDetails[normKey]) {
-                                    groupedDetails[normKey] = { name: name, value: 0 };
+                                    groupedDetails[normKey] = { name: name, value: 0, exposure: 0 };
                                 }
-                                groupedDetails[normKey].value += (item.value || 0);
+                                const v = (item.value || 0);
+                                const lev = (item.leverage !== undefined && item.leverage !== null) ? Number(item.leverage) : 1;
+                                const leverage = isNaN(lev) ? 1 : lev;
+                                groupedDetails[normKey].value += v;
+                                groupedDetails[normKey].exposure += v * leverage;
                             }
                         });
 
                         // Sort by value descending and show all
                         const allDetails = Object.values(groupedDetails)
                             .sort((a, b) => b.value - a.value)
-                            .map(entry => `${entry.name}($${entry.value.toLocaleString()})`)
+                            .map(entry => {
+                                const effLev = entry.value > 0 ? (entry.exposure / entry.value) : 1;
+                                const roundedLev = Math.round(effLev * 100) / 100;
+                                if (roundedLev !== 1) {
+                                    return `${entry.name}($${entry.value.toLocaleString()}, ${roundedLev}x曝險: $${entry.exposure.toLocaleString()})`;
+                                }
+                                return `${entry.name}($${entry.value.toLocaleString()})`;
+                            })
                             .join(', ');
                             
                         summaryText += ` [${allDetails}]`;
@@ -812,7 +940,20 @@
                 }
             });
             summaryText += `[負債總計] $${latestData.totalLiabilities.toLocaleString()}\n\n`;
-            summaryText += `三、淨資產: $${latestData.netWorth.toLocaleString()}`;
+            summaryText += `三、淨資產: $${latestData.netWorth.toLocaleString()}\n\n`;
+
+            const marketExp = latestData.marketExposure || 0;
+            const marketVal = latestData.marketValue || 0;
+            const expRatioStr = latestData.netWorth > 0
+                ? `${((marketExp / latestData.netWorth) * 100).toFixed(1)}%`
+                : '-';
+            summaryText += `四、市場總曝險 (股票/複委託/海外券商):\n`;
+            if (marketExp !== marketVal) {
+                summaryText += `實質名目曝險: $${marketExp.toLocaleString()} (含槓桿倍數換算，佔淨資產比率: ${expRatioStr})\n`;
+                summaryText += `市場帳面市值: $${marketVal.toLocaleString()}`;
+            } else {
+                summaryText += `實質名目曝險: $${marketExp.toLocaleString()} (佔淨資產比率: ${expRatioStr})`;
+            }
 
             textSummary.value = summaryText;
         }
@@ -962,19 +1103,26 @@
                         if (name) {
                             const normKey = name.toUpperCase();
                             if (!grouped[normKey]) {
-                                grouped[normKey] = { name: name, value: 0 };
+                                grouped[normKey] = { name: name, value: 0, exposure: 0 };
                             }
-                            grouped[normKey].value += (d.value || 0);
+                            const v = (d.value || 0);
+                            const lev = (d.leverage !== undefined && d.leverage !== null) ? Number(d.leverage) : 1;
+                            const leverage = isNaN(lev) ? 1 : lev;
+                            grouped[normKey].value += v;
+                            grouped[normKey].exposure += v * leverage;
                         }
                     });
 
                     Object.values(grouped).forEach(entry => {
-                        if (entry.value > 0) {
+                        if (entry.value > 0 || entry.exposure > 0) {
+                            const effLev = entry.value > 0 ? (entry.exposure / entry.value) : 1;
                             holdings.push({
                                 name: entry.name,
                                 categoryKey: key,
                                 categoryLabel: categoryLabels[key],
                                 value: entry.value,
+                                exposure: entry.exposure,
+                                leverage: Math.round(effLev * 100) / 100,
                                 categoryTotal: categoryValue
                             });
                         }
@@ -986,6 +1134,8 @@
                             categoryKey: key,
                             categoryLabel: categoryLabels[key],
                             value: unclassifiedSum,
+                            exposure: unclassifiedSum,
+                            leverage: 1,
                             categoryTotal: categoryValue
                         });
                     }
@@ -995,12 +1145,14 @@
                         categoryKey: key,
                         categoryLabel: categoryLabels[key],
                         value: categoryValue,
+                        exposure: categoryValue,
+                        leverage: 1,
                         categoryTotal: categoryValue
                     });
                 }
             });
 
-            holdings.sort((a, b) => b.value - a.value);
+            holdings.sort((a, b) => Math.abs(b.exposure) - Math.abs(a.exposure));
 
             if (holdings.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="4" class="px-2 py-4 text-center text-gray-400">目前無部位明細</td></tr>';
@@ -1009,18 +1161,36 @@
 
             holdings.forEach(item => {
                 const pctOfCurrent = ((item.value / totalAssets) * 100).toFixed(1);
+                const hasLev = item.leverage !== 1;
+                const levBadge = hasLev
+                    ? `<span class="ml-1.5 px-1.5 py-0.5 rounded text-xs font-semibold bg-indigo-100 text-indigo-700 whitespace-nowrap">${item.leverage}x</span>`
+                    : '';
+                const exposureHtml = hasLev
+                    ? `<div class="text-xs text-indigo-600 font-semibold">實質曝險 $${item.exposure.toLocaleString()}</div>`
+                    : '';
+                const netWorthExposureHtml = (hasLev && latestData.netWorth > 0)
+                    ? `<div class="text-xs text-indigo-600 font-medium">佔淨值曝險 ${((item.exposure / latestData.netWorth) * 100).toFixed(1)}%</div>`
+                    : '';
 
                 const row = document.createElement('tr');
                 row.className = 'border-b hover:bg-gray-50';
                 row.innerHTML = `
-                    <td class="px-2 py-3 font-semibold text-gray-800">${item.name}</td>
+                    <td class="px-2 py-3 font-semibold text-gray-800">
+                        <div class="flex items-center">${item.name}${levBadge}</div>
+                    </td>
                     <td class="px-2 py-3 text-gray-500">${item.categoryLabel}</td>
-                    <td class="px-2 py-3 text-right text-green-600 font-bold">$${item.value.toLocaleString()}</td>
                     <td class="px-2 py-3 text-right">
-                        <span class="inline-block text-blue-600 font-bold w-10">${pctOfCurrent}%</span>
-                        <div class="w-16 bg-gray-200 rounded-full h-1.5 inline-block ml-1 align-middle">
-                            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pctOfCurrent}%"></div>
+                        <div class="text-green-600 font-bold">$${item.value.toLocaleString()}</div>
+                        ${exposureHtml}
+                    </td>
+                    <td class="px-2 py-3 text-right">
+                        <div>
+                            <span class="inline-block text-blue-600 font-bold w-10">${pctOfCurrent}%</span>
+                            <div class="w-16 bg-gray-200 rounded-full h-1.5 inline-block ml-1 align-middle">
+                                <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pctOfCurrent}%"></div>
+                            </div>
                         </div>
+                        ${netWorthExposureHtml}
                     </td>
                 `;
                 tableBody.appendChild(row);
