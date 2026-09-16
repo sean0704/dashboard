@@ -184,15 +184,56 @@
                         <h2 class="text-xl font-semibold text-gray-700 mb-2">淨資產</h2>
                         <p class="text-3xl font-bold text-blue-600">$<span id="net-worth">0</span></p>
                     </div>
-                    <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
+                    <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between relative">
                         <div>
                             <div class="flex items-center justify-between mb-2">
-                                <h2 class="text-xl font-semibold text-gray-700">市場總曝險</h2>
-                                <span id="market-exposure-ratio" class="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">佔淨資產 0%</span>
+                                <div class="flex items-center space-x-1.5">
+                                    <h2 class="text-xl font-semibold text-gray-700">股票槓桿倍數</h2>
+                                    <!-- Info Tooltip Button -->
+                                    <button type="button" id="btn-leverage-info" class="text-gray-400 hover:text-indigo-600 focus:outline-none transition-colors" title="查看計算方式與說明" aria-label="查看計算方式與說明">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span id="market-exposure-ratio" class="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">股票市值 $0</span>
                             </div>
-                            <p class="text-3xl font-bold text-indigo-600">$<span id="market-exposure">0</span></p>
+                            <!-- Detailed Tooltip Popup -->
+                            <div id="market-leverage-tooltip" class="hidden absolute right-4 top-14 w-72 sm:w-80 p-3.5 bg-gray-900 text-white text-xs rounded-lg shadow-2xl z-50 border border-gray-700">
+                                <div class="font-bold border-b border-gray-700 pb-1.5 mb-2 flex items-center justify-between text-gray-100">
+                                    <span>股票槓桿倍數計算方式</span>
+                                    <span class="text-[10px] font-normal text-indigo-300 bg-indigo-900 bg-opacity-60 px-1.5 py-0.5 rounded">曝險 ÷ 淨資產</span>
+                                </div>
+                                <p class="text-gray-300 mb-2 leading-relaxed text-[11px]">
+                                    以家庭自有本金（淨資產）衡量整體在股票/海外市場承受的實質名目風險倍數。
+                                </p>
+                                <div class="bg-gray-800 p-2 rounded mb-2 border border-gray-700">
+                                    <div class="text-[10px] text-gray-400 mb-0.5 flex items-center justify-between">
+                                        <span>當前代入算式</span>
+                                        <span id="market-leverage-tooltip-badge" class="text-[10px] text-gray-400">最新月份</span>
+                                    </div>
+                                    <div id="market-leverage-tooltip-formula" class="font-mono text-indigo-300 text-xs font-semibold break-all leading-snug">
+                                        $0 (曝險) ÷ $0 (淨資產) = 0.00x
+                                    </div>
+                                </div>
+                                <div class="text-[11px] text-gray-300 space-y-1.5 border-t border-gray-800 pt-2">
+                                    <div class="flex items-start space-x-1">
+                                        <span class="text-indigo-400 font-bold">•</span>
+                                        <span><strong class="text-gray-200">曝險金額：</strong>標的市值 × 槓桿倍數（如正2 ETF 為2倍）。</span>
+                                    </div>
+                                    <div class="flex items-start space-x-1">
+                                        <span class="text-indigo-400 font-bold">•</span>
+                                        <span><strong class="text-gray-200">風控指引：</strong>
+                                            <span class="text-indigo-400 font-semibold">≤1.0x 安全</span> | 
+                                            <span class="text-yellow-400 font-semibold">1.0~1.5x 適度</span> | 
+                                            <span class="text-red-400 font-semibold">&gt;1.5x 警戒</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p id="market-leverage-container" class="text-3xl font-bold text-indigo-600"><span id="market-leverage">0.00</span><span class="text-2xl font-semibold ml-0.5">x</span></p>
                         </div>
-                        <p id="market-exposure-subtext" class="text-xs text-gray-400 mt-2">股票、複委託與海外券商投資總額</p>
+                        <p id="market-exposure-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">算式: $0 (曝險) ÷ $0 (淨資產) = 0.00x</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -210,7 +251,7 @@
                                         <tr>
                                             <th class="px-2 py-2">標的</th>
                                             <th class="px-2 py-2">大類</th>
-                                            <th class="px-2 py-2 text-right">帳面市值 (實質曝險)</th>
+                                            <th class="px-2 py-2 text-right">股票市值 (實質曝險)</th>
                                             <th class="px-2 py-2 text-right">佔當下資產%</th>
                                         </tr>
                                     </thead>
@@ -1040,13 +1081,37 @@
         memberCheckboxes.forEach(checkbox => checkbox.addEventListener('change', updateUI));
         categoryCheckboxes.forEach(checkbox => checkbox.addEventListener('change', updateUI));
 
+        // Tooltip toggle for market leverage info
+        const btnLeverageInfo = document.getElementById('btn-leverage-info');
+        const tooltipLeverage = document.getElementById('market-leverage-tooltip');
+        if (btnLeverageInfo && tooltipLeverage) {
+            btnLeverageInfo.addEventListener('click', (e) => {
+                e.stopPropagation();
+                tooltipLeverage.classList.toggle('hidden');
+            });
+            btnLeverageInfo.addEventListener('mouseenter', () => {
+                tooltipLeverage.classList.remove('hidden');
+            });
+            btnLeverageInfo.addEventListener('mouseleave', () => {
+                tooltipLeverage.classList.add('hidden');
+            });
+            document.addEventListener('click', (e) => {
+                if (!tooltipLeverage.contains(e.target) && !btnLeverageInfo.contains(e.target)) {
+                    tooltipLeverage.classList.add('hidden');
+                }
+            });
+        }
+
         function updateOverviewCards(latestData) {
             const elTotalAssets = document.getElementById('total-assets');
             const elTotalLiabilities = document.getElementById('total-liabilities');
             const elNetWorth = document.getElementById('net-worth');
-            const elMarketExposure = document.getElementById('market-exposure');
+            const elMarketLeverage = document.getElementById('market-leverage');
+            const elMarketLeverageContainer = document.getElementById('market-leverage-container');
             const elExposureRatio = document.getElementById('market-exposure-ratio');
             const elMarketSubtext = document.getElementById('market-exposure-subtext');
+            const elTooltipFormula = document.getElementById('market-leverage-tooltip-formula');
+            const elTooltipBadge = document.getElementById('market-leverage-tooltip-badge');
 
             if (latestData) {
                 if (elTotalAssets) elTotalAssets.textContent = latestData.totalAssets.toLocaleString();
@@ -1055,48 +1120,103 @@
 
                 const marketExp = latestData.marketExposure || 0;
                 const marketVal = latestData.marketValue || 0;
-                if (elMarketExposure) elMarketExposure.textContent = marketExp.toLocaleString();
 
+                let levNum = 0;
+                let levStr = '0.00';
+                let isFallbackToAssets = false;
+
+                if (latestData.netWorth > 0) {
+                    levNum = marketExp / latestData.netWorth;
+                    levStr = levNum.toFixed(2);
+                } else if (latestData.totalAssets > 0) {
+                    levNum = marketExp / latestData.totalAssets;
+                    levStr = levNum.toFixed(2);
+                    isFallbackToAssets = true;
+                }
+
+                if (elMarketLeverage) elMarketLeverage.textContent = levStr;
+
+                // Color coding for leverage magnitude
+                if (elMarketLeverageContainer) {
+                    if (levNum > 1.5) {
+                        elMarketLeverageContainer.className = 'text-3xl font-bold text-red-600';
+                    } else if (levNum > 1.0) {
+                        elMarketLeverageContainer.className = 'text-3xl font-bold text-yellow-600';
+                    } else {
+                        elMarketLeverageContainer.className = 'text-3xl font-bold text-indigo-600';
+                    }
+                }
+
+                // Badge shows market value or fallback warning
                 if (elExposureRatio) {
-                    if (latestData.netWorth > 0) {
-                        const ratio = ((marketExp / latestData.netWorth) * 100).toFixed(1);
-                        elExposureRatio.textContent = `實質曝險率 ${ratio}%`;
-                        if (parseFloat(ratio) > 100) {
+                    if (isFallbackToAssets) {
+                        elExposureRatio.textContent = '佔總資產 (淨資產≤0)';
+                        elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-700';
+                    } else {
+                        elExposureRatio.textContent = `股票市值 $${marketVal.toLocaleString()}`;
+                        if (levNum > 1.5) {
+                            elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-800';
+                        } else if (levNum > 1.0) {
                             elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-yellow-100 text-yellow-800';
                         } else {
                             elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700';
                         }
-                    } else if (latestData.totalAssets > 0) {
-                        const ratio = ((marketExp / latestData.totalAssets) * 100).toFixed(1);
-                        elExposureRatio.textContent = `佔總資產 ${ratio}%`;
-                        elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-700';
-                    } else {
-                        elExposureRatio.textContent = '實質曝險率 0%';
-                        elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-500';
                     }
                 }
 
-                if (elMarketSubtext) {
-                    if (marketExp !== marketVal) {
-                        elMarketSubtext.textContent = `含槓桿換算 (帳面市值: $${marketVal.toLocaleString()})`;
-                        elMarketSubtext.className = 'text-xs text-indigo-600 font-medium mt-2';
-                    } else {
-                        elMarketSubtext.textContent = '股票、複委託與海外券商投資總額';
-                        elMarketSubtext.className = 'text-xs text-gray-400 mt-2';
+                // Tooltip badge update
+                if (elTooltipBadge) {
+                    elTooltipBadge.textContent = latestData.month || '最新月份';
+                }
+
+                // Subtext shows clear formula derivation (Pattern 3)
+                if (latestData.netWorth > 0) {
+                    const formulaStr = `$${marketExp.toLocaleString()} (曝險) ÷ $${latestData.netWorth.toLocaleString()} (淨資產)`;
+                    if (elMarketSubtext) {
+                        elMarketSubtext.textContent = `算式: ${formulaStr}`;
+                        if (marketExp !== marketVal) {
+                            elMarketSubtext.className = 'text-xs text-indigo-600 font-mono mt-2 leading-tight';
+                        } else {
+                            elMarketSubtext.className = 'text-xs text-gray-500 font-mono mt-2 leading-tight';
+                        }
+                    }
+                    if (elTooltipFormula) {
+                        elTooltipFormula.textContent = `${formulaStr} = ${levStr}x`;
+                    }
+                } else if (latestData.totalAssets > 0) {
+                    const formulaStr = `$${marketExp.toLocaleString()} (曝險) ÷ $${latestData.totalAssets.toLocaleString()} (總資產) [淨值≤0]`;
+                    if (elMarketSubtext) {
+                        elMarketSubtext.textContent = `算式: ${formulaStr}`;
+                        elMarketSubtext.className = 'text-xs text-yellow-600 font-mono mt-2 leading-tight';
+                    }
+                    if (elTooltipFormula) {
+                        elTooltipFormula.textContent = `${formulaStr} = ${levStr}x`;
+                    }
+                } else {
+                    if (elMarketSubtext) {
+                        elMarketSubtext.textContent = '算式: $0 (曝險) ÷ $0 (淨資產) = 0.00x';
+                        elMarketSubtext.className = 'text-xs text-gray-400 font-mono mt-2 leading-tight';
+                    }
+                    if (elTooltipFormula) {
+                        elTooltipFormula.textContent = '$0 (曝險) ÷ $0 (淨資產) = 0.00x';
                     }
                 }
             } else {
                 if (elTotalAssets) elTotalAssets.textContent = '0';
                 if (elTotalLiabilities) elTotalLiabilities.textContent = '0';
                 if (elNetWorth) elNetWorth.textContent = '0';
-                if (elMarketExposure) elMarketExposure.textContent = '0';
+                if (elMarketLeverage) elMarketLeverage.textContent = '0.00';
+                if (elMarketLeverageContainer) elMarketLeverageContainer.className = 'text-3xl font-bold text-indigo-600';
                 if (elExposureRatio) {
-                    elExposureRatio.textContent = '實質曝險率 0%';
+                    elExposureRatio.textContent = '股票市值 $0';
                     elExposureRatio.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-gray-100 text-gray-500';
                 }
                 if (elMarketSubtext) {
-                    elMarketSubtext.textContent = '股票、複委託與海外券商投資總額';
-                    elMarketSubtext.className = 'text-xs text-gray-400 mt-2';
+                    elMarketSubtext.textContent = '算式: $0 (曝險) ÷ $0 (淨資產) = 0.00x';
+                    elMarketSubtext.className = 'text-xs text-gray-400 font-mono mt-2 leading-tight';
+                }
+                if (elTooltipFormula) {
+                    elTooltipFormula.textContent = '$0 (曝險) ÷ $0 (淨資產) = 0.00x';
                 }
             }
         }
@@ -1131,27 +1251,16 @@
                             if (name) {
                                 const normKey = name.toUpperCase();
                                 if (!groupedDetails[normKey]) {
-                                    groupedDetails[normKey] = { name: name, value: 0, exposure: 0 };
+                                    groupedDetails[normKey] = { name: name, value: 0 };
                                 }
-                                const v = (item.value || 0);
-                                const lev = (item.leverage !== undefined && item.leverage !== null) ? Number(item.leverage) : 1;
-                                const leverage = isNaN(lev) ? 1 : lev;
-                                groupedDetails[normKey].value += v;
-                                groupedDetails[normKey].exposure += v * leverage;
+                                groupedDetails[normKey].value += (item.value || 0);
                             }
                         });
 
-                        // Sort by value descending and show all
+                        // Sort by value descending and show pure market values
                         const allDetails = Object.values(groupedDetails)
                             .sort((a, b) => b.value - a.value)
-                            .map(entry => {
-                                const effLev = entry.value > 0 ? (entry.exposure / entry.value) : 1;
-                                const roundedLev = Math.round(effLev * 100) / 100;
-                                if (roundedLev !== 1) {
-                                    return `${entry.name}($${entry.value.toLocaleString()}, ${roundedLev}x曝險: $${entry.exposure.toLocaleString()})`;
-                                }
-                                return `${entry.name}($${entry.value.toLocaleString()})`;
-                            })
+                            .map(entry => `${entry.name}($${entry.value.toLocaleString()})`)
                             .join(', ');
                             
                         summaryText += ` [${allDetails}]`;
@@ -1169,20 +1278,7 @@
                 }
             });
             summaryText += `[負債總計] $${latestData.totalLiabilities.toLocaleString()}\n\n`;
-            summaryText += `三、淨資產: $${latestData.netWorth.toLocaleString()}\n\n`;
-
-            const marketExp = latestData.marketExposure || 0;
-            const marketVal = latestData.marketValue || 0;
-            const expRatioStr = latestData.netWorth > 0
-                ? `${((marketExp / latestData.netWorth) * 100).toFixed(1)}%`
-                : '-';
-            summaryText += `四、市場總曝險 (股票/複委託/海外券商):\n`;
-            if (marketExp !== marketVal) {
-                summaryText += `實質名目曝險: $${marketExp.toLocaleString()} (含槓桿倍數換算，佔淨資產比率: ${expRatioStr})\n`;
-                summaryText += `市場帳面市值: $${marketVal.toLocaleString()}`;
-            } else {
-                summaryText += `實質名目曝險: $${marketExp.toLocaleString()} (佔淨資產比率: ${expRatioStr})`;
-            }
+            summaryText += `三、淨資產: $${latestData.netWorth.toLocaleString()}`;
 
             textSummary.value = summaryText;
         }
