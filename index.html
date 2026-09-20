@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>個人化家庭資產儀表板</title>
+    <title>個人與家庭資產損益儀表板</title>
     <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Chart.js CDN -->
@@ -22,7 +22,7 @@
                     </svg>
                 </div>
                 <h2 class="text-2xl font-bold text-gray-800">資產金庫已鎖定</h2>
-                <p class="text-gray-500 mt-2">請輸入您的家庭金庫密碼以解密數據</p>
+                <p class="text-gray-500 mt-2">請輸入您的資產金庫密碼以解密數據</p>
             </div>
             <div class="mb-4">
                 <input type="password" id="unlock-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="輸入密碼...">
@@ -80,12 +80,15 @@
         </div>
     </div>
 
+
+
     <div id="app" class="container mx-auto p-4">
-        <!-- Navigation will go here -->
+        <!-- Navigation -->
         <nav class="bg-white p-4 rounded-lg shadow mb-4">
-            <ul class="flex space-x-4">
-                <li><a href="#" id="nav-dashboard" class="text-blue-500 hover:text-blue-700 font-bold">資產儀表板</a></li>
-                <li><a href="#" id="nav-input" class="text-gray-600 hover:text-blue-700">資產數據輸入</a></li>
+            <ul class="flex flex-wrap gap-2 md:gap-4">
+                <li><a href="#" id="nav-dashboard" class="text-blue-600 font-bold px-3 py-2 rounded-lg bg-blue-50 transition-colors">資產負債儀表板</a></li>
+                <li><a href="#" id="nav-income" class="text-gray-600 hover:text-blue-700 px-3 py-2 rounded-lg transition-colors">收支損益表</a></li>
+                <li><a href="#" id="nav-input" class="text-gray-600 hover:text-blue-700 px-3 py-2 rounded-lg transition-colors">財務數據輸入</a></li>
             </ul>
         </nav>
 
@@ -93,12 +96,17 @@
         <main id="content">
             <!-- Dashboard Page -->
             <section id="dashboard-page" class="page">
-                <h1 class="text-3xl font-bold mb-4 text-gray-800">資產儀表板</h1>
+                <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
+                    <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                        <h1 class="text-3xl font-bold text-gray-800">資產負債儀表板</h1>
+                        <div id="dashboard-scope-badge"></div>
+                    </div>
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <!-- Member Filter -->
                     <div id="member-filter" class="bg-white p-4 rounded-lg shadow">
-                        <h2 class="text-lg font-semibold text-gray-700 mb-2">家庭成員篩選</h2>
+                        <h2 class="text-lg font-semibold text-gray-700 mb-2">成員檢視篩選</h2>
                         <div class="flex flex-wrap gap-4">
                             <label class="inline-flex items-center">
                                 <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600 member-checkbox" value="member1" checked>
@@ -205,7 +213,7 @@
                                     <span class="text-[10px] font-normal text-indigo-300 bg-indigo-900 bg-opacity-60 px-1.5 py-0.5 rounded">曝險 ÷ 淨資產</span>
                                 </div>
                                 <p class="text-gray-300 mb-2 leading-relaxed text-[11px]">
-                                    以家庭自有本金（淨資產）衡量整體在股票/海外市場承受的實質名目風險倍數。
+                                    以自有本金（淨資產）衡量整體在股票/海外市場承受的實質名目風險倍數。
                                 </p>
                                 <div class="bg-gray-800 p-2 rounded mb-2 border border-gray-700">
                                     <div class="text-[10px] text-gray-400 mb-0.5 flex items-center justify-between">
@@ -299,9 +307,206 @@
                 </div>
             </section>
 
+            <!-- Income Statement Page -->
+            <section id="income-page" class="page hidden">
+                <div class="mb-6">
+                    <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                        <h1 class="text-3xl font-bold text-gray-800">收支損益表</h1>
+                        <div id="income-scope-badge"></div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">追蹤每月實質現金流入、生活與固定開銷、借貸融資利息成本及當月淨儲蓄結餘</p>
+                </div>
+
+                <!-- Member Filter -->
+                <div id="income-member-filter" class="bg-white p-4 rounded-lg shadow mb-6">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-2">成員檢視篩選 (損益表)</h2>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600 income-member-checkbox" value="member1" checked>
+                            <span class="ml-2 text-gray-700">成員1</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600 income-member-checkbox" value="member2" checked>
+                            <span class="ml-2 text-gray-700">成員2</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600 income-member-checkbox" value="member3" checked>
+                            <span class="ml-2 text-gray-700">成員3</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600 income-member-checkbox" value="member4" checked>
+                            <span class="ml-2 text-gray-700">成員4</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Income Overview Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <h2 class="text-lg font-semibold text-gray-700">當月總收入</h2>
+                                <span class="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800 font-semibold">流入</span>
+                            </div>
+                            <p class="text-3xl font-bold text-green-600">$<span id="income-total-amount">0</span></p>
+                        </div>
+                        <p id="income-breakdown-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">薪資: $0 | 股息: $0 | 其他: $0</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <h2 class="text-lg font-semibold text-gray-700">當月總支出</h2>
+                                <span class="text-xs px-2 py-0.5 rounded bg-red-100 text-red-800 font-semibold">流出</span>
+                            </div>
+                            <p class="text-3xl font-bold text-red-600">$<span id="expense-total-amount">0</span></p>
+                        </div>
+                        <p id="expense-breakdown-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">固定: $0 | 變動: $0 | 利息: $0</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center space-x-1">
+                                    <h2 class="text-lg font-semibold text-gray-700">借貸利息支出</h2>
+                                    <span class="cursor-pointer text-gray-400 hover:text-purple-600" title="房貸、增貸、信貸、質押等借款產生的純利息成本">
+                                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </span>
+                                </div>
+                                <span id="income-interest-ratio-badge" class="text-xs font-semibold px-2 py-0.5 rounded bg-purple-100 text-purple-700">利息比 0%</span>
+                            </div>
+                            <p class="text-3xl font-bold text-purple-600">$<span id="expense-interest-amount">0</span></p>
+                        </div>
+                        <p id="income-interest-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">佔總收入比例: 0.0% (融資成本負擔)</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <h2 class="text-lg font-semibold text-gray-700">當月淨儲蓄</h2>
+                                <span id="income-savings-rate-badge" class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700">儲蓄率 0%</span>
+                            </div>
+                            <p id="income-net-savings-container" class="text-3xl font-bold text-blue-600">$<span id="income-net-savings">0</span></p>
+                        </div>
+                        <p id="income-savings-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">現金流結餘 = 總收入 - 總支出</p>
+                    </div>
+                </div>
+
+                <!-- Financial Cross-Validation Card (資產負債與損益勾稽戰情室) -->
+                <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-5 rounded-lg border border-indigo-100 shadow mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-bold text-gray-800 text-base flex items-center gap-1.5">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                            財報勾稽分析：財富增長動能拆解
+                        </h3>
+                        <span id="cross-val-month-badge" class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-white text-indigo-700 border border-indigo-200">最新月份</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="bg-white p-3.5 rounded-lg shadow-sm border border-gray-100">
+                            <div class="text-xs text-gray-500 mb-1 font-medium">① 當月淨儲蓄 (收支結餘)</div>
+                            <div id="cross-val-savings" class="text-xl font-bold text-blue-600">$0</div>
+                            <div class="text-[11px] text-gray-400 mt-1">本月透過工作與自律存下的現金</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-lg shadow-sm border border-gray-100">
+                            <div class="text-xs text-gray-500 mb-1 font-medium">② 當月淨資產增減 (資產負債表)</div>
+                            <div id="cross-val-net-worth-diff" class="text-xl font-bold text-indigo-600">$0</div>
+                            <div class="text-[11px] text-gray-400 mt-1">期末淨資產相較上期之總體變化</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-lg shadow-sm border border-gray-100">
+                            <div class="text-xs text-gray-500 mb-1 font-medium">③ 推算投資與資產損益 (資本利得)</div>
+                            <div id="cross-val-capital-gains" class="text-xl font-bold text-green-600">$0</div>
+                            <div class="text-[11px] text-gray-400 mt-1">股票/房產市場波動帶來的未實現損益 (② - ①)</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3 text-center">
+                        💡 <strong>財務健康指引：</strong> 若「淨資產增長」大於「當月淨儲蓄」，代表投資部位帶來了正向資本利得；若小於則代表本期市場回檔，但自律儲蓄仍能發揮緩衝墊效果。
+                    </p>
+                </div>
+
+                <!-- Charts: Trend Line & Expense Pie -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">每月收支與淨儲蓄趨勢</h2>
+                        <canvas id="income-expense-chart"></canvas>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">當月支出結構佔比</h2>
+                        <canvas id="expense-structure-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Loan Interest Expense Details Table (當期借貸利息支出明細) -->
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-700">當期借貸利息支出明細</h2>
+                            <p class="text-xs text-gray-400 mt-0.5">彙整各成員當月各筆房貸、信貸與質押之實付利息明細與支出負擔佔比</p>
+                        </div>
+                        <span id="interest-detail-month-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">最新月份</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-xs sm:text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-purple-50">
+                                <tr>
+                                    <th class="px-3 py-2.5">借貸項目名稱</th>
+                                    <th class="px-3 py-2.5 text-right text-purple-700">當月實付利息</th>
+                                    <th class="px-3 py-2.5 text-center">佔利息支出比</th>
+                                    <th class="px-3 py-2.5 text-center">佔總收入比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="interest-details-table-body">
+                                <!-- Dynamic Content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Monthly Income & Expense Table -->
+                <div class="bg-white p-6 rounded-lg shadow mb-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">每月收支分析表</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-xs sm:text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th class="px-3 py-2.5">月份</th>
+                                    <th class="px-3 py-2.5 text-right text-green-700">總收入</th>
+                                    <th class="px-3 py-2.5 text-right text-purple-700">借貸利息</th>
+                                    <th class="px-3 py-2.5 text-right">固定支出</th>
+                                    <th class="px-3 py-2.5 text-right">變動支出</th>
+                                    <th class="px-3 py-2.5 text-right text-red-700">總支出</th>
+                                    <th class="px-3 py-2.5 text-right text-blue-700">淨儲蓄</th>
+                                    <th class="px-3 py-2.5 text-center">儲蓄率</th>
+                                    <th class="px-3 py-2.5 text-center">利息負擔比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="income-monthly-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- AI Friendly Summary Section -->
+                <div class="bg-white p-4 rounded-lg shadow mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                        <h2 class="text-lg font-semibold text-gray-700 italic">損益數據概覽 (AI 諮詢友善)</h2>
+                        <div class="flex items-center gap-2">
+                            <button id="btn-copy-income-summary" class="bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded text-sm font-bold transition">
+                                複製損益表
+                            </button>
+                            <button id="btn-copy-combined-summary" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded text-sm font-bold transition" title="同時複製資產負債表與當月損益表全文，供 AI 全方位診斷">
+                                複製完整雙軌財報 (資產+損益)
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="income-text-summary" readonly class="w-full h-44 p-3 bg-gray-50 border border-gray-200 rounded-md font-mono text-sm focus:outline-none" placeholder="尚未載入損益數據..."></textarea>
+                </div>
+            </section>
+
             <!-- Data Input Page -->
             <section id="input-page" class="page hidden">
-                <h1 class="text-3xl font-bold mb-6 text-gray-800">資產數據輸入</h1>
+                <h1 class="text-3xl font-bold mb-6 text-gray-800">財務數據輸入</h1>
                 <form id="asset-input-form" class="bg-white p-6 rounded-lg shadow">
                     <div class="mb-6 p-4 rounded-lg bg-gray-50 border border-gray-200">
                         <div class="flex flex-col md:flex-row md:items-end justify-between gap-3">
@@ -318,7 +523,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                                     還原此月舊紀錄
                                 </button>
-                                <button type="button" id="btn-import-latest" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3.5 rounded text-sm focus:outline-none shadow-sm transition-colors whitespace-nowrap inline-flex items-center gap-1.5" title="從資料庫中最新一筆紀錄帶入所有資產、負債與股票明細">
+                                <button type="button" id="btn-import-latest" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3.5 rounded text-sm focus:outline-none shadow-sm transition-colors whitespace-nowrap inline-flex items-center gap-1.5" title="從資料庫中最新一筆紀錄帶入所有資產、負債與收支損益">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
                                     帶入最新一期紀錄
                                 </button>
@@ -337,8 +542,19 @@
                         </div>
                     </div>
 
-                    <div class="mb-6">
-                        <div class="space-y-4">
+                    <!-- Input Sub-tabs -->
+                    <div class="flex border-b border-gray-200 mb-6 space-x-2">
+                        <button type="button" id="tab-btn-assets" class="py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
+                            <span>🏛️ 資產與負債數據</span>
+                        </button>
+                        <button type="button" id="tab-btn-income" class="py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
+                            <span>💵 收支（損益）數據</span>
+                        </button>
+                    </div>
+
+                    <!-- TAB 1: Assets & Debts -->
+                    <div id="tab-section-assets" class="mb-6 overflow-x-auto">
+                        <div class="space-y-4" style="min-width: 520px;">
                             <!-- Header -->
                             <div class="grid grid-cols-5 gap-2 font-bold text-gray-700">
                                 <div class="col-span-1">項目</div>
@@ -349,89 +565,226 @@
                             </div>
                             
                             <!-- Asset Inputs -->
-                            <div class="p-2 bg-gray-50 rounded-lg">
-                                <h3 class="font-semibold text-lg text-gray-800 mb-2 col-span-5">資產</h3>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">現金</label>
-                                    <input type="number" id="asset-cash-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="asset-cash-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="asset-cash-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="asset-cash-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                            <div class="p-3 bg-green-50 rounded-lg border border-green-200">
+                                <div class="flex items-center justify-between mb-3 border-b border-green-200 pb-1.5">
+                                    <h3 class="font-bold text-base text-green-900 flex items-center gap-1.5">
+                                        <span>🟢 資產 (持有市值與存款)</span>
+                                    </h3>
+                                    <span class="text-xs text-green-700">銀行存款、股票市值、海外券商、房產估值</span>
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">國內股票</label>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member3"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="domesticStocks" data-member="member4"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="新台幣與外幣活期、定存及流動現金">現金</label>
+                                    <input type="number" id="asset-cash-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="asset-cash-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="asset-cash-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="asset-cash-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">複委託</label>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member3"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="subBrokerage" data-member="member4"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="台股上市櫃股票、ETF，點擊編輯標的明細與槓桿倍數">國內股票</label>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="domesticStocks" data-member="member1" title="編輯成員1國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="domesticStocks" data-member="member2" title="編輯成員2國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="domesticStocks" data-member="member3" title="編輯成員3國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="domesticStocks" data-member="member4" title="編輯成員4國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">海外券商</label>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member1"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member3"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6" value="0" readonly><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member4"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="國內券商複委託持有之海外美股/ETF，點擊編輯標的明細與槓桿倍數">複委託</label>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="subBrokerage" data-member="member1" title="編輯成員1複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="subBrokerage" data-member="member2" title="編輯成員2複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="subBrokerage" data-member="member3" title="編輯成員3複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="subBrokerage" data-member="member4" title="編輯成員4複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                </div>
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="Firstrade, IB 等海外直接券商資產，點擊編輯標的明細與槓桿倍數">海外券商</label>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member1" title="編輯成員1海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member2" title="編輯成員2海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member3" title="編輯成員3海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member4" title="編輯成員4海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center">
-                                    <label class="col-span-1">房產</label>
-                                    <input type="number" id="asset-real-estate-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="asset-real-estate-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="asset-real-estate-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="asset-real-estate-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="自住或投資不動產當前預估淨市值">房產</label>
+                                    <input type="number" id="asset-real-estate-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="asset-real-estate-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="asset-real-estate-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="asset-real-estate-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
                             </div>
 
                             <!-- Debt Inputs -->
-                            <div class="p-2 bg-gray-50 rounded-lg">
-                                <h3 class="font-semibold text-lg text-gray-800 mb-2 col-span-5">負債</h3>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">一般型房貸</label>
-                                    <input type="number" id="debt-mortgage-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-mortgage-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-mortgage-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-mortgage-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                            <div class="p-3 bg-red-50 rounded-lg border border-red-200">
+                                <div class="flex items-center justify-between mb-3 border-b border-red-200 pb-1.5">
+                                    <h3 class="font-bold text-base text-red-900 flex items-center gap-1.5">
+                                        <span>🔴 負債 (借款本金餘額)</span>
+                                    </h3>
+                                    <span class="text-xs text-red-700">房貸、增貸、信貸、股票質押等未償還本金</span>
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">增貸型房貸 (一)</label>
-                                    <input type="number" id="debt-refinanceMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-refinanceMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-refinanceMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-refinanceMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="購屋自備或分期本息償還之一般房屋貸款本金餘額">一般型房貸</label>
+                                    <input type="number" id="debt-mortgage-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-mortgage-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-mortgage-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-mortgage-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">增貸型房貸 (二)</label>
-                                    <input type="number" id="debt-refinanceMortgage2-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-refinanceMortgage2-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-refinanceMortgage2-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-refinanceMortgage2-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房屋增貸第一期未償還本金餘額">增貸型房貸 (一)</label>
+                                    <input type="number" id="debt-refinanceMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-refinanceMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-refinanceMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-refinanceMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">理財型房貸</label>
-                                    <input type="number" id="debt-revolvingMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-revolvingMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-revolvingMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-revolvingMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房屋增貸第二期未償還本金餘額">增貸型房貸 (二)</label>
+                                    <input type="number" id="debt-refinanceMortgage2-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-refinanceMortgage2-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-refinanceMortgage2-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-refinanceMortgage2-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1">信用貸款</label>
-                                    <input type="number" id="debt-personalLoan-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-personalLoan-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-personalLoan-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-personalLoan-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="可隨借隨還之循環型理財房貸已動用本金餘額">理財型房貸</label>
+                                    <input type="number" id="debt-revolvingMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-revolvingMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-revolvingMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-revolvingMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                </div>
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="個人無擔保信用貸款剩餘本金">信用貸款</label>
+                                    <input type="number" id="debt-personalLoan-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-personalLoan-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-personalLoan-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-personalLoan-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center">
-                                    <label class="col-span-1">股票質押</label>
-                                    <input type="number" id="debt-stockLoan-member1" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-stockLoan-member2" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-stockLoan-member3" class="shadow-sm border rounded w-full py-1 px-2" value="0">
-                                    <input type="number" id="debt-stockLoan-member4" class="shadow-sm border rounded w-full py-1 px-2" value="0">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="股票向券商或銀行擔保借款之未償本金餘額">股票質押</label>
+                                    <input type="number" id="debt-stockLoan-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-stockLoan-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-stockLoan-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="debt-stockLoan-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: Income & Expenses (P&L) -->
+                    <div id="tab-section-income" class="mb-6 hidden overflow-x-auto">
+                        <div class="space-y-4" style="min-width: 520px;">
+                            <!-- Header -->
+                            <div class="grid grid-cols-5 gap-2 font-bold text-gray-700">
+                                <div class="col-span-1">項目</div>
+                                <div class="text-center">成員1</div>
+                                <div class="text-center">成員2</div>
+                                <div class="text-center">成員3</div>
+                                <div class="text-center">成員4</div>
+                            </div>
+
+                            <!-- Income Inputs -->
+                            <div class="p-3 bg-green-50 rounded-lg border border-green-200">
+                                <div class="flex items-center justify-between mb-3 border-b border-green-200 pb-1.5">
+                                    <h3 class="font-bold text-base text-green-900 flex items-center gap-1.5">
+                                        <span>🟢 當月實質現金流入 (收入)</span>
+                                    </h3>
+                                    <span class="text-xs text-green-700">稅後實質到帳金額</span>
+                                </div>
+
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="薪資、年終獎金、津貼、兼職所得">工作與薪資</label>
+                                    <input type="number" id="income-salary-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="income-salary-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="income-salary-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="income-salary-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                </div>
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="股票股利、ETF配息、債息、基金分紅">投資收益/股息</label>
+                                    <input type="number" id="income-dividend-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="income-dividend-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="income-dividend-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="income-dividend-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                </div>
+                                <div class="grid grid-cols-5 gap-2 items-center">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租收入、副業、利息、非經常性收入">其他收入</label>
+                                    <input type="number" id="income-other-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="income-other-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="income-other-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="income-other-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                </div>
+                            </div>
+
+                            <!-- Expense Inputs -->
+                            <div class="p-3 bg-red-50 rounded-lg border border-red-200">
+                                <div class="flex items-center justify-between mb-3 border-b border-red-200 pb-1.5">
+                                    <h3 class="font-bold text-base text-red-900 flex items-center gap-1.5">
+                                        <span>🔴 當月實質現金流出 (支出)</span>
+                                    </h3>
+                                    <span class="text-xs text-red-700">當月已扣款或生活支出</span>
+                                </div>
+
+                                <!-- Interest Expense (6 Loan Categories) -->
+                                <div class="mb-3 p-2.5 bg-purple-50 rounded-lg border border-purple-200">
+                                    <div class="flex items-center justify-between mb-2.5 border-b border-purple-200 pb-1.5">
+                                        <div class="flex items-center space-x-1.5">
+                                            <span class="text-sm font-bold text-purple-900">🟣 借貸利息支出 (純融資利息成本)</span>
+                                            <span class="text-xs text-purple-700 font-normal hidden sm:inline">(依各項負債當月實際扣繳或實付利息分別填寫)</span>
+                                        </div>
+                                        <span class="text-xs text-purple-700 font-semibold">各負債對應月利息</span>
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="一般購屋房貸之當月實付利息">一般房貸利息</label>
+                                        <input type="number" id="expense-interest-mortgage-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-mortgage-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-mortgage-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-mortgage-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="房屋增貸第一期之當月實付利息">增貸(一)利息</label>
+                                        <input type="number" id="expense-interest-refinanceMortgage-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="房屋增貸第二期之當月實付利息">增貸(二)利息</label>
+                                        <input type="number" id="expense-interest-refinanceMortgage2-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage2-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage2-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage2-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="理財型房貸循環動用之當月實付利息">理財房貸利息</label>
+                                        <input type="number" id="expense-interest-revolvingMortgage-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-revolvingMortgage-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-revolvingMortgage-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-revolvingMortgage-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="個人信用貸款之當月實付利息">信用貸款利息</label>
+                                        <input type="number" id="expense-interest-personalLoan-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-personalLoan-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-personalLoan-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-personalLoan-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="股票質押借款之當月實付利息">股票質押利息</label>
+                                        <input type="number" id="expense-interest-stockLoan-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-stockLoan-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-stockLoan-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-stockLoan-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                    </div>
+                                </div>
+
+                                <!-- Fixed Expense -->
+                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租/管理費、保險費、稅金、固定訂閱、孝親費">固定生活支出</label>
+                                    <input type="number" id="expense-fixed-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="expense-fixed-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="expense-fixed-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="expense-fixed-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                </div>
+
+                                <!-- Variable Expense -->
+                                <div class="grid grid-cols-5 gap-2 items-center">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="飲食伙食、交通、日常購物、娛樂社交等變動生活總額">變動生活支出</label>
+                                    <input type="number" id="expense-variable-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="expense-variable-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="expense-variable-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="expense-variable-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
                             </div>
                         </div>
@@ -453,8 +806,10 @@
         const unlockError = document.getElementById('unlock-error');
         
         const navDashboard = document.getElementById('nav-dashboard');
+        const navIncome = document.getElementById('nav-income');
         const navInput = document.getElementById('nav-input');
         const dashboardPage = document.getElementById('dashboard-page');
+        const incomePage = document.getElementById('income-page');
         const inputPage = document.getElementById('input-page');
         const monthSelect = document.getElementById('month-select');
         const monthStatusBadge = document.getElementById('month-status-badge');
@@ -467,9 +822,41 @@
         const btnSubmitForm = document.getElementById('btn-submit-form');
         const assetInputForm = document.getElementById('asset-input-form');
         const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+        const incomeMemberCheckboxes = document.querySelectorAll('.income-member-checkbox');
         const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         const textSummary = document.getElementById('text-summary');
         const btnCopySummary = document.getElementById('btn-copy-summary');
+
+        // Input Tabs
+        const tabBtnAssets = document.getElementById('tab-btn-assets');
+        const tabBtnIncome = document.getElementById('tab-btn-income');
+        const tabSectionAssets = document.getElementById('tab-section-assets');
+        const tabSectionIncome = document.getElementById('tab-section-income');
+
+        // Income Statement Overview Elements
+        const incomeTotalAmount = document.getElementById('income-total-amount');
+        const incomeBreakdownSubtext = document.getElementById('income-breakdown-subtext');
+        const expenseTotalAmount = document.getElementById('expense-total-amount');
+        const expenseBreakdownSubtext = document.getElementById('expense-breakdown-subtext');
+        const expenseInterestAmount = document.getElementById('expense-interest-amount');
+        const incomeInterestRatioBadge = document.getElementById('income-interest-ratio-badge');
+        const incomeInterestSubtext = document.getElementById('income-interest-subtext');
+        const incomeNetSavings = document.getElementById('income-net-savings');
+        const incomeNetSavingsContainer = document.getElementById('income-net-savings-container');
+        const incomeSavingsRateBadge = document.getElementById('income-savings-rate-badge');
+        const incomeSavingsSubtext = document.getElementById('income-savings-subtext');
+
+        // Income Cross-Validation Elements
+        const crossValMonthBadge = document.getElementById('cross-val-month-badge');
+        const crossValSavings = document.getElementById('cross-val-savings');
+        const crossValNetWorthDiff = document.getElementById('cross-val-net-worth-diff');
+        const crossValCapitalGains = document.getElementById('cross-val-capital-gains');
+
+        // Income Table & Summary Elements
+        const incomeMonthlyTableBody = document.getElementById('income-monthly-table-body');
+        const incomeTextSummary = document.getElementById('income-text-summary');
+        const btnCopyIncomeSummary = document.getElementById('btn-copy-income-summary');
+        const btnCopyCombinedSummary = document.getElementById('btn-copy-combined-summary');
 
         // Asset Detail Modal Elements
         const detailModal = document.getElementById('detail-modal');
@@ -480,9 +867,17 @@
         const btnSaveDetail = document.getElementById('btn-save-detail');
         const btnCloseDetail = document.getElementById('btn-close-detail');
 
+
+
+        // Interest Breakdown Table Elements
+        const interestDetailsTableBody = document.getElementById('interest-details-table-body');
+        const interestDetailMonthBadge = document.getElementById('interest-detail-month-badge');
+
         // --- Chart Instances ---
         let assetAllocationChart;
         let netWorthGrowthChart;
+        let incomeExpenseChart;
+        let expenseStructureChart;
         let rawData = []; // To store the original decrypted data
         let encryptedDataStr = null; // Store the original encrypted string from server
         let currentSessionPassword = ''; // Retain verified password in session to avoid accidental lockout
@@ -634,8 +1029,13 @@
 
         btnAddDetailRow.addEventListener('click', () => addDetailRow());
         btnCloseDetail.addEventListener('click', () => detailModal.classList.add('hidden'));
+        if (detailModal) {
+            detailModal.addEventListener('click', (e) => {
+                if (e.target === detailModal) detailModal.classList.add('hidden');
+            });
+        }
 
-        // Attach listeners to "Detail" buttons
+        // Attach listeners to "Detail" buttons & readonly inputs
         document.querySelectorAll('.btn-edit-member-detail').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const category = btn.getAttribute('data-category');
@@ -643,35 +1043,102 @@
                 openDetailModal(category, member);
             });
         });
+        detailSupportedKeys.forEach(cat => {
+            for (let i = 1; i <= 4; i++) {
+                const inputEl = document.getElementById(`asset-${cat}-member${i}`);
+                if (inputEl) {
+                    inputEl.addEventListener('click', () => openDetailModal(cat, `member${i}`));
+                }
+            }
+        });
+
+        // Keyboard accessibility: close modals on Escape key
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (detailModal && !detailModal.classList.contains('hidden')) {
+                    detailModal.classList.add('hidden');
+                }
+            }
+        });
 
         // --- Navigation ---
         function showPage(pageToShow) {
             dashboardPage.classList.add('hidden');
+            incomePage.classList.add('hidden');
             inputPage.classList.add('hidden');
             pageToShow.classList.remove('hidden');
+        }
+
+        function updateNavStyles(activeNav) {
+            [navDashboard, navIncome, navInput].forEach(nav => {
+                if (!nav) return;
+                if (nav === activeNav) {
+                    nav.className = 'text-blue-600 font-bold px-3 py-2 rounded-lg bg-blue-50 transition-colors';
+                } else {
+                    nav.className = 'text-gray-600 hover:text-blue-700 px-3 py-2 rounded-lg transition-colors';
+                }
+            });
         }
 
         navDashboard.addEventListener('click', (e) => {
             e.preventDefault();
             showPage(dashboardPage);
-            navDashboard.classList.add('font-bold', 'text-blue-500');
-            navDashboard.classList.remove('text-gray-600');
-            navInput.classList.remove('font-bold', 'text-blue-500');
-            navInput.classList.add('text-gray-600');
+            updateNavStyles(navDashboard);
+        });
+
+        navIncome.addEventListener('click', (e) => {
+            e.preventDefault();
+            showPage(incomePage);
+            updateNavStyles(navIncome);
+            updateIncomeUI();
         });
 
         navInput.addEventListener('click', (e) => {
             e.preventDefault();
             showPage(inputPage);
-            navInput.classList.add('font-bold', 'text-blue-500');
-            navInput.classList.remove('text-gray-600');
-            navDashboard.classList.remove('font-bold', 'text-blue-500');
-            navDashboard.classList.add('text-gray-600');
+            updateNavStyles(navInput);
             renderHistoryMonthPills();
             handleMonthChange(false);
         });
 
+        // --- Input Sub-tabs & Quick Interest Calculation ---
+        if (tabBtnAssets && tabBtnIncome) {
+            tabBtnAssets.addEventListener('click', () => {
+                tabSectionAssets.classList.remove('hidden');
+                tabSectionIncome.classList.add('hidden');
+                tabBtnAssets.className = 'py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+                tabBtnIncome.className = 'py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+            });
+
+            tabBtnIncome.addEventListener('click', () => {
+                tabSectionIncome.classList.remove('hidden');
+                tabSectionAssets.classList.add('hidden');
+                tabBtnIncome.className = 'py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+                tabBtnAssets.className = 'py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+            });
+        }
+
         // --- Import & Form Population Logic ---
+        const incomeExpensePrefixes = [
+            'income-salary', 'income-dividend', 'income-other',
+            'expense-fixed', 'expense-variable'
+        ];
+
+        function defaultIncomeStatement() {
+            return {
+                income: {
+                    salary: { member1: 0, member2: 0, member3: 0, member4: 0 },
+                    dividend: { member1: 0, member2: 0, member3: 0, member4: 0 },
+                    other: { member1: 0, member2: 0, member3: 0, member4: 0 }
+                },
+                expense: {
+                    interest: { member1: 0, member2: 0, member3: 0, member4: 0 },
+                    fixed: { member1: 0, member2: 0, member3: 0, member4: 0 },
+                    variable: { member1: 0, member2: 0, member3: 0, member4: 0 }
+                }
+            };
+        }
+
         function clearForm(clearHighlight = true) {
             tempDetails = {};
             for (let i = 1; i <= 4; i++) {
@@ -690,6 +1157,18 @@
                 }
                 debtKeys.forEach(type => {
                     const el = document.getElementById(`debt-${type}-${memberId}`);
+                    if (el) {
+                        el.value = 0;
+                        if (clearHighlight) el.classList.remove('bg-yellow-50');
+                    }
+                    const interestEl = document.getElementById(`expense-interest-${type}-${memberId}`);
+                    if (interestEl) {
+                        interestEl.value = 0;
+                        if (clearHighlight) interestEl.classList.remove('bg-yellow-50');
+                    }
+                });
+                incomeExpensePrefixes.forEach(prefix => {
+                    const el = document.getElementById(`${prefix}-${memberId}`);
                     if (el) {
                         el.value = 0;
                         if (clearHighlight) el.classList.remove('bg-yellow-50');
@@ -714,7 +1193,7 @@
                         tempDetails[type][member] = JSON.parse(JSON.stringify(val.details || []));
                     } else {
                         // Handle legacy structure: number
-                        el.value = val;
+                        el.value = (val !== undefined && val !== null) ? val : 0;
                     }
                     el.classList.add('bg-yellow-50');
                 }
@@ -723,24 +1202,108 @@
             const setDebtValue = (type, member, val) => {
                 const el = document.getElementById(`debt-${type}-${member}`);
                 if (el) {
-                    el.value = val;
+                    el.value = (val !== undefined && val !== null) ? val : 0;
                     el.classList.add('bg-yellow-50');
+                }
+            };
+
+            const setIncomeExpenseValue = (prefix, member, val) => {
+                const el = document.getElementById(`${prefix}-${member}`);
+                if (el) {
+                    el.value = (val !== undefined && val !== null) ? val : 0;
+                    el.classList.add('bg-yellow-50');
+                }
+            };
+
+            const debtKeyByName = {
+                '一般型房貸': 'mortgage', '一般房貸': 'mortgage', '房貸': 'mortgage',
+                '增貸型房貸 (一)': 'refinanceMortgage', '增貸型房貸(一)': 'refinanceMortgage', '增貸(一)': 'refinanceMortgage',
+                '增貸型房貸 (二)': 'refinanceMortgage2', '增貸型房貸(二)': 'refinanceMortgage2', '增貸(二)': 'refinanceMortgage2',
+                '理財型房貸': 'revolvingMortgage', '理財房貸': 'revolvingMortgage',
+                '信用貸款': 'personalLoan', '信貸': 'personalLoan',
+                '股票質押': 'stockLoan', '質押': 'stockLoan'
+            };
+
+            const setInterestValues = (memberId, interestData) => {
+                // Initialize all 6 inputs to 0
+                debtKeys.forEach(type => {
+                    const el = document.getElementById(`expense-interest-${type}-${memberId}`);
+                    if (el) {
+                        el.value = 0;
+                        el.classList.add('bg-yellow-50');
+                    }
+                });
+
+                if (!interestData) return;
+
+                if (typeof interestData === 'object' && interestData !== null) {
+                    const details = interestData.details || [];
+                    let matchedSum = 0;
+                    details.forEach(d => {
+                        const name = (d.name || '').trim();
+                        const val = parseFloat(d.value) || 0;
+                        const matchedKey = debtKeyByName[name];
+                        if (matchedKey) {
+                            const el = document.getElementById(`expense-interest-${matchedKey}-${memberId}`);
+                            if (el) {
+                                el.value = (parseFloat(el.value) || 0) + val;
+                            }
+                            matchedSum += val;
+                        }
+                    });
+
+                    // If there was unmapped detail or no details but total > 0
+                    const total = parseFloat(interestData.total) || 0;
+                    const remainder = total - matchedSum;
+                    if (remainder > 0) {
+                        let targetKey = 'mortgage';
+                        if (item.debts) {
+                            const activeDebtKey = debtKeys.find(k => item.debts[k] && item.debts[k][memberId] > 0);
+                            if (activeDebtKey) targetKey = activeDebtKey;
+                        }
+                        const el = document.getElementById(`expense-interest-${targetKey}-${memberId}`);
+                        if (el) {
+                            el.value = (parseFloat(el.value) || 0) + remainder;
+                        }
+                    }
+                } else if (typeof interestData === 'number' && interestData > 0) {
+                    let targetKey = 'mortgage';
+                    if (item.debts) {
+                        const activeDebtKey = debtKeys.find(k => item.debts[k] && item.debts[k][memberId] > 0);
+                        if (activeDebtKey) targetKey = activeDebtKey;
+                    }
+                    const el = document.getElementById(`expense-interest-${targetKey}-${memberId}`);
+                    if (el) el.value = interestData;
                 }
             };
 
             for (let i = 1; i <= 4; i++) {
                 const memberId = `member${i}`;
-                setAssetValue('cash', memberId, item.assets.cash[memberId] || 0);
-                setAssetValue('domesticStocks', memberId, item.assets.domesticStocks[memberId] || 0);
-                setAssetValue('subBrokerage', memberId, item.assets.subBrokerage[memberId] || 0);
-                setAssetValue('overseasBrokerage', memberId, item.assets.overseasBrokerage[memberId] || 0);
-                setAssetValue('real-estate', memberId, item.assets.realEstate[memberId] || 0);
-                setDebtValue('mortgage', memberId, (item.debts.mortgage && item.debts.mortgage[memberId]) || 0);
-                setDebtValue('refinanceMortgage', memberId, (item.debts.refinanceMortgage && item.debts.refinanceMortgage[memberId]) || 0);
-                setDebtValue('refinanceMortgage2', memberId, (item.debts.refinanceMortgage2 && item.debts.refinanceMortgage2[memberId]) || 0);
-                setDebtValue('revolvingMortgage', memberId, (item.debts.revolvingMortgage && item.debts.revolvingMortgage[memberId]) || 0);
-                setDebtValue('personalLoan', memberId, (item.debts.personalLoan && item.debts.personalLoan[memberId]) || 0);
-                setDebtValue('stockLoan', memberId, (item.debts.stockLoan && item.debts.stockLoan[memberId]) || 0);
+                const getSafeAsset = (key) => (item.assets && item.assets[key] && item.assets[key][memberId]) || 0;
+                const getSafeDebt = (key) => (item.debts && item.debts[key] && item.debts[key][memberId]) || 0;
+
+                setAssetValue('cash', memberId, getSafeAsset('cash'));
+                setAssetValue('domesticStocks', memberId, getSafeAsset('domesticStocks'));
+                setAssetValue('subBrokerage', memberId, getSafeAsset('subBrokerage'));
+                setAssetValue('overseasBrokerage', memberId, getSafeAsset('overseasBrokerage'));
+                setAssetValue('real-estate', memberId, getSafeAsset('realEstate') || getSafeAsset('real-estate'));
+                setDebtValue('mortgage', memberId, getSafeDebt('mortgage'));
+                setDebtValue('refinanceMortgage', memberId, getSafeDebt('refinanceMortgage'));
+                setDebtValue('refinanceMortgage2', memberId, getSafeDebt('refinanceMortgage2'));
+                setDebtValue('revolvingMortgage', memberId, getSafeDebt('revolvingMortgage'));
+                setDebtValue('personalLoan', memberId, getSafeDebt('personalLoan'));
+                setDebtValue('stockLoan', memberId, getSafeDebt('stockLoan'));
+            }
+
+            const is = item.incomeStatement || defaultIncomeStatement();
+            for (let i = 1; i <= 4; i++) {
+                const memberId = `member${i}`;
+                setIncomeExpenseValue('income-salary', memberId, is.income && is.income.salary && is.income.salary[memberId]);
+                setIncomeExpenseValue('income-dividend', memberId, is.income && is.income.dividend && is.income.dividend[memberId]);
+                setIncomeExpenseValue('income-other', memberId, is.income && is.income.other && is.income.other[memberId]);
+                setIncomeExpenseValue('expense-fixed', memberId, is.expense && is.expense.fixed && is.expense.fixed[memberId]);
+                setIncomeExpenseValue('expense-variable', memberId, is.expense && is.expense.variable && is.expense.variable[memberId]);
+                setInterestValues(memberId, is.expense && is.expense.interest && is.expense.interest[memberId]);
             }
         }
 
@@ -811,7 +1374,7 @@
                     monthStatusBadge.textContent = '📝 編輯歷史紀錄';
                 }
                 if (monthStatusHint) {
-                    monthStatusHint.innerHTML = `<span class="text-yellow-800 font-semibold">已自動載入「${selectedMonth}」之歷史資產與標的明細</span>，可直接修改數值，下方將執行覆蓋儲存。`;
+                    monthStatusHint.innerHTML = `<span class="text-yellow-800 font-semibold">已自動載入「${selectedMonth}」之歷史資產、負債、收支與各項明細</span>，可直接修改數值，下方將執行覆蓋儲存。`;
                 }
                 if (btnReloadCurrentMonth) btnReloadCurrentMonth.classList.remove('hidden');
                 if (btnSubmitForm) {
@@ -864,7 +1427,7 @@
             const sortedData = [...rawData].sort((a, b) => b.month.localeCompare(a.month));
             const latestEntry = sortedData[0];
             
-            if (confirm(`是否要從最新一期「${latestEntry.month}」的紀錄帶入資產、負債與股票明細？這將會覆蓋您目前輸入的內容。`)) {
+            if (confirm(`是否要從最新一期「${latestEntry.month}」的紀錄帶入資產、負債、收支與各項明細？這將會覆蓋您目前輸入的內容。`)) {
                 fillFormWithData(latestEntry);
             }
         });
@@ -889,8 +1452,8 @@
             }
             
             const promptMsg = currentSessionPassword
-                ? "請確認或輸入「家庭金庫密碼」以進行加密儲存："
-                : "請設置「家庭金庫密碼」以進行加密儲存：\n(此密碼將用於下次載入資料，請務必記住！)";
+                ? "請確認或輸入「資產金庫密碼」以進行加密儲存："
+                : "請設置「資產金庫密碼」以進行加密儲存：\n(此密碼將用於下次載入資料，請務必記住！)";
             const password = prompt(promptMsg, currentSessionPassword || "");
             if (!password) {
                 alert("取消儲存：必須設置密碼才能保護您的數據。");
@@ -899,7 +1462,7 @@
 
             // Confirm password on first setup or if password was changed
             if (password !== currentSessionPassword) {
-                const confirmPassword = prompt("請「再次輸入」相同的家庭金庫密碼以確認：");
+                const confirmPassword = prompt("請「再次輸入」相同的資產金庫密碼以確認：");
                 if (password !== confirmPassword) {
                     alert("兩次輸入的密碼不一致，儲存已取消以避免數據鎖死，請重新操作。");
                     return;
@@ -917,7 +1480,29 @@
                 }
                 return val;
             };
-            const getDebtValue = (type, member) => parseFloat(document.getElementById(`debt-${type}-${member}`).value) || 0;
+            const getIncomeExpenseValue = (prefix, member) => {
+                const el = document.getElementById(`${prefix}-${member}`);
+                return el ? (parseFloat(el.value) || 0) : 0;
+            };
+            const getInterestValue = (member) => {
+                let total = 0;
+                const details = [];
+                debtKeys.forEach(type => {
+                    const el = document.getElementById(`expense-interest-${type}-${member}`);
+                    const val = el ? (parseFloat(el.value) || 0) : 0;
+                    if (val > 0) {
+                        total += val;
+                        details.push({
+                            name: categoryLabels[type],
+                            value: val
+                        });
+                    }
+                });
+                return {
+                    total: total,
+                    details: details
+                };
+            };
 
             const newData = {
                 month: selectedMonth,
@@ -927,6 +1512,14 @@
                 debts: {
                     mortgage: {}, refinanceMortgage: {}, refinanceMortgage2: {}, revolvingMortgage: {}, personalLoan: {}, stockLoan: {}
                 },
+                incomeStatement: {
+                    income: {
+                        salary: {}, dividend: {}, other: {}
+                    },
+                    expense: {
+                        interest: {}, fixed: {}, variable: {}
+                    }
+                }
             };
 
             for (let i = 1; i <= 4; i++) {
@@ -942,6 +1535,13 @@
                 newData.debts.revolvingMortgage[memberId] = getDebtValue('revolvingMortgage', memberId);
                 newData.debts.personalLoan[memberId] = getDebtValue('personalLoan', memberId);
                 newData.debts.stockLoan[memberId] = getDebtValue('stockLoan', memberId);
+
+                newData.incomeStatement.income.salary[memberId] = getIncomeExpenseValue('income-salary', memberId);
+                newData.incomeStatement.income.dividend[memberId] = getIncomeExpenseValue('income-dividend', memberId);
+                newData.incomeStatement.income.other[memberId] = getIncomeExpenseValue('income-other', memberId);
+                newData.incomeStatement.expense.interest[memberId] = getInterestValue(memberId);
+                newData.incomeStatement.expense.fixed[memberId] = getIncomeExpenseValue('expense-fixed', memberId);
+                newData.incomeStatement.expense.variable[memberId] = getIncomeExpenseValue('expense-variable', memberId);
             }
             
             if (existingIndex !== -1) {
@@ -991,6 +1591,54 @@
             return Array.from(memberCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
         }
 
+        function getMemberScopeInfo(selectedMembers) {
+            const memberNameMap = {
+                'member1': '成員1',
+                'member2': '成員2',
+                'member3': '成員3',
+                'member4': '成員4'
+            };
+            const totalMembers = 4;
+            const count = selectedMembers ? selectedMembers.length : 0;
+            const isSingle = count === 1;
+            const isAll = count === totalMembers;
+            
+            let scopeName = '';
+            let scopeTag = '';
+            let badgeHtml = '';
+            let memberName = '';
+
+            if (count === 0) {
+                scopeName = '未選擇成員';
+                scopeTag = '未選擇成員';
+                badgeHtml = '<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 inline-flex items-center gap-1"><span>⚠️</span><span>未選擇成員</span></span>';
+            } else if (isSingle) {
+                memberName = memberNameMap[selectedMembers[0]] || selectedMembers[0];
+                scopeName = `${memberName} (個人財務)`;
+                scopeTag = `${memberName} (個人)`;
+                badgeHtml = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 inline-flex items-center gap-1 shadow-sm border border-blue-200"><span>👤</span><span>${memberName} (個人)</span></span>`;
+            } else if (isAll) {
+                scopeName = `全體財務 (共 ${totalMembers} 位成員)`;
+                scopeTag = `全體家庭 (共 ${totalMembers} 位)`;
+                badgeHtml = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 inline-flex items-center gap-1 shadow-sm border border-indigo-200"><span>👥</span><span>全體家庭 (4 位)</span></span>`;
+            } else {
+                const names = selectedMembers.map(m => memberNameMap[m] || m).join('、');
+                scopeName = `合併財務 (${names})`;
+                scopeTag = `合併檢視 (${names})`;
+                badgeHtml = `<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 inline-flex items-center gap-1 shadow-sm border border-purple-200"><span>👥</span><span>合併檢視 (${count} 位成員)</span></span>`;
+            }
+
+            return {
+                isSingle,
+                isAll,
+                count,
+                memberName,
+                scopeName,
+                scopeTag,
+                badgeHtml
+            };
+        }
+
         function getSelectedCategories() {
             return Array.from(categoryCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
         }
@@ -1022,8 +1670,8 @@
                 return val || 0;
             };
 
-            const sumForMembers = (obj) => selectedMembers.reduce((sum, member) => sum + getValue(obj[member]), 0);
-            const sumExposureForMembers = (obj) => selectedMembers.reduce((sum, member) => sum + getExposureValue(obj[member]), 0);
+            const sumForMembers = (obj) => obj ? selectedMembers.reduce((sum, member) => sum + getValue(obj[member]), 0) : 0;
+            const sumExposureForMembers = (obj) => obj ? selectedMembers.reduce((sum, member) => sum + getExposureValue(obj[member]), 0) : 0;
 
             return data.map(item => {
                 const assets = {};
@@ -1034,7 +1682,7 @@
                 let marketValue = 0;
 
                 for (const category of selectedCategories) {
-                    if (assetKeys.includes(category) && item.assets[category]) {
+                    if (assetKeys.includes(category) && item.assets && item.assets[category]) {
                         const value = sumForMembers(item.assets[category]);
                         assets[category] = value;
                         totalAssets += value;
@@ -1043,7 +1691,7 @@
                             marketExposure += sumExposureForMembers(item.assets[category]);
                         }
                     }
-                    if (debtKeys.includes(category) && item.debts[category]) {
+                    if (debtKeys.includes(category) && item.debts && item.debts[category]) {
                         const value = sumForMembers(item.debts[category]);
                         debts[category] = value;
                         totalLiabilities += value;
@@ -1064,21 +1712,49 @@
             }).sort((a, b) => a.month.localeCompare(b.month));
         }
 
+        function syncMemberCheckboxes(sourceCheckboxes, targetCheckboxes) {
+            sourceCheckboxes.forEach(src => {
+                targetCheckboxes.forEach(tgt => {
+                    if (tgt.value === src.value) tgt.checked = src.checked;
+                });
+            });
+        }
+
         function updateUI() {
             const selectedMembers = getSelectedMembers();
             const selectedCategories = getSelectedCategories();
             const processed = processData(rawData, selectedMembers, selectedCategories);
             const latestData = processed.length > 0 ? processed[processed.length - 1] : null;
             
+            // Update Dynamic Scope Badges
+            const dashboardScopeBadge = document.getElementById('dashboard-scope-badge');
+            const incomeScopeBadge = document.getElementById('income-scope-badge');
+            const scopeInfo = getMemberScopeInfo(selectedMembers);
+            if (dashboardScopeBadge) dashboardScopeBadge.innerHTML = scopeInfo.badgeHtml;
+            if (incomeScopeBadge) incomeScopeBadge.innerHTML = scopeInfo.badgeHtml;
+
             updateOverviewCards(latestData);
             updateTextSummary(latestData, selectedMembers);
             renderCharts(processed);
             renderHoldingsTable(latestData, selectedMembers);
+
+            // Update Income Statement UI
+            updateIncomeUI(processed, selectedMembers);
+
             renderHistoryMonthPills();
             handleMonthChange(false);
         }
         
-        memberCheckboxes.forEach(checkbox => checkbox.addEventListener('change', updateUI));
+        memberCheckboxes.forEach(checkbox => checkbox.addEventListener('change', () => {
+            syncMemberCheckboxes(memberCheckboxes, incomeMemberCheckboxes);
+            updateUI();
+        }));
+
+        incomeMemberCheckboxes.forEach(checkbox => checkbox.addEventListener('change', () => {
+            syncMemberCheckboxes(incomeMemberCheckboxes, memberCheckboxes);
+            updateUI();
+        }));
+
         categoryCheckboxes.forEach(checkbox => checkbox.addEventListener('change', updateUI));
 
         // Tooltip toggle for market leverage info
@@ -1227,7 +1903,8 @@
                 return;
             }
 
-            let summaryText = `截至 ${latestData.month} 資產負債概覽\n`;
+            const scopeInfo = getMemberScopeInfo(selectedMembers);
+            let summaryText = `截至 ${latestData.month} 資產負債概覽 [檢視對象: ${scopeInfo.scopeTag}]\n`;
             summaryText += `一、資產:\n`;
             assetKeys.forEach(key => {
                 const val = latestData.assets[key] || 0;
@@ -1237,7 +1914,7 @@
                     // Collect and group ALL details across selected members
                     let detailsArr = [];
                     selectedMembers.forEach(m => {
-                        const assetObj = latestData.originalAssets[key][m];
+                        const assetObj = (latestData.originalAssets && latestData.originalAssets[key]) ? latestData.originalAssets[key][m] : null;
                         if (assetObj && assetObj.details) {
                             detailsArr = detailsArr.concat(assetObj.details);
                         }
@@ -1486,6 +2163,7 @@
 
             holdings.forEach(item => {
                 const pctOfCurrent = ((item.value / totalAssets) * 100).toFixed(1);
+                const pctClamped = Math.min(100, Math.max(0, parseFloat(pctOfCurrent) || 0));
                 const hasLev = item.leverage !== 1;
                 const levBadge = hasLev
                     ? `<span class="ml-1.5 px-1.5 py-0.5 rounded text-xs font-semibold bg-indigo-100 text-indigo-700 whitespace-nowrap">${item.leverage}x</span>`
@@ -1504,11 +2182,526 @@
                     <td class="px-2 py-3 text-right">
                         <span class="inline-block text-blue-600 font-bold w-10">${pctOfCurrent}%</span>
                         <div class="w-16 bg-gray-200 rounded-full h-1.5 inline-block ml-1 align-middle">
-                            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pctOfCurrent}%"></div>
+                            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pctClamped}%"></div>
                         </div>
                     </td>
                 `;
                 tableBody.appendChild(row);
+            });
+        }
+
+        // --- Family Income Statement Logic ---
+        function processIncomeData(data, selectedMembers) {
+            if (!data || !Array.isArray(data)) return [];
+
+            return data.map(item => {
+                const is = item.incomeStatement || defaultIncomeStatement();
+                const sumForMembers = (catObj) => {
+                    if (!catObj) return 0;
+                    return selectedMembers.reduce((sum, m) => {
+                        const v = catObj[m];
+                        const val = (typeof v === 'object' && v !== null) ? (v.total || 0) : (parseFloat(v) || 0);
+                        return sum + (isNaN(val) ? 0 : val);
+                    }, 0);
+                };
+
+                const salary = sumForMembers(is.income && is.income.salary);
+                const dividend = sumForMembers(is.income && is.income.dividend);
+                const otherIncome = sumForMembers(is.income && is.income.other);
+                const totalIncome = salary + dividend + otherIncome;
+
+                const interest = sumForMembers(is.expense && is.expense.interest);
+                const fixed = sumForMembers(is.expense && is.expense.fixed);
+                const variable = sumForMembers(is.expense && is.expense.variable);
+                const totalExpense = interest + fixed + variable;
+
+                const netSavings = totalIncome - totalExpense;
+                const savingsRate = totalIncome > 0 ? (netSavings / totalIncome) * 100 : 0;
+                const interestRatio = totalIncome > 0 ? (interest / totalIncome) * 100 : 0;
+
+                return {
+                    month: item.month,
+                    income: { salary, dividend, other: otherIncome, total: totalIncome },
+                    expense: { interest, fixed, variable, total: totalExpense },
+                    netSavings,
+                    savingsRate,
+                    interestRatio,
+                    originalItem: item
+                };
+            }).sort((a, b) => a.month.localeCompare(b.month));
+        }
+
+        function updateIncomeUI(processedBalanceData = null, selectedMembers = getSelectedMembers()) {
+            if (!processedBalanceData) {
+                const selectedCategories = getSelectedCategories();
+                processedBalanceData = processData(rawData, selectedMembers, selectedCategories);
+            }
+            const processedIncome = processIncomeData(rawData, selectedMembers);
+            const latestIncome = processedIncome.length > 0 ? processedIncome[processedIncome.length - 1] : null;
+
+            // 1. Overview Cards
+            if (latestIncome) {
+                if (incomeTotalAmount) incomeTotalAmount.textContent = latestIncome.income.total.toLocaleString();
+                if (incomeBreakdownSubtext) {
+                    incomeBreakdownSubtext.textContent = `薪資: $${latestIncome.income.salary.toLocaleString()} | 股息: $${latestIncome.income.dividend.toLocaleString()} | 其他: $${latestIncome.income.other.toLocaleString()}`;
+                }
+
+                if (expenseTotalAmount) expenseTotalAmount.textContent = latestIncome.expense.total.toLocaleString();
+                if (expenseBreakdownSubtext) {
+                    expenseBreakdownSubtext.textContent = `固定: $${latestIncome.expense.fixed.toLocaleString()} | 變動: $${latestIncome.expense.variable.toLocaleString()} | 利息: $${latestIncome.expense.interest.toLocaleString()}`;
+                }
+
+                if (expenseInterestAmount) expenseInterestAmount.textContent = latestIncome.expense.interest.toLocaleString();
+                if (incomeInterestRatioBadge) {
+                    incomeInterestRatioBadge.textContent = `利息比 ${latestIncome.interestRatio.toFixed(1)}%`;
+                    if (latestIncome.interestRatio > 30) {
+                        incomeInterestRatioBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-800';
+                    } else if (latestIncome.interestRatio > 15) {
+                        incomeInterestRatioBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-yellow-100 text-yellow-800';
+                    } else {
+                        incomeInterestRatioBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-purple-100 text-purple-700';
+                    }
+                }
+                if (incomeInterestSubtext) {
+                    incomeInterestSubtext.textContent = `佔總收入比例: ${latestIncome.interestRatio.toFixed(1)}% (融資成本負擔)`;
+                }
+
+                if (incomeNetSavings) {
+                    const sign = latestIncome.netSavings >= 0 ? '+' : '';
+                    incomeNetSavings.textContent = `${sign}${latestIncome.netSavings.toLocaleString()}`;
+                }
+                if (incomeNetSavingsContainer) {
+                    incomeNetSavingsContainer.className = latestIncome.netSavings < 0 ? 'text-3xl font-bold text-red-600' : 'text-3xl font-bold text-blue-600';
+                }
+                if (incomeSavingsRateBadge) {
+                    const scopeInfo = getMemberScopeInfo(selectedMembers);
+                    const badgePrefix = scopeInfo.isSingle ? '個人' : '';
+                    incomeSavingsRateBadge.textContent = `${badgePrefix}儲蓄率 ${latestIncome.savingsRate.toFixed(1)}%`;
+                    if (latestIncome.savingsRate >= 30) {
+                        incomeSavingsRateBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-800';
+                    } else if (latestIncome.savingsRate >= 10) {
+                        incomeSavingsRateBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800';
+                    } else {
+                        incomeSavingsRateBadge.className = 'text-xs font-semibold px-2 py-0.5 rounded bg-red-100 text-red-800';
+                    }
+                }
+                if (incomeSavingsSubtext) {
+                    incomeSavingsSubtext.textContent = `現金流結餘 = 總收入 $${latestIncome.income.total.toLocaleString()} - 總支出 $${latestIncome.expense.total.toLocaleString()}`;
+                }
+
+                // 2. Cross-Validation Calculation
+                if (crossValMonthBadge) crossValMonthBadge.textContent = latestIncome.month;
+                if (crossValSavings) {
+                    const sign = latestIncome.netSavings >= 0 ? '+' : '';
+                    crossValSavings.textContent = `${sign}$${latestIncome.netSavings.toLocaleString()}`;
+                    crossValSavings.className = latestIncome.netSavings >= 0 ? 'text-xl font-bold text-blue-600' : 'text-xl font-bold text-red-600';
+                }
+
+                let netWorthDiff = null;
+                let capitalGains = null;
+                if (processedBalanceData && processedBalanceData.length > 0) {
+                    const currIdx = processedBalanceData.findIndex(b => b.month === latestIncome.month);
+                    if (currIdx !== -1) {
+                        const currBalance = processedBalanceData[currIdx];
+                        const prevBalance = currIdx > 0 ? processedBalanceData[currIdx - 1] : null;
+                        if (prevBalance) {
+                            netWorthDiff = currBalance.netWorth - prevBalance.netWorth;
+                            capitalGains = netWorthDiff - latestIncome.netSavings;
+                        }
+                    }
+                }
+
+                if (crossValNetWorthDiff) {
+                    if (netWorthDiff !== null) {
+                        const sign = netWorthDiff >= 0 ? '+' : '';
+                        crossValNetWorthDiff.textContent = `${sign}$${netWorthDiff.toLocaleString()}`;
+                        crossValNetWorthDiff.className = netWorthDiff >= 0 ? 'text-xl font-bold text-indigo-600' : 'text-xl font-bold text-red-600';
+                    } else {
+                        crossValNetWorthDiff.textContent = '- (首期紀錄)';
+                        crossValNetWorthDiff.className = 'text-xl font-bold text-gray-400';
+                    }
+                }
+
+                if (crossValCapitalGains) {
+                    if (capitalGains !== null) {
+                        const sign = capitalGains >= 0 ? '+' : '';
+                        crossValCapitalGains.textContent = `${sign}$${capitalGains.toLocaleString()}`;
+                        crossValCapitalGains.className = capitalGains >= 0 ? 'text-xl font-bold text-green-600' : 'text-xl font-bold text-red-600';
+                    } else {
+                        crossValCapitalGains.textContent = '-';
+                        crossValCapitalGains.className = 'text-xl font-bold text-gray-400';
+                    }
+                }
+            } else {
+                if (incomeTotalAmount) incomeTotalAmount.textContent = '0';
+                if (expenseTotalAmount) expenseTotalAmount.textContent = '0';
+                if (expenseInterestAmount) expenseInterestAmount.textContent = '0';
+                if (incomeNetSavings) incomeNetSavings.textContent = '0';
+                if (incomeBreakdownSubtext) incomeBreakdownSubtext.textContent = '薪資: $0 | 股息: $0 | 其他: $0';
+                if (expenseBreakdownSubtext) expenseBreakdownSubtext.textContent = '固定: $0 | 變動: $0 | 利息: $0';
+                if (incomeInterestRatioBadge) incomeInterestRatioBadge.textContent = '利息比 0%';
+                if (incomeSavingsRateBadge) incomeSavingsRateBadge.textContent = '儲蓄率 0%';
+                if (crossValSavings) crossValSavings.textContent = '$0';
+                if (crossValNetWorthDiff) crossValNetWorthDiff.textContent = '$0';
+                if (crossValCapitalGains) crossValCapitalGains.textContent = '$0';
+            }
+
+            // 3. Render Income Charts
+            renderIncomeCharts(processedIncome, latestIncome);
+
+            // 4. Render Interest Details Table
+            renderIncomeInterestTable(latestIncome, selectedMembers);
+
+            // 5. Render Monthly Income Table
+            renderIncomeMonthlyTable(processedIncome);
+
+            // 6. Update Income Text Summary
+            updateIncomeTextSummary(latestIncome, selectedMembers);
+        }
+
+        function renderIncomeCharts(processedIncome, latestIncome) {
+            const elTrend = document.getElementById('income-expense-chart');
+            const elStructure = document.getElementById('expense-structure-chart');
+            if (!elTrend || !elStructure) return;
+
+            const ctxTrend = elTrend.getContext('2d');
+            const ctxStructure = elStructure.getContext('2d');
+
+            if (incomeExpenseChart) incomeExpenseChart.destroy();
+            if (expenseStructureChart) expenseStructureChart.destroy();
+
+            if (processedIncome && processedIncome.length > 0) {
+                incomeExpenseChart = new Chart(ctxTrend, {
+                    type: 'bar',
+                    data: {
+                        labels: processedIncome.map(item => item.month),
+                        datasets: [
+                            {
+                                type: 'line',
+                                label: '當月淨儲蓄',
+                                data: processedIncome.map(item => item.netSavings),
+                                borderColor: '#2563EB',
+                                backgroundColor: '#2563EB',
+                                tension: 0.15,
+                                fill: false,
+                                order: 1
+                            },
+                            {
+                                type: 'bar',
+                                label: '總收入',
+                                data: processedIncome.map(item => item.income.total),
+                                backgroundColor: '#10B981',
+                                order: 2
+                            },
+                            {
+                                type: 'bar',
+                                label: '總支出',
+                                data: processedIncome.map(item => item.expense.total),
+                                backgroundColor: '#EF4444',
+                                order: 3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: $${context.parsed.y.toLocaleString()}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: { ticks: { callback: (value) => '$' + value.toLocaleString() } }
+                        }
+                    }
+                });
+
+                if (latestIncome && latestIncome.expense.total > 0) {
+                    const expTotal = latestIncome.expense.total || 1;
+                    expenseStructureChart = new Chart(ctxStructure, {
+                        type: 'pie',
+                        data: {
+                            labels: [
+                                `借貸利息支出 (${((latestIncome.expense.interest / expTotal) * 100).toFixed(1)}%)`,
+                                `固定生活支出 (${((latestIncome.expense.fixed / expTotal) * 100).toFixed(1)}%)`,
+                                `變動生活支出 (${((latestIncome.expense.variable / expTotal) * 100).toFixed(1)}%)`
+                            ],
+                            datasets: [{
+                                data: [
+                                    latestIncome.expense.interest,
+                                    latestIncome.expense.fixed,
+                                    latestIncome.expense.variable
+                                ],
+                                backgroundColor: ['#8B5CF6', '#F59E0B', '#EC4899']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const val = context.parsed;
+                                            const pct = ((val / expTotal) * 100).toFixed(1);
+                                            return `${context.label}: $${val.toLocaleString()} (${pct}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        function renderIncomeMonthlyTable(processedIncome) {
+            if (!incomeMonthlyTableBody) return;
+            incomeMonthlyTableBody.innerHTML = '';
+
+            if (!processedIncome || processedIncome.length === 0) {
+                incomeMonthlyTableBody.innerHTML = '<tr><td colspan="9" class="px-3 py-4 text-center text-gray-400">尚未載入損益數據...</td></tr>';
+                return;
+            }
+
+            const reversed = [...processedIncome].reverse();
+            reversed.forEach(item => {
+                const savingsSign = item.netSavings >= 0 ? '+' : '';
+                const savingsColor = item.netSavings >= 0 ? 'text-blue-600 font-bold' : 'text-red-600 font-bold';
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-3 py-2.5 font-medium">${item.month}</td>
+                    <td class="px-3 py-2.5 text-right text-green-600 font-bold">$${item.income.total.toLocaleString()}</td>
+                    <td class="px-3 py-2.5 text-right text-purple-600 font-bold">$${item.expense.interest.toLocaleString()}</td>
+                    <td class="px-3 py-2.5 text-right text-gray-600">$${item.expense.fixed.toLocaleString()}</td>
+                    <td class="px-3 py-2.5 text-right text-gray-600">$${item.expense.variable.toLocaleString()}</td>
+                    <td class="px-3 py-2.5 text-right text-red-600 font-bold">$${item.expense.total.toLocaleString()}</td>
+                    <td class="px-3 py-2.5 text-right ${savingsColor}">$${savingsSign}${item.netSavings.toLocaleString()}</td>
+                    <td class="px-3 py-2.5 text-center font-semibold text-blue-700">${item.savingsRate.toFixed(1)}%</td>
+                    <td class="px-3 py-2.5 text-center font-semibold text-purple-700">${item.interestRatio.toFixed(1)}%</td>
+                `;
+                incomeMonthlyTableBody.appendChild(row);
+            });
+        }
+
+        function renderIncomeInterestTable(latestIncome, selectedMembers = getSelectedMembers()) {
+            if (!interestDetailsTableBody) return;
+            interestDetailsTableBody.innerHTML = '';
+
+            if (!latestIncome || latestIncome.expense.interest <= 0) {
+                if (interestDetailMonthBadge) interestDetailMonthBadge.textContent = latestIncome ? latestIncome.month : '最新月份';
+                interestDetailsTableBody.innerHTML = '<tr><td colspan="4" class="px-3 py-4 text-center text-gray-400">本期無借貸利息支出或尚未載入數據</td></tr>';
+                return;
+            }
+
+            if (interestDetailMonthBadge) {
+                interestDetailMonthBadge.textContent = latestIncome.month;
+            }
+
+            let detailsArr = [];
+            let unclassifiedSum = 0;
+
+            if (latestIncome.originalItem && latestIncome.originalItem.incomeStatement && latestIncome.originalItem.incomeStatement.expense && latestIncome.originalItem.incomeStatement.expense.interest) {
+                const rawInterest = latestIncome.originalItem.incomeStatement.expense.interest;
+                selectedMembers.forEach(m => {
+                    const itemVal = rawInterest[m];
+                    if (itemVal !== undefined && itemVal !== null) {
+                        if (typeof itemVal === 'number') {
+                            unclassifiedSum += itemVal;
+                        } else if (typeof itemVal === 'object') {
+                            const total = itemVal.total || 0;
+                            const details = itemVal.details || [];
+                            const dSum = details.reduce((sum, d) => sum + (d.value || 0), 0);
+                            detailsArr = detailsArr.concat(details);
+                            if (total > dSum) {
+                                unclassifiedSum += (total - dSum);
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Merge items by normalized name (case-insensitive)
+            const grouped = {};
+            detailsArr.forEach(d => {
+                const name = (d.name || '').trim();
+                if (name) {
+                    const normKey = name.toUpperCase();
+                    if (!grouped[normKey]) {
+                        grouped[normKey] = { name: name, value: 0 };
+                    }
+                    grouped[normKey].value += (d.value || 0);
+                }
+            });
+
+            const items = Object.values(grouped).filter(x => x.value > 0);
+            if (unclassifiedSum > 0) {
+                items.push({ name: '未分類利息', value: unclassifiedSum, isUnclassified: true });
+            }
+
+            items.sort((a, b) => b.value - a.value);
+
+            if (items.length === 0) {
+                interestDetailsTableBody.innerHTML = '<tr><td colspan="4" class="px-3 py-4 text-center text-gray-400">本期尚未填寫借貸利息明細項目</td></tr>';
+                return;
+            }
+
+            const totalInterest = latestIncome.expense.interest || 1;
+            const totalIncome = latestIncome.income.total || 0;
+
+            items.forEach(item => {
+                const shareOfInterest = ((item.value / totalInterest) * 100).toFixed(1);
+                const shareOfIncome = totalIncome > 0 ? ((item.value / totalIncome) * 100).toFixed(1) + '%' : '-';
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-3 py-2.5 font-medium ${item.isUnclassified ? 'text-gray-400 italic' : 'text-gray-800'}">
+                        ${item.name}
+                    </td>
+                    <td class="px-3 py-2.5 text-right font-bold text-purple-600">
+                        $${item.value.toLocaleString()}
+                    </td>
+                    <td class="px-3 py-2.5 text-center font-semibold text-purple-700">
+                        ${shareOfInterest}%
+                    </td>
+                    <td class="px-3 py-2.5 text-center text-gray-600">
+                        ${shareOfIncome}
+                    </td>
+                `;
+                interestDetailsTableBody.appendChild(row);
+            });
+
+            // Summary footer row
+            const sumRow = document.createElement('tr');
+            sumRow.className = 'bg-purple-50 font-bold border-t-2 border-purple-200';
+            sumRow.innerHTML = `
+                <td class="px-3 py-2 text-purple-900">合計</td>
+                <td class="px-3 py-2 text-right text-purple-900">$${latestIncome.expense.interest.toLocaleString()}</td>
+                <td class="px-3 py-2 text-center text-purple-900">100.0%</td>
+                <td class="px-3 py-2 text-center text-purple-900">${latestIncome.interestRatio.toFixed(1)}%</td>
+            `;
+            interestDetailsTableBody.appendChild(sumRow);
+        }
+
+        function updateIncomeTextSummary(latestIncome, selectedMembers = getSelectedMembers()) {
+            if (!incomeTextSummary) return;
+            if (!latestIncome) {
+                incomeTextSummary.value = "尚未載入損益數據...";
+                return;
+            }
+
+            // Collect and group interest details for AI summary
+            let interestDetailsArr = [];
+            let unclassifiedInterest = 0;
+
+            if (latestIncome.originalItem && latestIncome.originalItem.incomeStatement && latestIncome.originalItem.incomeStatement.expense && latestIncome.originalItem.incomeStatement.expense.interest) {
+                const rawInterest = latestIncome.originalItem.incomeStatement.expense.interest;
+                selectedMembers.forEach(m => {
+                    const itemVal = rawInterest[m];
+                    if (itemVal !== undefined && itemVal !== null) {
+                        if (typeof itemVal === 'number') {
+                            unclassifiedInterest += itemVal;
+                        } else if (typeof itemVal === 'object') {
+                            const total = itemVal.total || 0;
+                            const details = itemVal.details || [];
+                            const dSum = details.reduce((sum, d) => sum + (d.value || 0), 0);
+                            interestDetailsArr = interestDetailsArr.concat(details);
+                            if (total > dSum) {
+                                unclassifiedInterest += (total - dSum);
+                            }
+                        }
+                    }
+                });
+            }
+
+            const groupedInterest = {};
+            interestDetailsArr.forEach(d => {
+                const name = (d.name || '').trim();
+                if (name) {
+                    const normKey = name.toUpperCase();
+                    if (!groupedInterest[normKey]) {
+                        groupedInterest[normKey] = { name: name, value: 0 };
+                    }
+                    groupedInterest[normKey].value += (d.value || 0);
+                }
+            });
+
+            const formattedDetails = Object.values(groupedInterest)
+                .sort((a, b) => b.value - a.value)
+                .map(d => `${d.name}($${d.value.toLocaleString()})`);
+
+            if (unclassifiedInterest > 0) {
+                formattedDetails.push(`未分類($${unclassifiedInterest.toLocaleString()})`);
+            }
+
+            const interestDetailsStr = formattedDetails.length > 0 ? ` [${formattedDetails.join(', ')}]` : '';
+
+            const scopeInfo = getMemberScopeInfo(selectedMembers);
+            const prefix = scopeInfo.isSingle ? '個人' : (scopeInfo.isAll ? '家庭' : '合併');
+
+            let text = `截至 ${latestIncome.month} 收支損益概覽 [檢視對象: ${scopeInfo.scopeTag}]\n`;
+            text += `一、${prefix}收入:\n`;
+            text += `  • 工作與薪資: $${latestIncome.income.salary.toLocaleString()}\n`;
+            text += `  • 投資收益/股息: $${latestIncome.income.dividend.toLocaleString()}\n`;
+            text += `  • 其他收入: $${latestIncome.income.other.toLocaleString()}\n`;
+            text += `  [總收入合計] $${latestIncome.income.total.toLocaleString()}\n\n`;
+
+            text += `二、${prefix}支出:\n`;
+            text += `  • 借貸利息支出: $${latestIncome.expense.interest.toLocaleString()}${interestDetailsStr} (佔總收入 ${latestIncome.interestRatio.toFixed(1)}%)\n`;
+            text += `  • 固定生活支出: $${latestIncome.expense.fixed.toLocaleString()}\n`;
+            text += `  • 變動生活支出: $${latestIncome.expense.variable.toLocaleString()}\n`;
+            text += `  [總支出合計] $${latestIncome.expense.total.toLocaleString()}\n\n`;
+
+            text += `三、現金流結餘與財務指標:\n`;
+            const sign = latestIncome.netSavings >= 0 ? '+' : '';
+            text += `  • 當月淨儲蓄: ${sign}$${latestIncome.netSavings.toLocaleString()}\n`;
+            text += `  • ${prefix}儲蓄率: ${latestIncome.savingsRate.toFixed(1)}%\n`;
+            text += `  • 借貸利息負擔比: ${latestIncome.interestRatio.toFixed(1)}%`;
+
+            incomeTextSummary.value = text;
+        }
+
+        if (btnCopyIncomeSummary) {
+            btnCopyIncomeSummary.addEventListener('click', () => {
+                if (!incomeTextSummary) return;
+                incomeTextSummary.select();
+                navigator.clipboard.writeText(incomeTextSummary.value).then(() => {
+                    const orig = btnCopyIncomeSummary.textContent;
+                    btnCopyIncomeSummary.textContent = '已複製！';
+                    setTimeout(() => btnCopyIncomeSummary.textContent = orig, 2000);
+                });
+            });
+        }
+
+        if (btnCopyCombinedSummary) {
+            btnCopyCombinedSummary.addEventListener('click', () => {
+                const balanceTxt = (textSummary && textSummary.value) || '尚無資產負債數據';
+                const incomeTxt = (incomeTextSummary && incomeTextSummary.value) || '尚無損益數據';
+                const scopeInfo = getMemberScopeInfo(getSelectedMembers());
+                let reportTitle = '';
+                let part2Title = '';
+                if (scopeInfo.isSingle) {
+                    reportTitle = `【${scopeInfo.memberName} 個人財務戰情報表 (資產負債 + 收支損益)】`;
+                    part2Title = `【第二部分：${scopeInfo.memberName} 當月收支損益表 (現金流量)】`;
+                } else if (scopeInfo.isAll) {
+                    reportTitle = `【家庭綜合財務戰情報表 (全體 4 位成員)】`;
+                    part2Title = `【第二部分：家庭當月損益表 (現金流量)】`;
+                } else {
+                    reportTitle = `【綜合財務戰情報表 (${scopeInfo.scopeTag})】`;
+                    part2Title = `【第二部分：當月收支損益表 (現金流量)】`;
+                }
+                const combined = `========================================\n${reportTitle}\n========================================\n\n【第一部分：資產負債表 (存量狀態)】\n${balanceTxt}\n\n----------------------------------------\n${part2Title}\n${incomeTxt}\n========================================`;
+
+                navigator.clipboard.writeText(combined).then(() => {
+                    const orig = btnCopyCombinedSummary.textContent;
+                    btnCopyCombinedSummary.textContent = '已複製完整雙軌財報！';
+                    setTimeout(() => btnCopyCombinedSummary.textContent = orig, 2000);
+                });
             });
         }
 
