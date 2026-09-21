@@ -314,12 +314,11 @@
                         <h1 class="text-3xl font-bold text-gray-800">收支損益表</h1>
                         <div id="income-scope-badge"></div>
                     </div>
-                    <p class="text-sm text-gray-500 mt-1">追蹤每月實質現金流入、生活與固定開銷、借貸融資利息成本及當月淨儲蓄結餘</p>
                 </div>
 
                 <!-- Member Filter -->
                 <div id="income-member-filter" class="bg-white p-4 rounded-lg shadow mb-6">
-                    <h2 class="text-lg font-semibold text-gray-700 mb-2">成員檢視篩選 (損益表)</h2>
+                    <h2 class="text-lg font-semibold text-gray-700 mb-2">成員檢視篩選</h2>
                     <div class="flex flex-wrap gap-4">
                         <label class="inline-flex items-center">
                             <input type="checkbox" class="form-checkbox h-5 w-5 text-green-600 income-member-checkbox" value="member1" checked>
@@ -418,9 +417,6 @@
                             <div class="text-[11px] text-gray-400 mt-1">股票/房產市場波動帶來的未實現損益 (② - ①)</div>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 mt-3 text-center">
-                        💡 <strong>財務健康指引：</strong> 若「淨資產增長」大於「當月淨儲蓄」，代表投資部位帶來了正向資本利得；若小於則代表本期市場回檔，但自律儲蓄仍能發揮緩衝墊效果。
-                    </p>
                 </div>
 
                 <!-- Charts: Trend Line & Expense Pie -->
@@ -441,7 +437,6 @@
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h2 class="text-xl font-semibold text-gray-700">當期借貸利息支出明細</h2>
-                            <p class="text-xs text-gray-400 mt-0.5">彙整各成員當月各筆房貸、信貸與質押之實付利息明細與支出負擔佔比</p>
                         </div>
                         <span id="interest-detail-month-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">最新月份</span>
                     </div>
@@ -490,10 +485,10 @@
                 <!-- AI Friendly Summary Section -->
                 <div class="bg-white p-4 rounded-lg shadow mb-8">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                        <h2 class="text-lg font-semibold text-gray-700 italic">損益數據概覽 (AI 諮詢友善)</h2>
+                        <h2 class="text-lg font-semibold text-gray-700 italic">數據概覽</h2>
                         <div class="flex items-center gap-2">
                             <button id="btn-copy-income-summary" class="bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded text-sm font-bold transition">
-                                複製損益表
+                                一鍵複製
                             </button>
                             <button id="btn-copy-combined-summary" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded text-sm font-bold transition" title="同時複製資產負債表與當月損益表全文，供 AI 全方位診斷">
                                 複製完整雙軌財報 (資產+損益)
@@ -545,10 +540,10 @@
                     <!-- Input Sub-tabs -->
                     <div class="flex border-b border-gray-200 mb-6 space-x-2">
                         <button type="button" id="tab-btn-assets" class="py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
-                            <span>🏛️ 資產與負債數據</span>
+                            <span>🏛️ 資產負債數據</span>
                         </button>
                         <button type="button" id="tab-btn-income" class="py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
-                            <span>💵 收支（損益）數據</span>
+                            <span>💵 收支損益數據</span>
                         </button>
                     </div>
 
@@ -568,7 +563,7 @@
                             <div class="p-3 bg-green-50 rounded-lg border border-green-200">
                                 <div class="flex items-center justify-between mb-3 border-b border-green-200 pb-1.5">
                                     <h3 class="font-bold text-base text-green-900 flex items-center gap-1.5">
-                                        <span>🟢 資產 (持有市值與存款)</span>
+                                        <span>🟢 資產</span>
                                     </h3>
                                     <span class="text-xs text-green-700">銀行存款、股票市值、海外券商、房產估值</span>
                                 </div>
@@ -613,7 +608,7 @@
                             <div class="p-3 bg-red-50 rounded-lg border border-red-200">
                                 <div class="flex items-center justify-between mb-3 border-b border-red-200 pb-1.5">
                                     <h3 class="font-bold text-base text-red-900 flex items-center gap-1.5">
-                                        <span>🔴 負債 (借款本金餘額)</span>
+                                        <span>🔴 負債</span>
                                     </h3>
                                     <span class="text-xs text-red-700">房貸、增貸、信貸、股票質押等未償還本金</span>
                                 </div>
@@ -679,7 +674,7 @@
                             <div class="p-3 bg-green-50 rounded-lg border border-green-200">
                                 <div class="flex items-center justify-between mb-3 border-b border-green-200 pb-1.5">
                                     <h3 class="font-bold text-base text-green-900 flex items-center gap-1.5">
-                                        <span>🟢 當月實質現金流入 (收入)</span>
+                                        <span>🟢 收入</span>
                                     </h3>
                                     <span class="text-xs text-green-700">稅後實質到帳金額</span>
                                 </div>
@@ -711,7 +706,7 @@
                             <div class="p-3 bg-red-50 rounded-lg border border-red-200">
                                 <div class="flex items-center justify-between mb-3 border-b border-red-200 pb-1.5">
                                     <h3 class="font-bold text-base text-red-900 flex items-center gap-1.5">
-                                        <span>🔴 當月實質現金流出 (支出)</span>
+                                        <span>🔴 支出</span>
                                     </h3>
                                     <span class="text-xs text-red-700">當月已扣款或生活支出</span>
                                 </div>
