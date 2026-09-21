@@ -1,4 +1,4 @@
-# 個人與家庭資產損益儀表板 (Personal & Family Financial Dashboard)
+# 財務儀表板 (Financial Dashboard)
 
 一個基於 **GitHub Pages** 的私有化個人與家庭資產與收支損益追蹤工具。透過「網頁輸入、AES 端對端加密儲存、GitHub 託管」的無伺服器架構，實現**免資料庫、高隱私（密碼與明文絕不上傳）且完全自主掌控**的個人與家庭財務戰情室。
 

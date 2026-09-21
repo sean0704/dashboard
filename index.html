@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>個人與家庭資產損益儀表板</title>
+    <title>財務儀表板</title>
     <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Chart.js CDN -->
@@ -86,7 +86,7 @@
         <!-- Navigation -->
         <nav class="bg-white p-4 rounded-lg shadow mb-4">
             <ul class="flex flex-wrap gap-2 md:gap-4">
-                <li><a href="#" id="nav-dashboard" class="text-blue-600 font-bold px-3 py-2 rounded-lg bg-blue-50 transition-colors">資產負債儀表板</a></li>
+                <li><a href="#" id="nav-dashboard" class="text-blue-600 font-bold px-3 py-2 rounded-lg bg-blue-50 transition-colors">資產負債表</a></li>
                 <li><a href="#" id="nav-income" class="text-gray-600 hover:text-blue-700 px-3 py-2 rounded-lg transition-colors">收支損益表</a></li>
                 <li><a href="#" id="nav-input" class="text-gray-600 hover:text-blue-700 px-3 py-2 rounded-lg transition-colors">財務數據輸入</a></li>
             </ul>
@@ -98,7 +98,7 @@
             <section id="dashboard-page" class="page">
                 <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
                     <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <h1 class="text-3xl font-bold text-gray-800">資產負債儀表板</h1>
+                        <h1 class="text-3xl font-bold text-gray-800">資產負債表</h1>
                         <div id="dashboard-scope-badge"></div>
                     </div>
                 </div>
@@ -2645,13 +2645,13 @@
             const prefix = scopeInfo.isSingle ? '個人' : (scopeInfo.isAll ? '家庭' : '合併');
 
             let text = `截至 ${latestIncome.month} 收支損益概覽 [檢視對象: ${scopeInfo.scopeTag}]\n`;
-            text += `一、${prefix}收入:\n`;
+            text += `一、收入:\n`;
             text += `  • 工作與薪資: $${latestIncome.income.salary.toLocaleString()}\n`;
             text += `  • 投資收益/股息: $${latestIncome.income.dividend.toLocaleString()}\n`;
             text += `  • 其他收入: $${latestIncome.income.other.toLocaleString()}\n`;
             text += `  [總收入合計] $${latestIncome.income.total.toLocaleString()}\n\n`;
 
-            text += `二、${prefix}支出:\n`;
+            text += `二、支出:\n`;
             text += `  • 借貸利息支出: $${latestIncome.expense.interest.toLocaleString()}${interestDetailsStr} (佔總收入 ${latestIncome.interestRatio.toFixed(1)}%)\n`;
             text += `  • 固定生活支出: $${latestIncome.expense.fixed.toLocaleString()}\n`;
             text += `  • 變動生活支出: $${latestIncome.expense.variable.toLocaleString()}\n`;
