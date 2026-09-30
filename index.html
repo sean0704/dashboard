@@ -1424,137 +1424,151 @@
         assetInputForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const selectedMonth = monthSelect.value ? monthSelect.value.trim() : '';
-            if (!selectedMonth || !/^\d{4}-\d{2}$/.test(selectedMonth)) {
-                alert("請選擇有效的月份 (格式為 YYYY-MM)！");
-                monthSelect.focus();
-                return;
-            }
-
-            let updatedDatabase = [...rawData];
-            const existingIndex = updatedDatabase.findIndex(item => item.month === selectedMonth);
-            if (existingIndex !== -1) {
-                if (!confirm(`已存在「${selectedMonth}」的歷史紀錄，確定要覆蓋此月份的數據嗎？`)) {
+            try {
+                const selectedMonth = monthSelect.value ? monthSelect.value.trim() : '';
+                if (!selectedMonth || !/^\d{4}-\d{2}$/.test(selectedMonth)) {
+                    alert("請選擇有效的月份 (格式為 YYYY-MM)！");
+                    monthSelect.focus();
                     return;
                 }
-            }
-            
-            const promptMsg = currentSessionPassword
-                ? "請確認或輸入「資產金庫密碼」以進行加密儲存："
-                : "請設置「資產金庫密碼」以進行加密儲存：\n(此密碼將用於下次載入資料，請務必記住！)";
-            const password = prompt(promptMsg, currentSessionPassword || "");
-            if (!password) {
-                alert("取消儲存：必須設置密碼才能保護您的數據。");
-                return;
-            }
 
-            // Confirm password on first setup or if password was changed
-            if (password !== currentSessionPassword) {
-                const confirmPassword = prompt("請「再次輸入」相同的資產金庫密碼以確認：");
-                if (password !== confirmPassword) {
-                    alert("兩次輸入的密碼不一致，儲存已取消以避免數據鎖死，請重新操作。");
+                let updatedDatabase = [...rawData];
+                const existingIndex = updatedDatabase.findIndex(item => item.month === selectedMonth);
+                if (existingIndex !== -1) {
+                    if (!confirm(`已存在「${selectedMonth}」的歷史紀錄，確定要覆蓋此月份的數據嗎？`)) {
+                        return;
+                    }
+                }
+                
+                const promptMsg = currentSessionPassword
+                    ? "請確認或輸入「資產金庫密碼」以進行加密儲存："
+                    : "請設置「資產金庫密碼」以進行加密儲存：\n(此密碼將用於下次載入資料，請務必記住！)";
+                const password = prompt(promptMsg, currentSessionPassword || "");
+                if (!password) {
+                    alert("取消儲存：必須設置密碼才能保護您的數據。");
                     return;
                 }
-            }
-            currentSessionPassword = password;
 
-            const getAssetValue = (type, member) => {
-                const val = parseFloat(document.getElementById(`asset-${type}-${member}`).value) || 0;
-                if (detailSupportedKeys.includes(type)) {
-                    return {
-                        total: val,
-                        details: (tempDetails[type] && tempDetails[type][member]) || []
-                    };
+                // Confirm password on first setup or if password was changed
+                if (password !== currentSessionPassword) {
+                    const confirmPassword = prompt("請「再次輸入」相同的資產金庫密碼以確認：");
+                    if (password !== confirmPassword) {
+                        alert("兩次輸入的密碼不一致，儲存已取消以避免數據鎖死，請重新操作。");
+                        return;
+                    }
                 }
-                return val;
-            };
-            const getIncomeExpenseValue = (prefix, member) => {
-                const el = document.getElementById(`${prefix}-${member}`);
-                return el ? (parseFloat(el.value) || 0) : 0;
-            };
-            const getInterestValue = (member) => {
-                let total = 0;
-                const details = [];
-                debtKeys.forEach(type => {
-                    const el = document.getElementById(`expense-interest-${type}-${member}`);
+                currentSessionPassword = password;
+
+                const getAssetValue = (type, member) => {
+                    const el = document.getElementById(`asset-${type}-${member}`);
                     const val = el ? (parseFloat(el.value) || 0) : 0;
-                    if (val > 0) {
-                        total += val;
-                        details.push({
-                            name: categoryLabels[type],
-                            value: val
-                        });
+                    if (detailSupportedKeys.includes(type)) {
+                        return {
+                            total: val,
+                            details: (tempDetails[type] && tempDetails[type][member]) || []
+                        };
                     }
-                });
-                return {
-                    total: total,
-                    details: details
+                    return val;
                 };
-            };
+                const getDebtValue = (type, member) => {
+                    const el = document.getElementById(`debt-${type}-${member}`);
+                    return el ? (parseFloat(el.value) || 0) : 0;
+                };
+                const getIncomeExpenseValue = (prefix, member) => {
+                    const el = document.getElementById(`${prefix}-${member}`);
+                    return el ? (parseFloat(el.value) || 0) : 0;
+                };
+                const getInterestValue = (member) => {
+                    let total = 0;
+                    const details = [];
+                    debtKeys.forEach(type => {
+                        const el = document.getElementById(`expense-interest-${type}-${member}`);
+                        const val = el ? (parseFloat(el.value) || 0) : 0;
+                        if (val > 0) {
+                            total += val;
+                            details.push({
+                                name: categoryLabels[type],
+                                value: val
+                            });
+                        }
+                    });
+                    return {
+                        total: total,
+                        details: details
+                    };
+                };
 
-            const newData = {
-                month: selectedMonth,
-                assets: {
-                    cash: {}, domesticStocks: {}, subBrokerage: {}, overseasBrokerage: {}, realEstate: {}
-                },
-                debts: {
-                    mortgage: {}, refinanceMortgage: {}, refinanceMortgage2: {}, revolvingMortgage: {}, personalLoan: {}, stockLoan: {}
-                },
-                incomeStatement: {
-                    income: {
-                        salary: {}, dividend: {}, other: {}
+                const newData = {
+                    month: selectedMonth,
+                    assets: {
+                        cash: {}, domesticStocks: {}, subBrokerage: {}, overseasBrokerage: {}, realEstate: {}
                     },
-                    expense: {
-                        interest: {}, fixed: {}, variable: {}
+                    debts: {
+                        mortgage: {}, refinanceMortgage: {}, refinanceMortgage2: {}, revolvingMortgage: {}, personalLoan: {}, stockLoan: {}
+                    },
+                    incomeStatement: {
+                        income: {
+                            salary: {}, dividend: {}, other: {}
+                        },
+                        expense: {
+                            interest: {}, fixed: {}, variable: {}
+                        }
                     }
+                };
+
+                for (let i = 1; i <= 4; i++) {
+                    const memberId = `member${i}`;
+                    newData.assets.cash[memberId] = getAssetValue('cash', memberId);
+                    newData.assets.domesticStocks[memberId] = getAssetValue('domesticStocks', memberId);
+                    newData.assets.subBrokerage[memberId] = getAssetValue('subBrokerage', memberId);
+                    newData.assets.overseasBrokerage[memberId] = getAssetValue('overseasBrokerage', memberId);
+                    newData.assets.realEstate[memberId] = getAssetValue('real-estate', memberId);
+                    newData.debts.mortgage[memberId] = getDebtValue('mortgage', memberId);
+                    newData.debts.refinanceMortgage[memberId] = getDebtValue('refinanceMortgage', memberId);
+                    newData.debts.refinanceMortgage2[memberId] = getDebtValue('refinanceMortgage2', memberId);
+                    newData.debts.revolvingMortgage[memberId] = getDebtValue('revolvingMortgage', memberId);
+                    newData.debts.personalLoan[memberId] = getDebtValue('personalLoan', memberId);
+                    newData.debts.stockLoan[memberId] = getDebtValue('stockLoan', memberId);
+
+                    newData.incomeStatement.income.salary[memberId] = getIncomeExpenseValue('income-salary', memberId);
+                    newData.incomeStatement.income.dividend[memberId] = getIncomeExpenseValue('income-dividend', memberId);
+                    newData.incomeStatement.income.other[memberId] = getIncomeExpenseValue('income-other', memberId);
+                    newData.incomeStatement.expense.interest[memberId] = getInterestValue(memberId);
+                    newData.incomeStatement.expense.fixed[memberId] = getIncomeExpenseValue('expense-fixed', memberId);
+                    newData.incomeStatement.expense.variable[memberId] = getIncomeExpenseValue('expense-variable', memberId);
                 }
-            };
+                
+                if (existingIndex !== -1) {
+                    updatedDatabase[existingIndex] = newData;
+                } else {
+                    updatedDatabase.push(newData);
+                }
 
-            for (let i = 1; i <= 4; i++) {
-                const memberId = `member${i}`;
-                newData.assets.cash[memberId] = getAssetValue('cash', memberId);
-                newData.assets.domesticStocks[memberId] = getAssetValue('domesticStocks', memberId);
-                newData.assets.subBrokerage[memberId] = getAssetValue('subBrokerage', memberId);
-                newData.assets.overseasBrokerage[memberId] = getAssetValue('overseasBrokerage', memberId);
-                newData.assets.realEstate[memberId] = getAssetValue('real-estate', memberId);
-                newData.debts.mortgage[memberId] = getDebtValue('mortgage', memberId);
-                newData.debts.refinanceMortgage[memberId] = getDebtValue('refinanceMortgage', memberId);
-                newData.debts.refinanceMortgage2[memberId] = getDebtValue('refinanceMortgage2', memberId);
-                newData.debts.revolvingMortgage[memberId] = getDebtValue('revolvingMortgage', memberId);
-                newData.debts.personalLoan[memberId] = getDebtValue('personalLoan', memberId);
-                newData.debts.stockLoan[memberId] = getDebtValue('stockLoan', memberId);
+                updatedDatabase.sort((a, b) => a.month.localeCompare(b.month));
 
-                newData.incomeStatement.income.salary[memberId] = getIncomeExpenseValue('income-salary', memberId);
-                newData.incomeStatement.income.dividend[memberId] = getIncomeExpenseValue('income-dividend', memberId);
-                newData.incomeStatement.income.other[memberId] = getIncomeExpenseValue('income-other', memberId);
-                newData.incomeStatement.expense.interest[memberId] = getInterestValue(memberId);
-                newData.incomeStatement.expense.fixed[memberId] = getIncomeExpenseValue('expense-fixed', memberId);
-                newData.incomeStatement.expense.variable[memberId] = getIncomeExpenseValue('expense-variable', memberId);
+                const encryptedStr = encrypt(updatedDatabase, password);
+                const blob = new Blob([encryptedStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'database.json'; 
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 1000);
+                
+                rawData = updatedDatabase;
+                updateUI(); 
+                
+                setTimeout(() => {
+                    alert(`加密成功！\n請將下載的「database.json」覆蓋掉專案中的同名檔案。`);
+                }, 100);
+            } catch (err) {
+                console.error("生成或下載 JSON 失敗:", err);
+                alert("生成或下載失敗: " + (err.message || err));
             }
-            
-            if (existingIndex !== -1) {
-                updatedDatabase[existingIndex] = newData;
-            } else {
-                updatedDatabase.push(newData);
-            }
-
-            updatedDatabase.sort((a, b) => a.month.localeCompare(b.month));
-
-            const encryptedStr = encrypt(updatedDatabase, password);
-            const blob = new Blob([encryptedStr], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'database.json'; 
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            rawData = updatedDatabase;
-            updateUI(); 
-            
-            alert(`加密成功！\n請將下載的「database.json」覆蓋掉專案中的同名檔案。`);
         });
 
         // --- Data Fetching and Processing ---
