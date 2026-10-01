@@ -855,6 +855,14 @@
         const btnSaveDetail = document.getElementById('btn-save-detail');
         const btnCloseDetail = document.getElementById('btn-close-detail');
 
+        // Monetary inputs may be pasted from spreadsheets with thousands separators
+        // (for example, "1,234.567"). Keep the form friendly to that format and
+        // normalize monetary values only when they are read for storage.
+        document.querySelectorAll('#input-page input[type="number"]').forEach(input => {
+            input.type = 'text';
+            input.inputMode = 'decimal';
+        });
+
 
 
         // Interest Breakdown Table Elements
@@ -879,6 +887,89 @@
         }
         function getMonthsDiff(startYM, currentYM) {
             return (currentYM.year - startYM.year) * 12 + (currentYM.month - startYM.month);
+        }
+
+        function parseFinancialInput(value) {
+            if (typeof value === 'number') {
+                return Number.isFinite(value) ? Math.round(value) : 0;
+            }
+
+            const normalized = String(value ?? '')
+                .replace(/[\s,，]/g, '')
+                .trim();
+            if (!normalized) return 0;
+
+            const parsed = Number(normalized);
+            return Number.isFinite(parsed) ? Math.round(parsed) : 0;
+        }
+
+        function normalizeRecordForStorage(record) {
+            const normalized = JSON.parse(JSON.stringify(record));
+            const normalizeNumberMap = (group) => {
+                if (!group) return;
+                Object.keys(group).forEach(key => {
+                    if (typeof group[key] === 'number' || typeof group[key] === 'string') {
+                        group[key] = parseFinancialInput(group[key]);
+                    }
+                });
+            };
+            const normalizeMemberGroups = (groups) => {
+                if (!groups) return;
+                Object.keys(groups).forEach(category => normalizeNumberMap(groups[category]));
+            };
+
+            normalizeMemberGroups(normalized.debts);
+
+            if (normalized.assets) {
+                Object.keys(normalized.assets).forEach(category => {
+                    const group = normalized.assets[category];
+                    if (!group) return;
+                    Object.keys(group).forEach(member => {
+                        const value = group[member];
+                        if (value && typeof value === 'object' && !Array.isArray(value)) {
+                            value.total = parseFinancialInput(value.total);
+                            if (Array.isArray(value.details)) {
+                                value.details.forEach(detail => {
+                                    detail.value = parseFinancialInput(detail.value);
+                                });
+                            }
+                        } else {
+                            group[member] = parseFinancialInput(value);
+                        }
+                    });
+                });
+            }
+
+            const incomeStatement = normalized.incomeStatement;
+            if (incomeStatement) {
+                normalizeMemberGroups(incomeStatement.income);
+                if (incomeStatement.expense) {
+                    normalizeNumberMap(incomeStatement.expense.fixed);
+                    normalizeNumberMap(incomeStatement.expense.variable);
+                    const interest = incomeStatement.expense.interest;
+                    if (interest) {
+                        Object.keys(interest).forEach(member => {
+                            const value = interest[member];
+                            if (value && typeof value === 'object' && !Array.isArray(value)) {
+                                value.total = parseFinancialInput(value.total);
+                                if (Array.isArray(value.details)) {
+                                    value.details.forEach(detail => {
+                                        detail.value = parseFinancialInput(detail.value);
+                                    });
+                                }
+                            } else {
+                                interest[member] = parseFinancialInput(value);
+                            }
+                        });
+                    }
+                }
+            }
+
+            return normalized;
+        }
+
+        function normalizeDatabaseForStorage(database) {
+            return database.map(normalizeRecordForStorage);
         }
 
         // --- Global State for Input Form Details ---
@@ -946,7 +1037,7 @@
             row.innerHTML = `
                 <input type="text" placeholder="標的 (如: 00631L, TSLA)" class="detail-name col-span-5 md:col-span-6 shadow-sm border rounded py-1.5 px-2 text-sm" value="${name}">
                 <input type="number" step="any" placeholder="倍數" class="detail-leverage col-span-3 md:col-span-2 shadow-sm border rounded py-1.5 px-2 text-sm text-center font-medium text-indigo-700 bg-indigo-50" value="${levVal}" title="槓桿倍數 (原型為 1，正2填 2，反一填 -1)">
-                <input type="number" placeholder="帳面價值" class="detail-value col-span-3 shadow-sm border rounded py-1.5 px-2 text-sm text-right font-medium" value="${value}">
+                <input type="text" inputmode="decimal" placeholder="帳面價值" class="detail-value col-span-3 shadow-sm border rounded py-1.5 px-2 text-sm text-right font-medium" value="${value}">
                 <div class="col-span-1 text-center">
                     <button type="button" class="text-red-500 hover:text-red-700 btn-remove-detail inline-flex justify-center p-1" title="刪除">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -972,7 +1063,7 @@
             let hasLeverage = false;
 
             rows.forEach(row => {
-                const val = parseFloat(row.querySelector('.detail-value').value) || 0;
+                const val = parseFinancialInput(row.querySelector('.detail-value').value);
                 const levInput = row.querySelector('.detail-leverage');
                 const levVal = levInput ? parseFloat(levInput.value) : 1;
                 const leverage = isNaN(levVal) ? 1 : levVal;
@@ -995,7 +1086,7 @@
                 const levVal = levInput ? parseFloat(levInput.value) : 1;
                 return {
                     name: row.querySelector('.detail-name').value.trim(),
-                    value: parseFloat(row.querySelector('.detail-value').value) || 0,
+                    value: parseFinancialInput(row.querySelector('.detail-value').value),
                     leverage: isNaN(levVal) ? 1 : levVal
                 };
             }).filter(item => item.name !== '');
@@ -1229,19 +1320,19 @@
                     let matchedSum = 0;
                     details.forEach(d => {
                         const name = (d.name || '').trim();
-                        const val = parseFloat(d.value) || 0;
+                        const val = parseFinancialInput(d.value);
                         const matchedKey = debtKeyByName[name];
                         if (matchedKey) {
                             const el = document.getElementById(`expense-interest-${matchedKey}-${memberId}`);
                             if (el) {
-                                el.value = (parseFloat(el.value) || 0) + val;
+                                el.value = parseFinancialInput(el.value) + val;
                             }
                             matchedSum += val;
                         }
                     });
 
                     // If there was unmapped detail or no details but total > 0
-                    const total = parseFloat(interestData.total) || 0;
+                            const total = parseFinancialInput(interestData.total);
                     const remainder = total - matchedSum;
                     if (remainder > 0) {
                         let targetKey = 'mortgage';
@@ -1251,7 +1342,7 @@
                         }
                         const el = document.getElementById(`expense-interest-${targetKey}-${memberId}`);
                         if (el) {
-                            el.value = (parseFloat(el.value) || 0) + remainder;
+                            el.value = parseFinancialInput(el.value) + remainder;
                         }
                     }
                 } else if (typeof interestData === 'number' && interestData > 0) {
@@ -1461,7 +1552,7 @@
 
                 const getAssetValue = (type, member) => {
                     const el = document.getElementById(`asset-${type}-${member}`);
-                    const val = el ? (parseFloat(el.value) || 0) : 0;
+                    const val = el ? parseFinancialInput(el.value) : 0;
                     if (detailSupportedKeys.includes(type)) {
                         return {
                             total: val,
@@ -1472,18 +1563,18 @@
                 };
                 const getDebtValue = (type, member) => {
                     const el = document.getElementById(`debt-${type}-${member}`);
-                    return el ? (parseFloat(el.value) || 0) : 0;
+                    return el ? parseFinancialInput(el.value) : 0;
                 };
                 const getIncomeExpenseValue = (prefix, member) => {
                     const el = document.getElementById(`${prefix}-${member}`);
-                    return el ? (parseFloat(el.value) || 0) : 0;
+                    return el ? parseFinancialInput(el.value) : 0;
                 };
                 const getInterestValue = (member) => {
                     let total = 0;
                     const details = [];
                     debtKeys.forEach(type => {
                         const el = document.getElementById(`expense-interest-${type}-${member}`);
-                        const val = el ? (parseFloat(el.value) || 0) : 0;
+                        const val = el ? parseFinancialInput(el.value) : 0;
                         if (val > 0) {
                             total += val;
                             details.push({
@@ -1546,6 +1637,7 @@
 
                 updatedDatabase.sort((a, b) => a.month.localeCompare(b.month));
 
+                updatedDatabase = normalizeDatabaseForStorage(updatedDatabase);
                 const encryptedStr = encrypt(updatedDatabase, password);
                 const blob = new Blob([encryptedStr], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
