@@ -351,7 +351,7 @@
                             </div>
                             <p class="text-3xl font-bold text-green-600">$<span id="income-total-amount">0</span></p>
                         </div>
-                        <p id="income-breakdown-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">薪資: $0 | 股息: $0 | 其他: $0</p>
+                        <p id="income-breakdown-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">薪資: $0 | 其他: $0</p>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
                         <div>
@@ -361,7 +361,7 @@
                             </div>
                             <p class="text-3xl font-bold text-red-600">$<span id="expense-total-amount">0</span></p>
                         </div>
-                        <p id="expense-breakdown-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">借貸還款: $0 | 固定: $0 | 變動: $0</p>
+                        <p id="expense-breakdown-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">借貸還款: $0 | 其他支出: $0</p>
                     </div>
 
                     <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
@@ -626,15 +626,8 @@
                                     <input type="number" id="income-salary-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-salary-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="股票股利、ETF配息、債息、基金分紅">固定其他收入</label>
-                                    <div class="relative"><input type="number" id="income-dividend-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1固定其他收入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="dividend" data-member="member1" title="編輯成員1固定其他收入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="income-dividend-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2固定其他收入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="dividend" data-member="member2" title="編輯成員2固定其他收入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="income-dividend-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3固定其他收入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="dividend" data-member="member3" title="編輯成員3固定其他收入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="income-dividend-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4固定其他收入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="dividend" data-member="member4" title="編輯成員4固定其他收入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                </div>
                                 <div class="grid grid-cols-5 gap-2 items-center">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租收入、副業、利息、非經常性收入">變動其他收入</label>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租收入、副業、利息、非經常性收入">其他收入</label>
                                     <input type="number" id="income-other-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-other-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-other-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
@@ -702,18 +695,10 @@
                                     </div>
                                 </div>
 
-                                <!-- Fixed Expense -->
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租/管理費、保險費、稅金、固定訂閱、孝親費">固定其他支出</label>
-                                    <div class="relative"><input type="number" id="expense-fixed-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1固定其他支出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="fixed" data-member="member1" title="編輯成員1固定其他支出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="expense-fixed-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2固定其他支出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="fixed" data-member="member2" title="編輯成員2固定其他支出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="expense-fixed-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3固定其他支出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="fixed" data-member="member3" title="編輯成員3固定其他支出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="expense-fixed-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4固定其他支出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="fixed" data-member="member4" title="編輯成員4固定其他支出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                </div>
 
                                 <!-- Variable Expense -->
                                 <div class="grid grid-cols-5 gap-2 items-center">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="飲食伙食、交通、日常購物、娛樂社交等變動生活總額">變動其他支出</label>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租/管理費、保險、稅金、孝親費、飲食伙食、交通、日常購物、娛樂社交等">其他支出</label>
                                     <input type="number" id="expense-variable-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-variable-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-variable-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
@@ -928,9 +913,9 @@
             const incomeStatement = normalized.incomeStatement;
             if (incomeStatement) {
                 normalizeMemberGroups(incomeStatement.income);
-                normalizeDetailedMap(incomeStatement.income && incomeStatement.income.dividend);
+                if (incomeStatement.income) delete incomeStatement.income.dividend;
                 if (incomeStatement.expense) {
-                    normalizeDetailedMap(incomeStatement.expense.fixed);
+                    delete incomeStatement.expense.fixed;
                     normalizeNumberMap(incomeStatement.expense.variable);
                     const interest = incomeStatement.expense.interest;
                     if (interest) {
@@ -979,15 +964,11 @@
         const assetKeys = ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage', 'realEstate'];
         const debtKeys = ['mortgage', 'refinanceMortgage', 'refinanceMortgage2', 'revolvingMortgage', 'personalLoan', 'stockLoan'];
         const detailSupportedKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
-        // Income/expense items that also use the per-member detail popup (no leverage column)
-        const incomeExpenseDetailPrefix = { dividend: 'income-dividend', fixed: 'expense-fixed' };
-        const incomeExpenseDetailLabels = { dividend: '固定其他收入', fixed: '固定其他支出' };
         // Input id prefix used when writing the popup total back to the form
         const detailInputPrefix = {
             domesticStocks: 'asset-domesticStocks',
             subBrokerage: 'asset-subBrokerage',
-            overseasBrokerage: 'asset-overseasBrokerage',
-            ...incomeExpenseDetailPrefix
+            overseasBrokerage: 'asset-overseasBrokerage'
         };
         const marketAssetKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
 
@@ -1037,7 +1018,7 @@
 
         function openDetailModal(category, member) {
             currentEditing = { category, member };
-            const categoryName = categoryLabels[category] || incomeExpenseDetailLabels[category];
+            const categoryName = categoryLabels[category];
             detailModalTitle.textContent = `${categoryName} 明細 - ${member.replace('member', '成員')}`;
             detailItemsContainer.innerHTML = '';
             const showLeverage = detailSupportedKeys.includes(category);
@@ -1166,15 +1147,6 @@
             }
         });
 
-        Object.keys(incomeExpenseDetailPrefix).forEach(cat => {
-            for (let i = 1; i <= 4; i++) {
-                const inputEl = document.getElementById(`${incomeExpenseDetailPrefix[cat]}-member${i}`);
-                if (inputEl) {
-                    inputEl.addEventListener('click', () => openDetailModal(cat, `member${i}`));
-                }
-            }
-        });
-
         // Keyboard accessibility: close modals on Escape key
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -1259,20 +1231,18 @@
 
         // --- Import & Form Population Logic ---
         const incomeExpensePrefixes = [
-            'income-salary', 'income-dividend', 'income-other',
-            'expense-fixed', 'expense-variable'
+            'income-salary', 'income-other',
+            'expense-variable'
         ];
 
         function defaultIncomeStatement() {
             return {
                 income: {
                     salary: { member1: 0, member2: 0, member3: 0, member4: 0 },
-                    dividend: { member1: 0, member2: 0, member3: 0, member4: 0 },
                     other: { member1: 0, member2: 0, member3: 0, member4: 0 }
                 },
                 expense: {
                     interest: { member1: 0, member2: 0, member3: 0, member4: 0 },
-                    fixed: { member1: 0, member2: 0, member3: 0, member4: 0 },
                     variable: { member1: 0, member2: 0, member3: 0, member4: 0 }
                 }
             };
@@ -1344,20 +1314,6 @@
                     el.value = (val !== undefined && val !== null) ? val : 0;
                     el.classList.add('bg-yellow-50');
                 }
-            };
-
-            // Items with a detail popup store { total, details }; older records store a plain number
-            const setDetailedIncomeExpenseValue = (category, member, val) => {
-                const el = document.getElementById(`${incomeExpenseDetailPrefix[category]}-${member}`);
-                if (!el) return;
-                if (typeof val === 'object' && val !== null) {
-                    el.value = val.total || 0;
-                    if (!tempDetails[category]) tempDetails[category] = {};
-                    tempDetails[category][member] = JSON.parse(JSON.stringify(val.details || []));
-                } else {
-                    el.value = (val !== undefined && val !== null) ? val : 0;
-                }
-                el.classList.add('bg-yellow-50');
             };
 
             const setIncomeExpenseValue = (prefix, member, val) => {
@@ -1452,9 +1408,7 @@
             for (let i = 1; i <= 4; i++) {
                 const memberId = `member${i}`;
                 setIncomeExpenseValue('income-salary', memberId, is.income && is.income.salary && is.income.salary[memberId]);
-                setDetailedIncomeExpenseValue('dividend', memberId, is.income && is.income.dividend && is.income.dividend[memberId]);
                 setIncomeExpenseValue('income-other', memberId, is.income && is.income.other && is.income.other[memberId]);
-                setDetailedIncomeExpenseValue('fixed', memberId, is.expense && is.expense.fixed && is.expense.fixed[memberId]);
                 setIncomeExpenseValue('expense-variable', memberId, is.expense && is.expense.variable && is.expense.variable[memberId]);
                 setInterestValues(memberId, is.expense && is.expense.interest && is.expense.interest[memberId]);
             }
@@ -1502,13 +1456,6 @@
                 const el = document.getElementById(`${prefix}-${member}`);
                 return el ? parseFinancialInput(el.value) : 0;
             };
-            const getDetailedIncomeExpenseValue = (category, member) => {
-                const el = document.getElementById(`${incomeExpenseDetailPrefix[category]}-${member}`);
-                return {
-                    total: el ? parseFinancialInput(el.value) : 0,
-                    details: (tempDetails[category] && tempDetails[category][member]) || []
-                };
-            };
             const getInterestValue = (member) => {
                 let total = 0;
                 const details = [];
@@ -1539,10 +1486,10 @@
                 },
                 incomeStatement: {
                     income: {
-                        salary: {}, dividend: {}, other: {}
+                        salary: {}, other: {}
                     },
                     expense: {
-                        interest: {}, fixed: {}, variable: {}
+                        interest: {}, variable: {}
                     }
                 }
             };
@@ -1562,10 +1509,8 @@
                 data.debts.stockLoan[memberId] = getDebtValue('stockLoan', memberId);
 
                 data.incomeStatement.income.salary[memberId] = getIncomeExpenseValue('income-salary', memberId);
-                data.incomeStatement.income.dividend[memberId] = getDetailedIncomeExpenseValue('dividend', memberId);
                 data.incomeStatement.income.other[memberId] = getIncomeExpenseValue('income-other', memberId);
                 data.incomeStatement.expense.interest[memberId] = getInterestValue(memberId);
-                data.incomeStatement.expense.fixed[memberId] = getDetailedIncomeExpenseValue('fixed', memberId);
                 data.incomeStatement.expense.variable[memberId] = getIncomeExpenseValue('expense-variable', memberId);
             }
             return data;
@@ -1815,8 +1760,8 @@
         const jsonStatus = document.getElementById('json-status');
         const JSON_MEMBER_KEYS = ['member1', 'member2', 'member3', 'member4'];
         const JSON_ASSET_KEYS = ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage', 'realEstate'];
-        const JSON_INCOME_KEYS = ['salary', 'dividend', 'other'];
-        const JSON_EXPENSE_KEYS = ['interest', 'fixed', 'variable'];
+        const JSON_INCOME_KEYS = ['salary', 'other'];
+        const JSON_EXPENSE_KEYS = ['interest', 'variable'];
 
         function isPlainObject(value) {
             return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -2694,14 +2639,12 @@
                 };
 
                 const salary = sumForMembers(is.income && is.income.salary);
-                const dividend = sumForMembers(is.income && is.income.dividend);
                 const otherIncome = sumForMembers(is.income && is.income.other);
-                const totalIncome = salary + dividend + otherIncome;
+                const totalIncome = salary + otherIncome;
 
                 const interest = sumForMembers(is.expense && is.expense.interest);
-                const fixed = sumForMembers(is.expense && is.expense.fixed);
                 const variable = sumForMembers(is.expense && is.expense.variable);
-                const totalExpense = interest + fixed + variable;
+                const totalExpense = interest + variable;
 
                 const netSavings = totalIncome - totalExpense;
                 const savingsRate = totalIncome > 0 ? (netSavings / totalIncome) * 100 : 0;
@@ -2709,8 +2652,8 @@
 
                 return {
                     month: item.month,
-                    income: { salary, dividend, other: otherIncome, total: totalIncome },
-                    expense: { interest, fixed, variable, total: totalExpense },
+                    income: { salary, other: otherIncome, total: totalIncome },
+                    expense: { interest, variable, total: totalExpense },
                     netSavings,
                     savingsRate,
                     interestRatio,
@@ -2744,8 +2687,8 @@
                 if (expenseTotalAmount) expenseTotalAmount.textContent = '0';
                 if (expenseInterestAmount) expenseInterestAmount.textContent = '0';
                 if (incomeNetSavings) incomeNetSavings.textContent = '0';
-                if (incomeBreakdownSubtext) incomeBreakdownSubtext.textContent = '薪資: $0 | 股息: $0 | 其他: $0';
-                if (expenseBreakdownSubtext) expenseBreakdownSubtext.textContent = '借貸還款: $0 | 固定: $0 | 變動: $0';
+                if (incomeBreakdownSubtext) incomeBreakdownSubtext.textContent = '薪資: $0 | 其他: $0';
+                if (expenseBreakdownSubtext) expenseBreakdownSubtext.textContent = '借貸還款: $0 | 其他支出: $0';
                 if (incomeInterestRatioBadge) incomeInterestRatioBadge.textContent = '還款負擔 0%';
                 if (incomeSavingsRateBadge) incomeSavingsRateBadge.textContent = '儲蓄率 0%';
                 if (ytdValue) ytdValue.textContent = '$0';
@@ -2754,12 +2697,12 @@
 
             if (incomeTotalAmount) incomeTotalAmount.textContent = latest.income.total.toLocaleString();
             if (incomeBreakdownSubtext) {
-                incomeBreakdownSubtext.textContent = `薪資: $${latest.income.salary.toLocaleString()} | 股息: $${latest.income.dividend.toLocaleString()} | 其他: $${latest.income.other.toLocaleString()}`;
+                incomeBreakdownSubtext.textContent = `薪資: $${latest.income.salary.toLocaleString()} | 其他: $${latest.income.other.toLocaleString()}`;
             }
 
             if (expenseTotalAmount) expenseTotalAmount.textContent = latest.expense.total.toLocaleString();
             if (expenseBreakdownSubtext) {
-                expenseBreakdownSubtext.textContent = `借貸還款: $${latest.expense.interest.toLocaleString()} | 固定: $${latest.expense.fixed.toLocaleString()} | 變動: $${latest.expense.variable.toLocaleString()}`;
+                expenseBreakdownSubtext.textContent = `借貸還款: $${latest.expense.interest.toLocaleString()} | 其他支出: $${latest.expense.variable.toLocaleString()}`;
             }
 
             if (expenseInterestAmount) expenseInterestAmount.textContent = latest.expense.interest.toLocaleString();
@@ -2857,12 +2800,11 @@
                     data: {
                         labels: [
                             `借貸還款 (${pct(latestIncome.expense.interest)}%)`,
-                            `固定其他支出 (${pct(latestIncome.expense.fixed)}%)`,
-                            `變動其他支出 (${pct(latestIncome.expense.variable)}%)`
+                            `其他支出 (${pct(latestIncome.expense.variable)}%)`
                         ],
                         datasets: [{
-                            data: [latestIncome.expense.interest, latestIncome.expense.fixed, latestIncome.expense.variable],
-                            backgroundColor: ['#a855f7', '#f97316', '#14b8a6']
+                            data: [latestIncome.expense.interest, latestIncome.expense.variable],
+                            backgroundColor: ['#a855f7', '#14b8a6']
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false }
@@ -2933,14 +2875,12 @@
             let text = `截至 ${latestIncome.month} 現金流概覽\n`;
             text += `一、流入:\n`;
             text += `  • 薪資: $${latestIncome.income.salary.toLocaleString()}\n`;
-            text += `  • 固定其他收入: $${latestIncome.income.dividend.toLocaleString()}\n`;
-            text += `  • 變動其他收入: $${latestIncome.income.other.toLocaleString()}\n`;
+            text += `  • 其他收入: $${latestIncome.income.other.toLocaleString()}\n`;
             text += `  [總流入] $${latestIncome.income.total.toLocaleString()}\n\n`;
 
             text += `二、流出:\n`;
             text += `  • 借貸還款: $${latestIncome.expense.interest.toLocaleString()}${loanPart} (佔流入 ${latestIncome.interestRatio.toFixed(1)}%)\n`;
-            text += `  • 固定其他支出: $${latestIncome.expense.fixed.toLocaleString()}\n`;
-            text += `  • 變動其他支出: $${latestIncome.expense.variable.toLocaleString()}\n`;
+            text += `  • 其他支出: $${latestIncome.expense.variable.toLocaleString()}\n`;
             text += `  [總流出] $${latestIncome.expense.total.toLocaleString()}\n\n`;
 
             text += `三、結餘:\n`;
