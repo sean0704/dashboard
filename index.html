@@ -308,10 +308,9 @@
             <section id="income-page" class="page hidden">
                 <div class="mb-4">
                     <h1 class="text-3xl font-bold text-gray-800">收支損益表</h1>
-                    <p class="text-sm text-gray-500 mt-1">以現金流為主：本月流入、流出與結餘，以及累積情況。</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 items-stretch">
                     <!-- Member Filter -->
                     <div id="income-member-filter" class="bg-white p-4 rounded-lg shadow">
                         <h2 class="text-lg font-semibold text-gray-700 mb-2">成員檢視篩選</h2>
@@ -334,9 +333,11 @@
                             </label>
                         </div>
                     </div>
+                    <!-- Year-to-date cumulative net cash flow -->
                     <div class="bg-white p-4 rounded-lg shadow flex flex-col justify-center">
-                        <h2 class="text-lg font-semibold text-gray-700 mb-1">判讀方式</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 leading-relaxed">淨現金流 = 流入 − 流出（流出包含借貸還款的利息與本金）。儲蓄率 = 淨現金流 ÷ 流入。</p>
+                        <h2 class="text-lg font-semibold text-gray-700 mb-1">今年累積淨現金流</h2>
+                        <p class="text-3xl font-bold text-blue-600" id="cf-ytd-value">$0</p>
+                        <p id="cf-ytd-subtext" class="text-xs text-gray-500 mt-2"></p>
                     </div>
                 </div>
 
@@ -366,7 +367,7 @@
                     <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-1">
-                                <h2 class="text-lg font-semibold text-gray-700">本月淨現金流</h2>
+                                <h2 class="text-lg font-semibold text-gray-700" title="淨現金流 = 流入 − 流出（流出含借貸還款的利息與本金）；儲蓄率 = 淨現金流 ÷ 流入">本月淨現金流 ⓘ</h2>
                                 <span id="income-savings-rate-badge" class="text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-800">儲蓄率 0%</span>
                             </div>
                             <p id="income-net-savings-container" class="text-3xl font-bold text-blue-600"><span id="income-net-savings">0</span></p>
@@ -383,20 +384,6 @@
                             <p class="text-3xl font-bold text-purple-600">$<span id="expense-interest-amount">0</span></p>
                         </div>
                         <p id="income-interest-subtext" class="text-xs text-gray-500 mt-2 leading-tight">佔流入比例（含本金）</p>
-                    </div>
-                </div>
-
-                <!-- Cumulative & average -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h2 class="text-lg font-semibold text-gray-700 mb-1">今年累積淨現金流</h2>
-                        <p class="text-3xl font-bold text-blue-600" id="cf-ytd-value">$0</p>
-                        <p id="cf-ytd-subtext" class="text-xs text-gray-500 mt-2"></p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h2 class="text-lg font-semibold text-gray-700 mb-1">近三個月平均淨現金流</h2>
-                        <p class="text-3xl font-bold text-blue-600" id="cf-avg3-value">$0</p>
-                        <p id="cf-avg3-subtext" class="text-xs text-gray-500 mt-2"></p>
                     </div>
                 </div>
 
@@ -839,6 +826,7 @@
         let expenseStructureChart;
         let rawData = []; // Working copy: saved data + staged (unexported) months
         let savedRawData = []; // Snapshot of data as loaded/exported, used to discard staged changes
+        let loadedMonthCount = 0; // Months in the file when it was loaded; export must never write fewer
         const pendingMonths = new Set(); // Months staged in this session but not yet exported
         let encryptedDataStr = null; // Store the original encrypted string from server
         let currentSessionPassword = ''; // Retain verified password in session to avoid accidental lockout
@@ -1460,6 +1448,7 @@
         function setDatabase(data) {
             rawData = data;
             savedRawData = deepClone(data);
+            loadedMonthCount = data.length;
             pendingMonths.clear();
             loadedMonth = null;
         }
@@ -1818,6 +1807,10 @@
 
         btnExportDb.addEventListener('click', () => {
             captureCurrentDraft();
+            if (rawData.length < loadedMonthCount) {
+                alert(`目前只有 ${rawData.length} 個月，少於載入時的 ${loadedMonthCount} 個月，為避免覆蓋資料已中止存檔。請重新整理頁面。`);
+                return;
+            }
             if (pendingMonths.size === 0) {
                 alert('目前沒有需要存檔的變更。');
                 refreshMonthStatus();
@@ -1885,18 +1878,20 @@
         // --- Data Fetching and Processing ---
         async function fetchData() {
             try {
-                const response = await fetch('./database.json');
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const text = await response.text();
-                
-                if (text.trim().startsWith('[') || text.trim().startsWith('{')) {
+                // Cache-busting query + no-store so a stale copy of database.json is never shown
+                const response = await fetch(`./database.json?t=${Date.now()}`, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const text = (await response.text()).trim();
+                if (text === '') throw new Error('檔案是空的');
+
+                if (text.startsWith('[') || text.startsWith('{')) {
                     return { type: 'plain', data: JSON.parse(text) };
-                } else {
-                    return { type: 'encrypted', data: text.trim() };
                 }
+                return { type: 'encrypted', data: text };
             } catch (error) {
-                console.warn('載入 database.json 失敗 (若在本地直接開啟 HTML，請透過網頁伺服器或 GitHub Pages 存取):', error);
-                return { type: 'empty', data: [] };
+                console.error('載入 database.json 失敗:', error);
+                // Returning an empty database here would let a later export overwrite the real data
+                return { type: 'error', message: error.message || String(error) };
             }
         }
         
@@ -2509,9 +2504,6 @@
                 const ytdItems = list.filter(item => item.month.startsWith(year));
                 latest.ytdNet = ytdItems.reduce((sum, item) => sum + item.netSavings, 0);
                 latest.ytdMonths = ytdItems.length;
-                const recent = list.slice(-3);
-                latest.avg3Net = recent.reduce((sum, item) => sum + item.netSavings, 0) / recent.length;
-                latest.avg3Months = recent.length;
             }
             return list;
         }
@@ -2519,8 +2511,6 @@
         function renderCashFlowCards(latest) {
             const ytdValue = document.getElementById('cf-ytd-value');
             const ytdSubtext = document.getElementById('cf-ytd-subtext');
-            const avgValue = document.getElementById('cf-avg3-value');
-            const avgSubtext = document.getElementById('cf-avg3-subtext');
 
             if (!latest) {
                 if (incomeTotalAmount) incomeTotalAmount.textContent = '0';
@@ -2532,7 +2522,6 @@
                 if (incomeInterestRatioBadge) incomeInterestRatioBadge.textContent = '還款負擔 0%';
                 if (incomeSavingsRateBadge) incomeSavingsRateBadge.textContent = '儲蓄率 0%';
                 if (ytdValue) ytdValue.textContent = '$0';
-                if (avgValue) avgValue.textContent = '$0';
                 return;
             }
 
@@ -2584,11 +2573,6 @@
                 ytdValue.className = latest.ytdNet < 0 ? 'text-3xl font-bold text-red-600' : 'text-3xl font-bold text-blue-600';
             }
             if (ytdSubtext) ytdSubtext.textContent = `${latest.month.slice(0, 4)} 年 1 月至 ${latest.month}，共 ${latest.ytdMonths} 個月`;
-            if (avgValue) {
-                avgValue.textContent = formatSignedMoney(Math.round(latest.avg3Net));
-                avgValue.className = latest.avg3Net < 0 ? 'text-3xl font-bold text-red-600' : 'text-3xl font-bold text-blue-600';
-            }
-            if (avgSubtext) avgSubtext.textContent = `最近 ${latest.avg3Months} 個月（含本月）的平均`;
         }
 
         function updateIncomeUI(processedBalanceData = null, selectedMembers = getSelectedMembers()) {
@@ -2721,7 +2705,6 @@
             const loanStr = [...loans].map(([name, value]) => `${name}($${value.toLocaleString()})`).join(', ');
             const loanPart = loanStr ? ` [${loanStr}]` : '';
             const ytdNet = latestIncome.ytdNet;
-            const avg3Net = Math.round(latestIncome.avg3Net);
 
             let text = `截至 ${latestIncome.month} 現金流概覽\n`;
             text += `一、流入:\n`;
@@ -2739,8 +2722,7 @@
             text += `三、結餘:\n`;
             text += `  • 本月淨現金流: ${formatSignedMoney(latestIncome.netSavings)}\n`;
             text += `  • 儲蓄率: ${latestIncome.savingsRate.toFixed(1)}%\n`;
-            text += `  • ${latestIncome.month.slice(0, 4)} 年累積淨現金流: ${formatSignedMoney(ytdNet)}\n`;
-            text += `  • 近三個月平均淨現金流: ${formatSignedMoney(avg3Net)}`;
+            text += `  • ${latestIncome.month.slice(0, 4)} 年累積淨現金流: ${formatSignedMoney(ytdNet)}`;
 
             incomeTextSummary.value = text;
         }
@@ -2789,24 +2771,31 @@
             }
         }
 
+        function showLoadError(message) {
+            unlockOverlay.classList.remove('hidden');
+            unlockPasswordInput.disabled = true;
+            btnUnlock.disabled = true;
+            unlockError.textContent = `無法載入 database.json（${message}）。為避免覆蓋既有資料，已停止編輯，請確認檔案後重新整理頁面。`;
+            unlockError.classList.remove('hidden');
+        }
+
         async function initializeApp() {
             const today = new Date();
             monthSelect.value = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}`;
             const fetchResult = await fetchData();
-            if (fetchResult.type !== 'empty') {
-                encryptedDataStr = fetchResult.data;
-                if (fetchResult.type === 'plain') {
-                    // Plaintext data doesn't need decryption
-                    setDatabase(fetchResult.data);
-                    unlockOverlay.classList.add('hidden');
-                    updateUI();
-                } else {
-                    unlockOverlay.classList.remove('hidden');
-                    setTimeout(() => unlockPasswordInput.focus(), 100);
-                }
-            } else {
+            if (fetchResult.type === 'error') {
+                showLoadError(fetchResult.message);
+                return;
+            }
+            encryptedDataStr = fetchResult.data;
+            if (fetchResult.type === 'plain') {
+                // Plaintext data doesn't need decryption
+                setDatabase(fetchResult.data);
                 unlockOverlay.classList.add('hidden');
                 updateUI();
+            } else {
+                unlockOverlay.classList.remove('hidden');
+                setTimeout(() => unlockPasswordInput.focus(), 100);
             }
         }
         initializeApp();
