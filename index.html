@@ -337,7 +337,7 @@
                     <div class="bg-white p-4 rounded-lg shadow flex flex-col justify-center">
                         <h2 class="text-lg font-semibold text-gray-700 mb-1">收支與現金流檢視說明</h2>
                         <p class="text-xs sm:text-sm text-gray-500 leading-relaxed">
-                            追蹤所選成員之薪資、股息收入與各項固定、變動及借貸利息支出，並自動勾稽資產負債表動態拆解財富增長動能。
+                            追蹤所選成員之薪資、股息收入與各項固定、變動及借貸支出，並自動勾稽資產負債表動態拆解財富增長動能。
                         </p>
                     </div>
                 </div>
@@ -370,7 +370,7 @@
                         <div>
                             <div class="flex items-center justify-between mb-1">
                                 <div class="flex items-center space-x-1">
-                                    <h2 class="text-lg font-semibold text-gray-700">借貸利息支出</h2>
+                                    <h2 class="text-lg font-semibold text-gray-700">借貸支出</h2>
                                     <span class="cursor-pointer text-gray-400 hover:text-purple-600" title="房貸、增貸、信貸、質押等借款產生的純利息成本">
                                         <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     </span>
@@ -435,11 +435,11 @@
                     </div>
                 </div>
 
-                <!-- Loan Interest Expense Details Table (當期借貸利息支出明細) -->
+                <!-- Loan Interest Expense Details Table (當期借貸支出明細) -->
                 <div class="bg-white p-6 rounded-lg shadow mb-6">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h2 class="text-xl font-semibold text-gray-700">當期借貸利息支出明細</h2>
+                            <h2 class="text-xl font-semibold text-gray-700">當期借貸支出明細</h2>
                         </div>
                         <span id="interest-detail-month-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">最新月份</span>
                     </div>
@@ -470,8 +470,8 @@
                                     <th class="px-3 py-2.5">月份</th>
                                     <th class="px-3 py-2.5 text-right text-green-700">總收入</th>
                                     <th class="px-3 py-2.5 text-right text-purple-700">借貸利息</th>
-                                    <th class="px-3 py-2.5 text-right">固定支出</th>
-                                    <th class="px-3 py-2.5 text-right">變動支出</th>
+                                    <th class="px-3 py-2.5 text-right">固定其他支出</th>
+                                    <th class="px-3 py-2.5 text-right">變動其他支出</th>
                                     <th class="px-3 py-2.5 text-right text-red-700">總支出</th>
                                     <th class="px-3 py-2.5 text-right text-blue-700">淨儲蓄</th>
                                     <th class="px-3 py-2.5 text-center">儲蓄率</th>
@@ -677,21 +677,21 @@
                                 </div>
 
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="薪資、年終獎金、津貼、兼職所得">工作與薪資</label>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="薪資、年終獎金、津貼、兼職所得">薪資</label>
                                     <input type="number" id="income-salary-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-salary-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-salary-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-salary-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="股票股利、ETF配息、債息、基金分紅">投資收益/股息</label>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="股票股利、ETF配息、債息、基金分紅">固定其他收入</label>
                                     <input type="number" id="income-dividend-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-dividend-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-dividend-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-dividend-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
                                 <div class="grid grid-cols-5 gap-2 items-center">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租收入、副業、利息、非經常性收入">其他收入</label>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租收入、副業、利息、非經常性收入">變動其他收入</label>
                                     <input type="number" id="income-other-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-other-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-other-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
@@ -707,60 +707,103 @@
                                     </h3>
                                 </div>
 
-                                <!-- Interest Expense (6 Loan Categories) -->
+                                <!-- Loan Expense: interest & principal per loan (6 loan categories) -->
                                 <div class="mb-3 p-2.5 bg-purple-50 rounded-lg border border-purple-200">
                                     <div class="flex items-center justify-between mb-2.5 border-b border-purple-200 pb-1.5">
                                         <div class="flex items-center space-x-1.5">
-                                            <span class="text-sm font-bold text-purple-900">🟣 借貸利息支出</span>
+                                            <span class="text-sm font-bold text-purple-900">🟣 借貸支出</span>
                                         </div>
                                     </div>
+                                    <p class="text-xs text-gray-500 mb-2.5">每筆貸款分別填寫當月「利息」與「本金」；只還利息的貸款，本金填 0。<span class="text-indigo-700 font-semibold">本金不計入支出與淨儲蓄。</span></p>
                                     <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="一般購屋房貸之當月實付利息">一般房貸利息</label>
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="一般購屋房貸之當月實付利息">一般房貸（利息）</label>
                                         <input type="number" id="expense-interest-mortgage-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-mortgage-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-mortgage-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-mortgage-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                     </div>
                                     <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="房屋增貸第一期之當月實付利息">增貸(一)利息</label>
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-indigo-700" title="一般購屋房貸之當月償還本金">一般房貸（本金）</label>
+                                        <input type="number" id="expense-principal-mortgage-member1" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-mortgage-member2" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-mortgage-member3" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-mortgage-member4" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="房屋增貸第一期之當月實付利息">增貸(一)（利息）</label>
                                         <input type="number" id="expense-interest-refinanceMortgage-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-refinanceMortgage-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-refinanceMortgage-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-refinanceMortgage-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                     </div>
                                     <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="房屋增貸第二期之當月實付利息">增貸(二)利息</label>
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-indigo-700" title="房屋增貸第一期之當月償還本金">增貸(一)（本金）</label>
+                                        <input type="number" id="expense-principal-refinanceMortgage-member1" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-refinanceMortgage-member2" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-refinanceMortgage-member3" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-refinanceMortgage-member4" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="房屋增貸第二期之當月實付利息">增貸(二)（利息）</label>
                                         <input type="number" id="expense-interest-refinanceMortgage2-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-refinanceMortgage2-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-refinanceMortgage2-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-refinanceMortgage2-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                     </div>
                                     <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="理財型房貸循環動用之當月實付利息">理財房貸利息</label>
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-indigo-700" title="房屋增貸第二期之當月償還本金">增貸(二)（本金）</label>
+                                        <input type="number" id="expense-principal-refinanceMortgage2-member1" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-refinanceMortgage2-member2" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-refinanceMortgage2-member3" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-refinanceMortgage2-member4" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="理財型房貸循環動用之當月實付利息">理財房貸（利息）</label>
                                         <input type="number" id="expense-interest-revolvingMortgage-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-revolvingMortgage-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-revolvingMortgage-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-revolvingMortgage-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                     </div>
                                     <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="個人信用貸款之當月實付利息">信用貸款利息</label>
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-indigo-700" title="理財型房貸之當月償還本金">理財房貸（本金）</label>
+                                        <input type="number" id="expense-principal-revolvingMortgage-member1" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-revolvingMortgage-member2" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-revolvingMortgage-member3" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-revolvingMortgage-member4" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="個人信用貸款之當月實付利息">信用貸款（利息）</label>
                                         <input type="number" id="expense-interest-personalLoan-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-personalLoan-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-personalLoan-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-personalLoan-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                     </div>
-                                    <div class="grid grid-cols-5 gap-2 items-center">
-                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="股票質押借款之當月實付利息">股票質押利息</label>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-indigo-700" title="個人信用貸款之當月償還本金">信用貸款（本金）</label>
+                                        <input type="number" id="expense-principal-personalLoan-member1" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-personalLoan-member2" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-personalLoan-member3" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-personalLoan-member4" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="股票質押借款之當月實付利息">股票質押（利息）</label>
                                         <input type="number" id="expense-interest-stockLoan-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-stockLoan-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-stockLoan-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                         <input type="number" id="expense-interest-stockLoan-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
                                     </div>
+                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                        <label class="col-span-1 text-xs sm:text-sm font-medium text-indigo-700" title="股票質押借款之當月償還本金">股票質押（本金）</label>
+                                        <input type="number" id="expense-principal-stockLoan-member1" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-stockLoan-member2" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-stockLoan-member3" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                        <input type="number" id="expense-principal-stockLoan-member4" class="shadow-sm border border-indigo-200 rounded w-full py-1 px-2 text-right font-medium text-indigo-800" value="0">
+                                    </div>
                                 </div>
 
                                 <!-- Fixed Expense -->
                                 <div class="grid grid-cols-5 gap-2 items-center mb-2">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租/管理費、保險費、稅金、固定訂閱、孝親費">固定生活支出</label>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="房租/管理費、保險費、稅金、固定訂閱、孝親費">固定其他支出</label>
                                     <input type="number" id="expense-fixed-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-fixed-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-fixed-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
@@ -769,7 +812,7 @@
 
                                 <!-- Variable Expense -->
                                 <div class="grid grid-cols-5 gap-2 items-center">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="飲食伙食、交通、日常購物、娛樂社交等變動生活總額">變動生活支出</label>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="飲食伙食、交通、日常購物、娛樂社交等變動生活總額">變動其他支出</label>
                                     <input type="number" id="expense-variable-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-variable-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-variable-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
@@ -779,9 +822,20 @@
                         </div>
                     </div>
                     
-                    <button type="submit" id="btn-submit-form" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors">
-                        生成 JSON 並下載
-                    </button>
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <div id="staged-panel" class="hidden mb-4 p-3 rounded-lg bg-purple-50 border border-purple-200">
+                            <div class="text-sm font-bold text-purple-800 mb-2">
+                                待存檔的月份（<span id="staged-count">0</span> 筆）
+                            </div>
+                            <ul id="staged-month-list" class="flex flex-wrap gap-2"></ul>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                            <button type="button" id="btn-export-db" disabled class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none shadow transition-colors">
+                                存檔（匯出加密 database.json）
+                            </button>
+                            <p class="text-xs text-gray-500">切換月份時會自動保留未存檔的修改，可連續填寫多個月份後一次存檔；存檔的檔案需覆蓋專案中的 database.json。</p>
+                        </div>
+                    </div>
                 </form>
             </section>
         </main>
@@ -808,7 +862,10 @@
         const btnClearForm = document.getElementById('btn-clear-form');
         const historyMonthsContainer = document.getElementById('history-months-container');
         const historyMonthPills = document.getElementById('history-month-pills');
-        const btnSubmitForm = document.getElementById('btn-submit-form');
+        const btnExportDb = document.getElementById('btn-export-db');
+        const stagedPanel = document.getElementById('staged-panel');
+        const stagedCount = document.getElementById('staged-count');
+        const stagedMonthList = document.getElementById('staged-month-list');
         const assetInputForm = document.getElementById('asset-input-form');
         const memberCheckboxes = document.querySelectorAll('.member-checkbox');
         const incomeMemberCheckboxes = document.querySelectorAll('.income-member-checkbox');
@@ -874,7 +931,9 @@
         let netWorthGrowthChart;
         let incomeExpenseChart;
         let expenseStructureChart;
-        let rawData = []; // To store the original decrypted data
+        let rawData = []; // Working copy: saved data + staged (unexported) months
+        let savedRawData = []; // Snapshot of data as loaded/exported, used to discard staged changes
+        const pendingMonths = new Set(); // Months staged in this session but not yet exported
         let encryptedDataStr = null; // Store the original encrypted string from server
         let currentSessionPassword = ''; // Retain verified password in session to avoid accidental lockout
 
@@ -963,6 +1022,23 @@
                         });
                     }
                 }
+            }
+
+            const principal = normalized.incomeStatement && normalized.incomeStatement.expense && normalized.incomeStatement.expense.principal;
+            if (principal) {
+                Object.keys(principal).forEach(member => {
+                    const value = principal[member];
+                    if (value && typeof value === 'object' && !Array.isArray(value)) {
+                        value.total = parseFinancialInput(value.total);
+                        if (Array.isArray(value.details)) {
+                            value.details.forEach(detail => {
+                                detail.value = parseFinancialInput(detail.value);
+                            });
+                        }
+                    } else {
+                        principal[member] = parseFinancialInput(value);
+                    }
+                });
             }
 
             return normalized;
@@ -1104,6 +1180,7 @@
             }
 
             detailModal.classList.add('hidden');
+            refreshMonthStatus();
         });
 
         btnAddDetailRow.addEventListener('click', () => addDetailRow());
@@ -1177,7 +1254,11 @@
             showPage(inputPage);
             updateNavStyles(navInput);
             renderHistoryMonthPills();
-            handleMonthChange(false);
+            if (loadedMonth === null) {
+                loadMonthIntoForm(getSelectedMonth());
+            } else {
+                refreshMonthStatus();
+            }
         });
 
         // --- Input Sub-tabs & Quick Interest Calculation ---
@@ -1212,6 +1293,7 @@
                 },
                 expense: {
                     interest: { member1: 0, member2: 0, member3: 0, member4: 0 },
+                    principal: { member1: 0, member2: 0, member3: 0, member4: 0 },
                     fixed: { member1: 0, member2: 0, member3: 0, member4: 0 },
                     variable: { member1: 0, member2: 0, member3: 0, member4: 0 }
                 }
@@ -1244,6 +1326,11 @@
                     if (interestEl) {
                         interestEl.value = 0;
                         if (clearHighlight) interestEl.classList.remove('bg-yellow-50');
+                    }
+                    const principalEl = document.getElementById(`expense-principal-${type}-${memberId}`);
+                    if (principalEl) {
+                        principalEl.value = 0;
+                        if (clearHighlight) principalEl.classList.remove('bg-yellow-50');
                     }
                 });
                 incomeExpensePrefixes.forEach(prefix => {
@@ -1356,6 +1443,35 @@
                 }
             };
 
+            const setPrincipalValues = (memberId, principalData) => {
+                debtKeys.forEach(type => {
+                    const el = document.getElementById(`expense-principal-${type}-${memberId}`);
+                    if (el) {
+                        el.value = 0;
+                        el.classList.add('bg-yellow-50');
+                    }
+                });
+                if (!principalData) return;
+
+                const isObject = typeof principalData === 'object' && principalData !== null;
+                let matchedSum = 0;
+                (isObject ? (principalData.details || []) : []).forEach(d => {
+                    const matchedKey = debtKeyByName[(d.name || '').trim()];
+                    if (!matchedKey) return;
+                    const val = parseFinancialInput(d.value);
+                    const el = document.getElementById(`expense-principal-${matchedKey}-${memberId}`);
+                    if (el) el.value = parseFinancialInput(el.value) + val;
+                    matchedSum += val;
+                });
+                // Keep the total even if some details cannot be matched to a loan
+                const total = isObject ? parseFinancialInput(principalData.total) : parseFinancialInput(principalData);
+                const remainder = total - matchedSum;
+                if (remainder > 0) {
+                    const el = document.getElementById(`expense-principal-mortgage-${memberId}`);
+                    if (el) el.value = parseFinancialInput(el.value) + remainder;
+                }
+            };
+
             for (let i = 1; i <= 4; i++) {
                 const memberId = `member${i}`;
                 const getSafeAsset = (key) => (item.assets && item.assets[key] && item.assets[key][memberId]) || 0;
@@ -1383,10 +1499,206 @@
                 setIncomeExpenseValue('expense-fixed', memberId, is.expense && is.expense.fixed && is.expense.fixed[memberId]);
                 setIncomeExpenseValue('expense-variable', memberId, is.expense && is.expense.variable && is.expense.variable[memberId]);
                 setInterestValues(memberId, is.expense && is.expense.interest && is.expense.interest[memberId]);
+                setPrincipalValues(memberId, is.expense && is.expense.principal && is.expense.principal[memberId]);
             }
         }
 
-        // --- History Months Quick Selector & Status ---
+        // --- Month Switching, Unsaved Drafts & Save ---
+        let loadedMonth = null; // Month currently shown in the input form
+        let loadedSnapshot = ''; // Form contents right after loading; differs from current form = unsaved edits
+
+        function deepClone(value) {
+            return JSON.parse(JSON.stringify(value));
+        }
+
+        function getSelectedMonth() {
+            return monthSelect.value ? monthSelect.value.trim() : '';
+        }
+
+        // Replace the working data with the given baseline and clear every unsaved change
+        function setDatabase(data) {
+            rawData = data;
+            savedRawData = deepClone(data);
+            pendingMonths.clear();
+            loadedMonth = null;
+        }
+
+        // Read the whole input form into one month record
+        function collectFormData(month) {
+            const getAssetValue = (type, member) => {
+                const el = document.getElementById(`asset-${type}-${member}`);
+                const val = el ? parseFinancialInput(el.value) : 0;
+                if (detailSupportedKeys.includes(type)) {
+                    return {
+                        total: val,
+                        details: (tempDetails[type] && tempDetails[type][member]) || []
+                    };
+                }
+                return val;
+            };
+            const getDebtValue = (type, member) => {
+                const el = document.getElementById(`debt-${type}-${member}`);
+                return el ? parseFinancialInput(el.value) : 0;
+            };
+            const getIncomeExpenseValue = (prefix, member) => {
+                const el = document.getElementById(`${prefix}-${member}`);
+                return el ? parseFinancialInput(el.value) : 0;
+            };
+            const getInterestValue = (member) => {
+                let total = 0;
+                const details = [];
+                debtKeys.forEach(type => {
+                    const el = document.getElementById(`expense-interest-${type}-${member}`);
+                    const val = el ? parseFinancialInput(el.value) : 0;
+                    if (val > 0) {
+                        total += val;
+                        details.push({
+                            name: categoryLabels[type],
+                            value: val
+                        });
+                    }
+                });
+                return {
+                    total: total,
+                    details: details
+                };
+            };
+
+            const getPrincipalValue = (member) => {
+                let total = 0;
+                const details = [];
+                debtKeys.forEach(type => {
+                    const el = document.getElementById(`expense-principal-${type}-${member}`);
+                    const val = el ? parseFinancialInput(el.value) : 0;
+                    if (val > 0) {
+                        total += val;
+                        details.push({
+                            name: categoryLabels[type],
+                            value: val
+                        });
+                    }
+                });
+                return {
+                    total: total,
+                    details: details
+                };
+            };
+
+            const data = {
+                month: month,
+                assets: {
+                    cash: {}, domesticStocks: {}, subBrokerage: {}, overseasBrokerage: {}, realEstate: {}
+                },
+                debts: {
+                    mortgage: {}, refinanceMortgage: {}, refinanceMortgage2: {}, revolvingMortgage: {}, personalLoan: {}, stockLoan: {}
+                },
+                incomeStatement: {
+                    income: {
+                        salary: {}, dividend: {}, other: {}
+                    },
+                    expense: {
+                        interest: {}, principal: {}, fixed: {}, variable: {}
+                    }
+                }
+            };
+
+            for (let i = 1; i <= 4; i++) {
+                const memberId = `member${i}`;
+                data.assets.cash[memberId] = getAssetValue('cash', memberId);
+                data.assets.domesticStocks[memberId] = getAssetValue('domesticStocks', memberId);
+                data.assets.subBrokerage[memberId] = getAssetValue('subBrokerage', memberId);
+                data.assets.overseasBrokerage[memberId] = getAssetValue('overseasBrokerage', memberId);
+                data.assets.realEstate[memberId] = getAssetValue('real-estate', memberId);
+                data.debts.mortgage[memberId] = getDebtValue('mortgage', memberId);
+                data.debts.refinanceMortgage[memberId] = getDebtValue('refinanceMortgage', memberId);
+                data.debts.refinanceMortgage2[memberId] = getDebtValue('refinanceMortgage2', memberId);
+                data.debts.revolvingMortgage[memberId] = getDebtValue('revolvingMortgage', memberId);
+                data.debts.personalLoan[memberId] = getDebtValue('personalLoan', memberId);
+                data.debts.stockLoan[memberId] = getDebtValue('stockLoan', memberId);
+
+                data.incomeStatement.income.salary[memberId] = getIncomeExpenseValue('income-salary', memberId);
+                data.incomeStatement.income.dividend[memberId] = getIncomeExpenseValue('income-dividend', memberId);
+                data.incomeStatement.income.other[memberId] = getIncomeExpenseValue('income-other', memberId);
+                data.incomeStatement.expense.interest[memberId] = getInterestValue(memberId);
+                data.incomeStatement.expense.principal[memberId] = getPrincipalValue(memberId);
+                data.incomeStatement.expense.fixed[memberId] = getIncomeExpenseValue('expense-fixed', memberId);
+                data.incomeStatement.expense.variable[memberId] = getIncomeExpenseValue('expense-variable', memberId);
+            }
+            return data;
+        }
+
+        function hasFormChanges() {
+            return loadedMonth !== null && JSON.stringify(collectFormData(loadedMonth)) !== loadedSnapshot;
+        }
+
+        function hasUnsavedChanges() {
+            return pendingMonths.size > 0 || hasFormChanges();
+        }
+
+        // If the form was edited for the month being shown, keep that month as an unsaved draft
+        function captureCurrentDraft() {
+            if (!hasFormChanges()) return;
+            const draft = collectFormData(loadedMonth);
+            const existingIndex = rawData.findIndex(item => item.month === loadedMonth);
+            if (existingIndex !== -1) {
+                rawData[existingIndex] = draft;
+            } else {
+                rawData.push(draft);
+            }
+            rawData.sort((a, b) => a.month.localeCompare(b.month));
+            pendingMonths.add(loadedMonth);
+            loadedSnapshot = JSON.stringify(draft);
+        }
+
+        // Undo unsaved changes for one month: restore the saved version, or remove it if it was never saved
+        function discardPendingMonth(month) {
+            const savedEntry = savedRawData.find(item => item.month === month);
+            rawData = rawData.filter(item => item.month !== month);
+            if (savedEntry) rawData.push(deepClone(savedEntry));
+            rawData.sort((a, b) => a.month.localeCompare(b.month));
+            pendingMonths.delete(month);
+        }
+
+        // Undo unsaved changes for one month and, if it is on screen, reload the form from the restored data
+        function discardMonth(month) {
+            discardPendingMonth(month);
+            if (month === loadedMonth) {
+                loadedMonth = null;
+                loadMonthIntoForm(month);
+            }
+            updateUI();
+        }
+
+        function loadMonthIntoForm(month) {
+            if (!month) {
+                loadedMonth = null;
+                loadedSnapshot = '';
+                refreshMonthStatus();
+                return;
+            }
+            const entry = rawData.find(item => item.month === month);
+            if (entry) {
+                fillFormWithData(entry);
+            } else {
+                clearForm();
+            }
+            loadedMonth = month;
+            loadedSnapshot = JSON.stringify(collectFormData(month));
+            refreshMonthStatus();
+        }
+
+        // Save the current month as a draft, then show the newly selected month
+        function switchMonth() {
+            const month = getSelectedMonth();
+            if (month === loadedMonth) {
+                refreshMonthStatus();
+                return;
+            }
+            captureCurrentDraft();
+            loadMonthIntoForm(month);
+            updateUI();
+        }
+
         function renderHistoryMonthPills() {
             if (!historyMonthPills || !historyMonthsContainer) return;
             if (!rawData || rawData.length === 0) {
@@ -1397,33 +1709,35 @@
 
             historyMonthsContainer.classList.remove('hidden');
             const sortedData = [...rawData].sort((a, b) => b.month.localeCompare(a.month));
-            const currentSelected = monthSelect.value ? monthSelect.value.trim() : '';
 
             historyMonthPills.innerHTML = '';
             sortedData.forEach(item => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                const isCurrent = (item.month === currentSelected);
-                btn.className = `month-pill text-xs px-2.5 py-1 rounded border transition-colors ${
-                    isCurrent
-                        ? 'bg-blue-600 text-white border-blue-600 font-bold shadow-sm'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-400'
-                }`;
+                btn.dataset.month = item.month;
                 btn.textContent = item.month;
-                btn.title = `點擊切換並載入 ${item.month} 歷史紀錄`;
+                if (pendingMonths.has(item.month)) {
+                    const dot = document.createElement('span');
+                    dot.className = 'ml-1 text-purple-500';
+                    dot.textContent = '●';
+                    dot.title = '尚未存檔';
+                    btn.appendChild(dot);
+                }
+                btn.title = `點擊切換並載入 ${item.month} 紀錄`;
                 btn.addEventListener('click', () => {
                     monthSelect.value = item.month;
-                    handleMonthChange();
+                    switchMonth();
                 });
                 historyMonthPills.appendChild(btn);
             });
+            updateHistoryMonthPillsActive(getSelectedMonth());
         }
 
         function updateHistoryMonthPillsActive(selectedMonth) {
             if (!historyMonthPills) return;
             const pills = historyMonthPills.querySelectorAll('.month-pill');
             pills.forEach(pill => {
-                if (pill.textContent.trim() === selectedMonth) {
+                if (pill.dataset.month === selectedMonth) {
                     pill.className = 'month-pill text-xs px-2.5 py-1 rounded border transition-colors bg-blue-600 text-white border-blue-600 font-bold shadow-sm';
                 } else {
                     pill.className = 'month-pill text-xs px-2.5 py-1 rounded border transition-colors bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-400';
@@ -1431,39 +1745,32 @@
             });
         }
 
-        function handleMonthChange(shouldClearIfNew = false) {
-            const selectedMonth = monthSelect.value ? monthSelect.value.trim() : '';
+        function refreshMonthStatus() {
+            const selectedMonth = getSelectedMonth();
+            const entry = selectedMonth ? rawData.find(item => item.month === selectedMonth) : null;
+            const isDraft = pendingMonths.has(selectedMonth);
+            const isEdited = hasFormChanges();
+
             if (!selectedMonth) {
                 if (monthStatusBadge) monthStatusBadge.className = 'hidden';
                 if (monthStatusHint) monthStatusHint.textContent = '';
-                if (btnReloadCurrentMonth) btnReloadCurrentMonth.classList.add('hidden');
-                if (btnSubmitForm) {
-                    btnSubmitForm.textContent = '生成 JSON 並下載';
-                    btnSubmitForm.className = 'bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors';
+            } else if (isEdited || isDraft) {
+                if (monthStatusBadge) {
+                    monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-300';
+                    monthStatusBadge.textContent = isEdited ? '✏️ 有未存檔的修改' : '🗂️ 已暫存（尚未存檔）';
                 }
-                updateHistoryMonthPillsActive('');
-                return;
-            }
-
-            const existingEntry = rawData ? rawData.find(item => item.month === selectedMonth) : null;
-            if (existingEntry) {
-                fillFormWithData(existingEntry);
+                if (monthStatusHint) {
+                    monthStatusHint.innerHTML = `<span class="text-purple-800 font-semibold">「${selectedMonth}」的修改尚未存檔</span>，切換月份時會自動保留，全部完成後點擊下方「存檔」。`;
+                }
+            } else if (entry) {
                 if (monthStatusBadge) {
                     monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-300';
                     monthStatusBadge.textContent = '📝 編輯歷史紀錄';
                 }
                 if (monthStatusHint) {
-                    monthStatusHint.innerHTML = `<span class="text-yellow-800 font-semibold">已自動載入「${selectedMonth}」之歷史資產、負債、收支與各項明細</span>，可直接修改數值，下方將執行覆蓋儲存。`;
-                }
-                if (btnReloadCurrentMonth) btnReloadCurrentMonth.classList.remove('hidden');
-                if (btnSubmitForm) {
-                    btnSubmitForm.textContent = `覆蓋儲存「${selectedMonth}」並下載 JSON`;
-                    btnSubmitForm.className = 'bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors border border-yellow-600';
+                    monthStatusHint.innerHTML = `<span class="text-yellow-800 font-semibold">已自動載入「${selectedMonth}」之歷史資產、負債、收支與各項明細</span>，可直接修改數值。`;
                 }
             } else {
-                if (shouldClearIfNew) {
-                    clearForm();
-                }
                 if (monthStatusBadge) {
                     monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200';
                     monthStatusBadge.textContent = '✨ 全新月份';
@@ -1471,30 +1778,42 @@
                 if (monthStatusHint) {
                     monthStatusHint.innerHTML = `「${selectedMonth}」尚無歷史紀錄，可直接輸入全新數據，或點擊上方「帶入最新一期紀錄」快速填寫。`;
                 }
-                if (btnReloadCurrentMonth) btnReloadCurrentMonth.classList.add('hidden');
-                if (btnSubmitForm) {
-                    btnSubmitForm.textContent = `生成「${selectedMonth}」JSON 並下載`;
-                    btnSubmitForm.className = 'bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none focus:shadow-outline shadow transition-colors';
-                }
+            }
+
+            if (btnReloadCurrentMonth) {
+                btnReloadCurrentMonth.classList.toggle('hidden', !entry && !isEdited);
             }
             updateHistoryMonthPillsActive(selectedMonth);
+            renderStagedPanel();
+            if (btnExportDb) {
+                const canSave = hasUnsavedChanges();
+                btnExportDb.disabled = !canSave;
+                btnExportDb.classList.toggle('opacity-50', !canSave);
+                btnExportDb.classList.toggle('cursor-not-allowed', !canSave);
+            }
         }
 
-        monthSelect.addEventListener('change', () => handleMonthChange(true));
+        monthSelect.addEventListener('change', switchMonth);
+        assetInputForm.addEventListener('input', refreshMonthStatus);
+        assetInputForm.addEventListener('submit', (e) => e.preventDefault());
 
         btnReloadCurrentMonth.addEventListener('click', () => {
-            const selectedMonth = monthSelect.value ? monthSelect.value.trim() : '';
-            const existingEntry = rawData ? rawData.find(item => item.month === selectedMonth) : null;
-            if (existingEntry) {
-                if (confirm(`確定要將表單重設回「${selectedMonth}」原本儲存的歷史數據嗎？未儲存的修改將會被還原。`)) {
-                    fillFormWithData(existingEntry);
-                }
+            const selectedMonth = getSelectedMonth();
+            const entry = rawData.find(item => item.month === selectedMonth);
+            if (!entry && !hasFormChanges()) return;
+            const hasSaved = savedRawData.some(item => item.month === selectedMonth);
+            const message = hasSaved
+                ? `確定要還原「${selectedMonth}」為原本儲存的歷史數據嗎？此月未存檔的修改將被撤銷。`
+                : `確定要撤銷「${selectedMonth}」的修改嗎？此為全新月份，撤銷後將移除該月。`;
+            if (confirm(message)) {
+                discardMonth(selectedMonth);
             }
         });
 
         btnClearForm.addEventListener('click', () => {
             if (confirm('確定要清空目前表單上的所有數值嗎？')) {
                 clearForm();
+                refreshMonthStatus();
             }
         });
 
@@ -1505,38 +1824,60 @@
             }
             const sortedData = [...rawData].sort((a, b) => b.month.localeCompare(a.month));
             const latestEntry = sortedData[0];
-            
+
             if (confirm(`是否要從最新一期「${latestEntry.month}」的紀錄帶入資產、負債、收支與各項明細？這將會覆蓋您目前輸入的內容。`)) {
                 fillFormWithData(latestEntry);
+                refreshMonthStatus();
             }
         });
 
-        // --- Data Input and JSON Generation ---
-        assetInputForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+        // --- Batch Save (export) ---
+        function renderStagedPanel() {
+            if (!stagedPanel) return;
+            const months = [...pendingMonths].sort();
+            stagedPanel.classList.toggle('hidden', months.length === 0);
+            stagedCount.textContent = months.length;
+            stagedMonthList.innerHTML = '';
+            months.forEach(month => {
+                const li = document.createElement('li');
+                li.className = 'inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-white border border-purple-300 text-purple-800';
+                const label = document.createElement('span');
+                label.textContent = month;
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'text-purple-500 hover:text-red-600 font-bold leading-none';
+                removeBtn.title = `撤銷「${month}」的未存檔修改`;
+                removeBtn.textContent = '✕';
+                removeBtn.addEventListener('click', () => {
+                    const hasSaved = savedRawData.some(item => item.month === month);
+                    const message = hasSaved
+                        ? `確定要撤銷「${month}」的修改嗎？將還原為已儲存的版本。`
+                        : `確定要撤銷「${month}」的修改嗎？此為全新月份，撤銷後將移除該月。`;
+                    if (confirm(message)) {
+                        discardMonth(month);
+                    }
+                });
+                li.append(label, removeBtn);
+                stagedMonthList.appendChild(li);
+            });
+        }
+
+        btnExportDb.addEventListener('click', () => {
+            captureCurrentDraft();
+            if (pendingMonths.size === 0) {
+                alert('目前沒有需要存檔的變更。');
+                refreshMonthStatus();
+                return;
+            }
 
             try {
-                const selectedMonth = monthSelect.value ? monthSelect.value.trim() : '';
-                if (!selectedMonth || !/^\d{4}-\d{2}$/.test(selectedMonth)) {
-                    alert("請選擇有效的月份 (格式為 YYYY-MM)！");
-                    monthSelect.focus();
-                    return;
-                }
-
-                let updatedDatabase = [...rawData];
-                const existingIndex = updatedDatabase.findIndex(item => item.month === selectedMonth);
-                if (existingIndex !== -1) {
-                    if (!confirm(`已存在「${selectedMonth}」的歷史紀錄，確定要覆蓋此月份的數據嗎？`)) {
-                        return;
-                    }
-                }
-                
+                const savedMonths = [...pendingMonths].sort();
                 const promptMsg = currentSessionPassword
-                    ? "請確認或輸入「資產金庫密碼」以進行加密儲存："
-                    : "請設置「資產金庫密碼」以進行加密儲存：\n(此密碼將用於下次載入資料，請務必記住！)";
+                    ? "請確認或輸入「資產金庫密碼」以進行加密存檔："
+                    : "請設置「資產金庫密碼」以進行加密存檔：\n(此密碼將用於下次載入資料，請務必記住！)";
                 const password = prompt(promptMsg, currentSessionPassword || "");
                 if (!password) {
-                    alert("取消儲存：必須設置密碼才能保護您的數據。");
+                    alert("取消存檔：必須設置密碼才能保護您的數據。");
                     return;
                 }
 
@@ -1544,122 +1885,46 @@
                 if (password !== currentSessionPassword) {
                     const confirmPassword = prompt("請「再次輸入」相同的資產金庫密碼以確認：");
                     if (password !== confirmPassword) {
-                        alert("兩次輸入的密碼不一致，儲存已取消以避免數據鎖死，請重新操作。");
+                        alert("兩次輸入的密碼不一致，存檔已取消以避免數據鎖死，請重新操作。");
                         return;
                     }
                 }
                 currentSessionPassword = password;
 
-                const getAssetValue = (type, member) => {
-                    const el = document.getElementById(`asset-${type}-${member}`);
-                    const val = el ? parseFinancialInput(el.value) : 0;
-                    if (detailSupportedKeys.includes(type)) {
-                        return {
-                            total: val,
-                            details: (tempDetails[type] && tempDetails[type][member]) || []
-                        };
-                    }
-                    return val;
-                };
-                const getDebtValue = (type, member) => {
-                    const el = document.getElementById(`debt-${type}-${member}`);
-                    return el ? parseFinancialInput(el.value) : 0;
-                };
-                const getIncomeExpenseValue = (prefix, member) => {
-                    const el = document.getElementById(`${prefix}-${member}`);
-                    return el ? parseFinancialInput(el.value) : 0;
-                };
-                const getInterestValue = (member) => {
-                    let total = 0;
-                    const details = [];
-                    debtKeys.forEach(type => {
-                        const el = document.getElementById(`expense-interest-${type}-${member}`);
-                        const val = el ? parseFinancialInput(el.value) : 0;
-                        if (val > 0) {
-                            total += val;
-                            details.push({
-                                name: categoryLabels[type],
-                                value: val
-                            });
-                        }
-                    });
-                    return {
-                        total: total,
-                        details: details
-                    };
-                };
-
-                const newData = {
-                    month: selectedMonth,
-                    assets: {
-                        cash: {}, domesticStocks: {}, subBrokerage: {}, overseasBrokerage: {}, realEstate: {}
-                    },
-                    debts: {
-                        mortgage: {}, refinanceMortgage: {}, refinanceMortgage2: {}, revolvingMortgage: {}, personalLoan: {}, stockLoan: {}
-                    },
-                    incomeStatement: {
-                        income: {
-                            salary: {}, dividend: {}, other: {}
-                        },
-                        expense: {
-                            interest: {}, fixed: {}, variable: {}
-                        }
-                    }
-                };
-
-                for (let i = 1; i <= 4; i++) {
-                    const memberId = `member${i}`;
-                    newData.assets.cash[memberId] = getAssetValue('cash', memberId);
-                    newData.assets.domesticStocks[memberId] = getAssetValue('domesticStocks', memberId);
-                    newData.assets.subBrokerage[memberId] = getAssetValue('subBrokerage', memberId);
-                    newData.assets.overseasBrokerage[memberId] = getAssetValue('overseasBrokerage', memberId);
-                    newData.assets.realEstate[memberId] = getAssetValue('real-estate', memberId);
-                    newData.debts.mortgage[memberId] = getDebtValue('mortgage', memberId);
-                    newData.debts.refinanceMortgage[memberId] = getDebtValue('refinanceMortgage', memberId);
-                    newData.debts.refinanceMortgage2[memberId] = getDebtValue('refinanceMortgage2', memberId);
-                    newData.debts.revolvingMortgage[memberId] = getDebtValue('revolvingMortgage', memberId);
-                    newData.debts.personalLoan[memberId] = getDebtValue('personalLoan', memberId);
-                    newData.debts.stockLoan[memberId] = getDebtValue('stockLoan', memberId);
-
-                    newData.incomeStatement.income.salary[memberId] = getIncomeExpenseValue('income-salary', memberId);
-                    newData.incomeStatement.income.dividend[memberId] = getIncomeExpenseValue('income-dividend', memberId);
-                    newData.incomeStatement.income.other[memberId] = getIncomeExpenseValue('income-other', memberId);
-                    newData.incomeStatement.expense.interest[memberId] = getInterestValue(memberId);
-                    newData.incomeStatement.expense.fixed[memberId] = getIncomeExpenseValue('expense-fixed', memberId);
-                    newData.incomeStatement.expense.variable[memberId] = getIncomeExpenseValue('expense-variable', memberId);
-                }
-                
-                if (existingIndex !== -1) {
-                    updatedDatabase[existingIndex] = newData;
-                } else {
-                    updatedDatabase.push(newData);
-                }
-
-                updatedDatabase.sort((a, b) => a.month.localeCompare(b.month));
-
-                updatedDatabase = normalizeDatabaseForStorage(updatedDatabase);
-                const encryptedStr = encrypt(updatedDatabase, password);
+                const normalized = normalizeDatabaseForStorage(deepClone(rawData).sort((a, b) => a.month.localeCompare(b.month)));
+                const encryptedStr = encrypt(normalized, password);
                 const blob = new Blob([encryptedStr], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'database.json'; 
+                a.download = 'database.json';
                 document.body.appendChild(a);
                 a.click();
                 setTimeout(() => {
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                 }, 1000);
-                
-                rawData = updatedDatabase;
-                updateUI(); 
-                
+
+                // The downloaded file is now the saved baseline
+                rawData = normalized;
+                savedRawData = deepClone(normalized);
+                pendingMonths.clear();
+                updateUI();
+
                 setTimeout(() => {
-                    alert(`加密成功！\n請將下載的「database.json」覆蓋掉專案中的同名檔案。`);
+                    alert(`加密存檔成功（本次包含：${savedMonths.join('、')}）。\n請將下載的「database.json」覆蓋掉專案中的同名檔案。`);
                 }, 100);
             } catch (err) {
-                console.error("生成或下載 JSON 失敗:", err);
-                alert("生成或下載失敗: " + (err.message || err));
+                console.error("存檔失敗:", err);
+                alert("存檔失敗: " + (err.message || err));
+            }
+        });
+
+        // Warn before leaving the page while changes have not been saved
+        window.addEventListener('beforeunload', (e) => {
+            if (hasUnsavedChanges()) {
+                e.preventDefault();
+                e.returnValue = '';
             }
         });
 
@@ -1781,7 +2046,11 @@
             updateIncomeUI(processed, selectedMembers);
 
             renderHistoryMonthPills();
-            handleMonthChange(false);
+            if (loadedMonth === null) {
+                loadMonthIntoForm(getSelectedMonth());
+            } else {
+                refreshMonthStatus();
+            }
         }
         
         memberCheckboxes.forEach(checkbox => checkbox.addEventListener('change', () => {
@@ -2252,6 +2521,8 @@
                 const fixed = sumForMembers(is.expense && is.expense.fixed);
                 const variable = sumForMembers(is.expense && is.expense.variable);
                 const totalExpense = interest + fixed + variable;
+                // Principal repayment reduces debt, not net worth, so it stays out of expenses and savings
+                const principal = sumForMembers(is.expense && is.expense.principal);
 
                 const netSavings = totalIncome - totalExpense;
                 const savingsRate = totalIncome > 0 ? (netSavings / totalIncome) * 100 : 0;
@@ -2261,6 +2532,7 @@
                     month: item.month,
                     income: { salary, dividend, other: otherIncome, total: totalIncome },
                     expense: { interest, fixed, variable, total: totalExpense },
+                    principal,
                     netSavings,
                     savingsRate,
                     interestRatio,
@@ -2301,7 +2573,7 @@
                     }
                 }
                 if (incomeInterestSubtext) {
-                    incomeInterestSubtext.textContent = `佔總收入比例: ${latestIncome.interestRatio.toFixed(1)}% (融資成本負擔)`;
+                    incomeInterestSubtext.textContent = `佔總收入比例: ${latestIncome.interestRatio.toFixed(1)}% (融資成本負擔) ｜ 本金償還 $${latestIncome.principal.toLocaleString()}（不計入支出）`;
                 }
 
                 if (incomeNetSavings) {
@@ -2462,9 +2734,9 @@
                         type: 'pie',
                         data: {
                             labels: [
-                                `借貸利息支出 (${((latestIncome.expense.interest / expTotal) * 100).toFixed(1)}%)`,
-                                `固定生活支出 (${((latestIncome.expense.fixed / expTotal) * 100).toFixed(1)}%)`,
-                                `變動生活支出 (${((latestIncome.expense.variable / expTotal) * 100).toFixed(1)}%)`
+                                `借貸支出 (${((latestIncome.expense.interest / expTotal) * 100).toFixed(1)}%)`,
+                                `固定其他支出 (${((latestIncome.expense.fixed / expTotal) * 100).toFixed(1)}%)`,
+                                `變動其他支出 (${((latestIncome.expense.variable / expTotal) * 100).toFixed(1)}%)`
                             ],
                             datasets: [{
                                 data: [
@@ -2531,7 +2803,7 @@
 
             if (!latestIncome || latestIncome.expense.interest <= 0) {
                 if (interestDetailMonthBadge) interestDetailMonthBadge.textContent = latestIncome ? latestIncome.month : '最新月份';
-                interestDetailsTableBody.innerHTML = '<tr><td colspan="4" class="px-3 py-4 text-center text-gray-400">本期無借貸利息支出或尚未載入數據</td></tr>';
+                interestDetailsTableBody.innerHTML = '<tr><td colspan="4" class="px-3 py-4 text-center text-gray-400">本期無借貸支出或尚未載入數據</td></tr>';
                 return;
             }
 
@@ -2679,15 +2951,16 @@
 
             let text = `截至 ${latestIncome.month} 收支損益概覽\n`;
             text += `一、收入:\n`;
-            text += `  • 工作與薪資: $${latestIncome.income.salary.toLocaleString()}\n`;
-            text += `  • 投資收益/股息: $${latestIncome.income.dividend.toLocaleString()}\n`;
-            text += `  • 其他收入: $${latestIncome.income.other.toLocaleString()}\n`;
+            text += `  • 薪資: $${latestIncome.income.salary.toLocaleString()}\n`;
+            text += `  • 固定其他收入: $${latestIncome.income.dividend.toLocaleString()}\n`;
+            text += `  • 變動其他收入: $${latestIncome.income.other.toLocaleString()}\n`;
             text += `  [總收入合計] $${latestIncome.income.total.toLocaleString()}\n\n`;
 
             text += `二、支出:\n`;
-            text += `  • 借貸利息支出: $${latestIncome.expense.interest.toLocaleString()}${interestDetailsStr} (佔總收入 ${latestIncome.interestRatio.toFixed(1)}%)\n`;
-            text += `  • 固定生活支出: $${latestIncome.expense.fixed.toLocaleString()}\n`;
-            text += `  • 變動生活支出: $${latestIncome.expense.variable.toLocaleString()}\n`;
+            text += `  • 借貸支出: $${latestIncome.expense.interest.toLocaleString()}${interestDetailsStr} (佔總收入 ${latestIncome.interestRatio.toFixed(1)}%)\n`;
+            text += `  • 借貸本金償還（不計入支出）: $${latestIncome.principal.toLocaleString()}\n`;
+            text += `  • 固定其他支出: $${latestIncome.expense.fixed.toLocaleString()}\n`;
+            text += `  • 變動其他支出: $${latestIncome.expense.variable.toLocaleString()}\n`;
             text += `  [總支出合計] $${latestIncome.expense.total.toLocaleString()}\n\n`;
 
             text += `三、現金流結餘與財務指標:\n`;
@@ -2719,7 +2992,7 @@
             const password = unlockPasswordInput.value;
             
             if (typeof encryptedDataStr === 'object') {
-                rawData = encryptedDataStr;
+                setDatabase(encryptedDataStr);
                 unlockOverlay.classList.add('hidden');
                 updateUI();
                 return;
@@ -2733,7 +3006,7 @@
 
             const decrypted = decrypt(encryptedDataStr, password);
             if (decrypted) {
-                rawData = decrypted;
+                setDatabase(decrypted);
                 currentSessionPassword = password; // Remember verified password for current session
                 unlockOverlay.classList.add('hidden');
                 updateUI();
@@ -2751,7 +3024,7 @@
                 encryptedDataStr = fetchResult.data;
                 if (fetchResult.type === 'plain') {
                     // Plaintext data doesn't need decryption
-                    rawData = fetchResult.data;
+                    setDatabase(fetchResult.data);
                     unlockOverlay.classList.add('hidden');
                     updateUI();
                 } else {
