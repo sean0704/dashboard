@@ -410,7 +410,6 @@
                                     <th class="px-3 py-2.5 text-right">流入</th>
                                     <th class="px-3 py-2.5 text-right">流出</th>
                                     <th class="px-3 py-2.5 text-right">淨現金流</th>
-                                    <th class="px-3 py-2.5 text-right">累積淨現金流</th>
                                     <th class="px-3 py-2.5 text-center">儲蓄率</th>
                                 </tr>
                             </thead>
@@ -485,6 +484,9 @@
                         </button>
                         <button type="button" id="tab-btn-income" class="py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
                             <span>💵 收支損益數據</span>
+                        </button>
+                        <button type="button" id="tab-btn-json" class="py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
+                            <span>🧾 JSON 編輯</span>
                         </button>
                     </div>
 
@@ -721,6 +723,20 @@
                         </div>
                     </div>
                     
+                    <!-- TAB 3: Raw JSON editor (decrypted working copy, including unsaved changes) -->
+                    <div id="tab-section-json" class="mb-6 hidden">
+                        <div class="mb-3 p-3 rounded-lg bg-yellow-50 border border-yellow-300 text-xs text-yellow-900">
+                            此處顯示的是<strong>解密後的完整資料</strong>（含未存檔修改），請勿截圖或分享。套用後的變更會進入未存檔狀態，仍需按下方「存檔」才會寫入檔案。
+                        </div>
+                        <textarea id="json-editor" spellcheck="false" class="w-full h-96 p-3 font-mono text-xs bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+                        <div class="flex flex-wrap items-center gap-2 mt-3">
+                            <button type="button" id="btn-json-validate" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded text-sm transition-colors">驗證</button>
+                            <button type="button" id="btn-json-apply" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-sm transition-colors">套用到目前資料</button>
+                            <button type="button" id="btn-json-reload" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded text-sm transition-colors">重新載入目前資料</button>
+                        </div>
+                        <div id="json-status" class="hidden mt-3 p-3 rounded-lg text-sm whitespace-pre-line"></div>
+                    </div>
+
                     <div class="mt-6 pt-4 border-t border-gray-200">
                         <div id="staged-panel" class="hidden mb-4 p-3 rounded-lg bg-purple-50 border border-purple-200">
                             <div class="text-sm font-bold text-purple-800 mb-2">
@@ -1212,22 +1228,34 @@
             }
         });
 
-        // --- Input Sub-tabs & Quick Interest Calculation ---
-        if (tabBtnAssets && tabBtnIncome) {
-            tabBtnAssets.addEventListener('click', () => {
-                tabSectionAssets.classList.remove('hidden');
-                tabSectionIncome.classList.add('hidden');
-                tabBtnAssets.className = 'py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
-                tabBtnIncome.className = 'py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
-            });
+        // --- Input Sub-tabs ---
+        const tabBtnJson = document.getElementById('tab-btn-json');
+        const btnJsonValidate = document.getElementById('btn-json-validate');
+        const btnJsonApply = document.getElementById('btn-json-apply');
+        const btnJsonReload = document.getElementById('btn-json-reload');
+        const tabSectionJson = document.getElementById('tab-section-json');
+        const inputTabs = [
+            { button: tabBtnAssets, section: tabSectionAssets },
+            { button: tabBtnIncome, section: tabSectionIncome },
+            { button: tabBtnJson, section: tabSectionJson }
+        ];
+        const TAB_ACTIVE_CLASS = 'py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+        const TAB_INACTIVE_CLASS = 'py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
 
-            tabBtnIncome.addEventListener('click', () => {
-                tabSectionIncome.classList.remove('hidden');
-                tabSectionAssets.classList.add('hidden');
-                tabBtnIncome.className = 'py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
-                tabBtnAssets.className = 'py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+        function activateInputTab(active) {
+            inputTabs.forEach(tab => {
+                const isActive = tab.button === active.button;
+                tab.section.classList.toggle('hidden', !isActive);
+                tab.button.className = isActive ? TAB_ACTIVE_CLASS : TAB_INACTIVE_CLASS;
             });
         }
+
+        tabBtnAssets.addEventListener('click', () => activateInputTab(inputTabs[0]));
+        tabBtnIncome.addEventListener('click', () => activateInputTab(inputTabs[1]));
+        tabBtnJson.addEventListener('click', () => {
+            activateInputTab(inputTabs[2]);
+            refreshJsonEditor();
+        });
 
         // --- Import & Form Population Logic ---
         const incomeExpensePrefixes = [
@@ -1781,6 +1809,210 @@
                 refreshMonthStatus();
             }
         });
+
+        // --- Raw JSON editor ---
+        const jsonEditor = document.getElementById('json-editor');
+        const jsonStatus = document.getElementById('json-status');
+        const JSON_MEMBER_KEYS = ['member1', 'member2', 'member3', 'member4'];
+        const JSON_ASSET_KEYS = ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage', 'realEstate'];
+        const JSON_INCOME_KEYS = ['salary', 'dividend', 'other'];
+        const JSON_EXPENSE_KEYS = ['interest', 'fixed', 'variable'];
+
+        function isPlainObject(value) {
+            return value !== null && typeof value === 'object' && !Array.isArray(value);
+        }
+
+        function validateAmountValue(value, path, errors) {
+            if (typeof value === 'number') {
+                if (!Number.isFinite(value)) errors.push(`${path}：不是有效數字`);
+                return;
+            }
+            if (!isPlainObject(value)) {
+                errors.push(`${path}：必須是數字或 { total, details } 物件`);
+                return;
+            }
+            if (typeof value.total !== 'number' || !Number.isFinite(value.total)) {
+                errors.push(`${path}.total：必須是數字`);
+            }
+            if (value.details !== undefined) {
+                if (!Array.isArray(value.details)) {
+                    errors.push(`${path}.details：必須是陣列`);
+                    return;
+                }
+                value.details.forEach((detail, i) => {
+                    if (!isPlainObject(detail) || typeof detail.name !== 'string') {
+                        errors.push(`${path}.details[${i}].name：必須是文字`);
+                    }
+                    if (!isPlainObject(detail) || typeof detail.value !== 'number') {
+                        errors.push(`${path}.details[${i}].value：必須是數字`);
+                    }
+                });
+            }
+        }
+
+        function validateGroup(group, path, allowedKeys, errors) {
+            if (group === undefined) return;
+            if (!isPlainObject(group)) {
+                errors.push(`${path}：必須是物件`);
+                return;
+            }
+            Object.keys(group).forEach(key => {
+                if (!allowedKeys.includes(key)) {
+                    errors.push(`${path}.${key}：不認識的項目名稱`);
+                    return;
+                }
+                const members = group[key];
+                if (!isPlainObject(members)) {
+                    errors.push(`${path}.${key}：必須是成員物件`);
+                    return;
+                }
+                Object.keys(members).forEach(member => {
+                    const memberPath = `${path}.${key}.${member}`;
+                    if (!JSON_MEMBER_KEYS.includes(member)) {
+                        errors.push(`${memberPath}：成員只能是 member1～member4`);
+                        return;
+                    }
+                    validateAmountValue(members[member], memberPath, errors);
+                });
+            });
+        }
+
+        // Returns { ok, data } or { ok: false, errors }
+        function validateDatabaseJson(text) {
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (err) {
+                return { ok: false, errors: [`JSON 語法錯誤：${err.message}`] };
+            }
+            if (!Array.isArray(data)) {
+                return { ok: false, errors: ['最外層必須是陣列 [ … ]'] };
+            }
+
+            const errors = [];
+            const seenMonths = new Set();
+            data.forEach((item, i) => {
+                const label = `第 ${i + 1} 筆`;
+                if (!isPlainObject(item)) {
+                    errors.push(`${label}：必須是物件`);
+                    return;
+                }
+                if (typeof item.month !== 'string' || !/^\d{4}-(0[1-9]|1[0-2])$/.test(item.month)) {
+                    errors.push(`${label}.month：格式必須為 YYYY-MM（例如 2026-09）`);
+                    return;
+                }
+                const month = item.month;
+                if (seenMonths.has(month)) errors.push(`${month}：月份重複`);
+                seenMonths.add(month);
+
+                validateGroup(item.assets, `${month}.assets`, JSON_ASSET_KEYS, errors);
+                validateGroup(item.debts, `${month}.debts`, debtKeys, errors);
+                if (item.incomeStatement !== undefined) {
+                    if (!isPlainObject(item.incomeStatement)) {
+                        errors.push(`${month}.incomeStatement：必須是物件`);
+                    } else {
+                        validateGroup(item.incomeStatement.income, `${month}.incomeStatement.income`, JSON_INCOME_KEYS, errors);
+                        validateGroup(item.incomeStatement.expense, `${month}.incomeStatement.expense`, JSON_EXPENSE_KEYS, errors);
+                    }
+                }
+            });
+
+            return errors.length ? { ok: false, errors } : { ok: true, data };
+        }
+
+        function monthSignature(record) {
+            return JSON.stringify(normalizeRecordForStorage(record));
+        }
+
+        // Compares two record lists by month and content
+        function diffDatabases(current, next) {
+            const currentMap = new Map(current.map(item => [item.month, monthSignature(item)]));
+            const nextMap = new Map(next.map(item => [item.month, monthSignature(item)]));
+            const sortMonths = (list) => list.sort((a, b) => a.localeCompare(b));
+            return {
+                added: sortMonths([...nextMap.keys()].filter(m => !currentMap.has(m))),
+                removed: sortMonths([...currentMap.keys()].filter(m => !nextMap.has(m))),
+                changed: sortMonths([...nextMap.keys()].filter(m => currentMap.has(m) && currentMap.get(m) !== nextMap.get(m)))
+            };
+        }
+
+        function setJsonStatus(lines, type) {
+            if (!jsonStatus) return;
+            const styles = {
+                error: 'bg-red-50 border border-red-300 text-red-800',
+                success: 'bg-green-50 border border-green-300 text-green-800',
+                info: 'bg-blue-50 border border-blue-200 text-blue-800'
+            };
+            jsonStatus.className = `mt-3 p-3 rounded-lg text-sm whitespace-pre-line ${styles[type]}`;
+            jsonStatus.textContent = lines.join('\n');
+        }
+
+        function refreshJsonEditor() {
+            captureCurrentDraft();
+            const sorted = deepClone(rawData).sort((a, b) => a.month.localeCompare(b.month));
+            jsonEditor.value = JSON.stringify(normalizeDatabaseForStorage(sorted), null, 2);
+            jsonStatus.classList.add('hidden');
+        }
+
+        function validateJsonEditor() {
+            const result = validateDatabaseJson(jsonEditor.value);
+            if (!result.ok) {
+                const shown = result.errors.slice(0, 20);
+                const more = result.errors.length > shown.length ? [`…另有 ${result.errors.length - shown.length} 個錯誤`] : [];
+                setJsonStatus(['驗證失敗，尚未套用：', ...shown.map(e => `• ${e}`), ...more], 'error');
+                return null;
+            }
+            setJsonStatus([`驗證通過，共 ${result.data.length} 個月份。`], 'success');
+            return result.data;
+        }
+
+        function applyJsonEditor() {
+            captureCurrentDraft();
+            const parsed = validateJsonEditor();
+            if (!parsed) return;
+
+            const next = normalizeDatabaseForStorage(deepClone(parsed)).sort((a, b) => a.month.localeCompare(b.month));
+            const diff = diffDatabases(rawData, next);
+            if (diff.added.length + diff.removed.length + diff.changed.length === 0) {
+                setJsonStatus(['沒有變更，未套用任何內容。'], 'info');
+                return;
+            }
+
+            if (diff.removed.length > 0 && !confirm(`此次會刪除以下月份：${diff.removed.join('、')}\n確定要刪除嗎？（刪除前可用各月份的「撤銷未存檔修改」還原）`)) {
+                setJsonStatus(['已取消套用。'], 'info');
+                return;
+            }
+
+            // Rebuild the pending set: any month that differs from the saved copy, including deletions of saved months
+            rawData = next;
+            pendingMonths.clear();
+            const savedMap = new Map(savedRawData.map(item => [item.month, monthSignature(item)]));
+            const nextMap = new Map(next.map(item => [item.month, monthSignature(item)]));
+            nextMap.forEach((signature, month) => {
+                if (savedMap.get(month) !== signature) pendingMonths.add(month);
+            });
+            savedMap.forEach((signature, month) => {
+                if (!nextMap.has(month)) pendingMonths.add(month);
+            });
+            // A confirmed deletion lowers the floor the export guard checks against
+            loadedMonthCount = Math.min(loadedMonthCount, next.length);
+
+            loadedMonth = null;
+            updateUI();
+
+            const summary = [
+                `已套用：新增 ${diff.added.length} 個月、修改 ${diff.changed.length} 個月、刪除 ${diff.removed.length} 個月。`
+            ];
+            if (diff.added.length) summary.push(`新增：${diff.added.join('、')}`);
+            if (diff.changed.length) summary.push(`修改：${diff.changed.join('、')}`);
+            if (diff.removed.length) summary.push(`刪除：${diff.removed.join('、')}`);
+            summary.push('變更尚未寫入檔案，請按下方「存檔」。');
+            setJsonStatus(summary, 'success');
+        }
+
+        btnJsonValidate.addEventListener('click', validateJsonEditor);
+        btnJsonApply.addEventListener('click', applyJsonEditor);
+        btnJsonReload.addEventListener('click', refreshJsonEditor);
 
         // --- Batch Save (export) ---
         function renderStagedPanel() {
@@ -2491,13 +2723,8 @@
             return value >= 0 ? `+$${value.toLocaleString()}` : `-$${Math.abs(value).toLocaleString()}`;
         }
 
-        // Adds running totals used by the cash-flow view: cumulative since first record, this-year total, and 3-month average
+        // Adds the this-year total used by the cash-flow card and summary
         function addCashFlowMetrics(list) {
-            let running = 0;
-            list.forEach(item => {
-                running += item.netSavings;
-                item.cumulative = running;
-            });
             const latest = list[list.length - 1];
             if (latest) {
                 const year = latest.month.slice(0, 4);
@@ -2608,8 +2835,7 @@
                         datasets: [
                             { type: 'bar', label: '流入', data: processedIncome.map(item => item.income.total), backgroundColor: 'rgba(34, 197, 94, 0.6)', yAxisID: 'y' },
                             { type: 'bar', label: '流出', data: processedIncome.map(item => item.expense.total), backgroundColor: 'rgba(239, 68, 68, 0.6)', yAxisID: 'y' },
-                            { type: 'line', label: '淨現金流', data: processedIncome.map(item => item.netSavings), borderColor: '#2563eb', backgroundColor: '#2563eb', tension: 0.2, yAxisID: 'y' },
-                            { type: 'line', label: '累積淨現金流', data: processedIncome.map(item => item.cumulative), borderColor: '#7c3aed', borderDash: [6, 4], tension: 0.2, yAxisID: 'y1' }
+                            { type: 'line', label: '淨現金流', data: processedIncome.map(item => item.netSavings), borderColor: '#2563eb', backgroundColor: '#2563eb', tension: 0.2, yAxisID: 'y' }
                         ]
                     },
                     options: {
@@ -2617,8 +2843,7 @@
                         maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
                         scales: {
-                            y: { position: 'left', ticks: { callback: money } },
-                            y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { callback: money } }
+                            y: { ticks: { callback: money } }
                         }
                     }
                 });
@@ -2662,7 +2887,6 @@
                     <td class="px-3 py-2.5 text-right text-green-600">$${item.income.total.toLocaleString()}</td>
                     <td class="px-3 py-2.5 text-right text-red-600">$${item.expense.total.toLocaleString()}</td>
                     <td class="px-3 py-2.5 text-right font-bold ${item.netSavings >= 0 ? 'text-blue-600' : 'text-red-600'}">${formatSignedMoney(item.netSavings)}</td>
-                    <td class="px-3 py-2.5 text-right ${item.cumulative >= 0 ? 'text-gray-700' : 'text-red-600'}">${formatSignedMoney(item.cumulative)}</td>
                     <td class="px-3 py-2.5 text-center font-semibold text-blue-700">${item.savingsRate.toFixed(1)}%</td>
                 `;
                 incomeMonthlyTableBody.appendChild(row);
