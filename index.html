@@ -4,16 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>財務儀表板</title>
-    <!-- Tailwind CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+    <style>
+        /* Clean Ledger theme: warm paper background, white cards with soft elevation, ink-blue actions,
+           deep emerald gains / crimson losses (all text >= 4.5:1 on white). Tokens first, utility remaps below. */
+        :root {
+            color-scheme: light;
+            --bg: #f4f5f7; --surface: #ffffff; --surface-2: #f8f9fb; --surface-3: #eef0f4;
+            --border: #e4e7ec; --border-strong: #cdd3dd;
+            --text: #111827; --text-2: #374151; --muted: #5b6676;
+            --primary: #2f55d4; --primary-dark: #2342a8; --primary-soft: #e9eefc;
+            --gain: #047857; --loss: #be123c; --warn: #b45309;
+            --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 4px 14px rgba(16, 24, 40, .05);
+        }
+        html { background: var(--bg); }
+        body { background: var(--bg) !important; color: var(--text) !important;
+               font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+               background-image: linear-gradient(180deg, #eaeefb 0, rgba(244, 245, 247, 0) 320px); background-repeat: no-repeat; }
+
+        /* Focus, cursor, motion */
+        :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
+        input:focus-visible, textarea:focus-visible, select:focus-visible { outline-offset: 0; }
+        a, button, label, select, summary, [role="button"], input[type="checkbox"] { cursor: pointer; }
+        button:disabled, input:disabled { cursor: not-allowed; }
+        button, a, label { transition: background-color .15s ease, color .15s ease, box-shadow .15s ease, border-color .15s ease; }
+        td, th, #app p, #app input, #app span { font-variant-numeric: tabular-nums; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+
+        /* Surfaces: white cards, hairline border, soft shadow */
+        .rounded-lg.shadow, .rounded-md.shadow-lg, .rounded-xl.shadow-2xl { border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .rounded-lg { border-radius: .9rem; }
+        .shadow { box-shadow: var(--shadow); }
+        .bg-gray-50 { background-color: var(--surface-2) !important; }
+        .bg-gray-100 { background-color: var(--surface-3) !important; }
+        .bg-gray-200 { background-color: var(--surface-3) !important; }
+        .hover\:bg-gray-300:hover { background-color: #dfe3ea !important; }
+        .border-gray-100, .border-gray-200 { border-color: var(--border) !important; }
+        .border-gray-300 { border-color: var(--border-strong) !important; }
+        thead th, .bg-gray-50 th { color: var(--muted) !important; font-weight: 600; letter-spacing: .02em; }
+        tbody tr:hover { background-color: #f3f6ff; }
+
+        /* Text: keep Tailwind's neutrals but guarantee contrast */
+        .text-gray-800, .text-gray-900 { color: var(--text); }
+        .text-gray-700 { color: var(--text-2); }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-500, .text-gray-400 { color: var(--muted); }
+        .bg-gray-800 .text-gray-400, .bg-gray-900 .text-gray-400 { color: #9ca3af; }
+        .text-green-600, .text-green-700 { color: var(--gain); }
+        .text-red-600, .text-red-700 { color: var(--loss); }
+        .text-blue-600 { color: var(--primary); }
+        .text-yellow-600 { color: var(--warn); }
+        .bg-gray-900 .text-green-600, .bg-gray-900 .text-red-600, .bg-gray-900 .text-blue-600 { color: inherit; }
+
+        /* Primary actions */
+        .bg-blue-600 { background-color: var(--primary) !important; }
+        .hover\:bg-blue-700:hover { background-color: var(--primary-dark) !important; }
+        .bg-green-600 { background-color: #0b7a56 !important; }
+        .hover\:bg-green-700:hover { background-color: #08634a !important; }
+        .bg-blue-50, .bg-blue-100 { background-color: var(--primary-soft) !important; }
+
+        /* Form controls */
+        input, select, textarea { border-color: var(--border-strong); background-color: #fff; color: var(--text); }
+        input::placeholder, textarea::placeholder { color: #8892a2; opacity: 1; }
+        input[readonly] { background-color: var(--surface-2); }
+        input[type="checkbox"] { accent-color: var(--primary); }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(47, 85, 212, .18) !important; }
+        input.border-red-500 { background-color: #fff1f2 !important; }
+
+        /* Overlays */
+        .bg-gray-600.bg-opacity-50 { background-color: rgba(17, 24, 39, .45) !important; }
+        #unlock-overlay.bg-opacity-95 { background-color: rgba(17, 24, 39, .88) !important; }
+        #unlock-overlay > div, #password-form, #detail-modal > div { border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(16, 24, 40, .25); }
+
+        /* Navigation: soft pill with an accent underline */
+        nav ul a { border-radius: .6rem; }
+        nav ul a[aria-current="page"] { background: var(--primary-soft) !important; color: var(--primary-dark) !important; border-bottom-color: var(--primary) !important; }
+
+        /* Mobile input: show the label column plus the chosen member only */
+        .mobile-member-btn { background: #fff; color: var(--text-2); border-color: var(--border-strong); }
+        .mobile-member-btn[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
+        @media (max-width: 639px) {
+            #input-page [style*="min-width: 520px"] { min-width: 0 !important; }
+            #input-page .grid-cols-5 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+            #input-page[data-mobile-member="1"] .grid-cols-5 > :nth-child(n+3),
+            #input-page[data-mobile-member="2"] .grid-cols-5 > :nth-child(2), #input-page[data-mobile-member="2"] .grid-cols-5 > :nth-child(n+4),
+            #input-page[data-mobile-member="3"] .grid-cols-5 > :nth-child(-n+3):not(:first-child), #input-page[data-mobile-member="3"] .grid-cols-5 > :nth-child(5),
+            #input-page[data-mobile-member="4"] .grid-cols-5 > :nth-child(-n+4):not(:first-child) { display: none; }
+        }
+
+        #app h1 { letter-spacing: -.01em; color: var(--text); }
+        .text-3xl.font-bold { letter-spacing: -.01em; }
+    </style>
+    <!-- Tailwind CSS CDN (SRI 鎖定) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" integrity="sha384-HtMZLkYo+pR5/u7zCzXxMJP6QoNnQJt1qkHM0EaOPvGDIzaVZbmYr/TlvUZ/sKAg" crossorigin="anonymous">
     <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js" integrity="sha384-4mFQWIqZrcfYZkFPEgIoT//zTEU64gEoH2tGV72Koyhoa9Fxz43YgroFUGj4/RAx" crossorigin="anonymous"></script>
     <!-- CryptoJS CDN for Encryption -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" integrity="sha384-S3wQ/l0OsbJoFeJC81UIr3JOlx/OzNJpRt1bV+yhpWQxPAahfpQtpxBSfn+Isslc" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-100 font-sans text-gray-900">
     <!-- Unlock Overlay -->
-    <div id="unlock-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-95 flex items-center justify-center z-50 hidden">
+    <div id="unlock-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-95 flex items-center justify-center z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="unlock-title">
         <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full">
             <div class="text-center mb-6">
                 <div class="inline-block p-3 rounded-full bg-blue-100 text-blue-600 mb-4">
@@ -21,12 +114,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-800">資產金庫已鎖定</h2>
+                <h2 id="unlock-title" class="text-2xl font-bold text-gray-800">資產金庫已鎖定</h2>
                 <p class="text-gray-500 mt-2">請輸入您的資產金庫密碼以解密數據</p>
             </div>
             <div class="mb-4">
-                <input type="password" id="unlock-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="輸入密碼...">
-                <p id="unlock-error" class="text-red-500 text-sm mt-2 hidden">密碼錯誤，請再試一次</p>
+                <input type="password" id="unlock-password" autocomplete="current-password" aria-label="資產金庫密碼" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="輸入密碼...">
+                <p id="unlock-error" role="alert" class="text-red-500 text-sm mt-2 hidden">密碼錯誤，請再試一次</p>
             </div>
             <button id="btn-unlock" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transform active:scale-95 transition">
                 解鎖並載入數據
@@ -37,13 +130,26 @@
         </div>
     </div>
 
+    <!-- Password Prompt Modal (masked replacement for window.prompt) -->
+    <div id="password-modal" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">
+        <form id="password-form" class="bg-white p-6 rounded-xl shadow-2xl max-w-md w-full mx-4" autocomplete="off">
+            <h3 id="password-modal-title" class="text-lg font-bold text-gray-800 mb-2">資產金庫密碼</h3>
+            <p id="password-modal-msg" class="text-sm text-gray-600 mb-4 whitespace-pre-line"></p>
+            <input type="password" id="password-modal-input" autocomplete="new-password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" aria-label="資產金庫密碼">
+            <div class="flex justify-end gap-2 mt-4">
+                <button type="button" id="password-modal-cancel" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700">取消</button>
+                <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold">確認</button>
+            </div>
+        </form>
+    </div>
+
     <!-- Asset Detail Modal -->
-    <div id="detail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-40">
+    <div id="detail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-40" role="dialog" aria-modal="true" aria-labelledby="detail-modal-title">
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <div class="flex justify-between items-center pb-3 border-b">
                     <h3 class="text-xl font-bold text-gray-900" id="detail-modal-title">資產明細編輯</h3>
-                    <button id="btn-close-detail" class="text-gray-400 hover:text-gray-500">
+                    <button id="btn-close-detail" class="text-gray-400 hover:text-gray-500" aria-label="關閉">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -84,11 +190,11 @@
 
     <div id="app" class="container mx-auto p-4">
         <!-- Navigation -->
-        <nav class="bg-white p-4 rounded-lg shadow mb-4">
+        <nav class="bg-white p-4 rounded-lg shadow mb-4" aria-label="主要頁面導覽">
             <ul class="flex flex-wrap gap-2 md:gap-4">
-                <li><a href="#" id="nav-dashboard" class="text-blue-600 font-bold px-3 py-2 rounded-lg bg-blue-50 transition-colors">資產負債表</a></li>
-                <li><a href="#" id="nav-income" class="text-gray-600 hover:text-blue-700 px-3 py-2 rounded-lg transition-colors">現金流</a></li>
-                <li><a href="#" id="nav-input" class="text-gray-600 hover:text-blue-700 px-3 py-2 rounded-lg transition-colors">財務數據輸入</a></li>
+                <li><a href="#" id="nav-dashboard" aria-current="page" class="text-blue-700 font-bold px-3 py-2 rounded-lg bg-blue-50 border-b-2 border-blue-600 transition-colors">資產負債表</a></li>
+                <li><a href="#" id="nav-income" class="text-gray-600 hover:text-blue-700 hover:bg-gray-50 px-3 py-2 rounded-lg border-b-2 border-transparent transition-colors">現金流</a></li>
+                <li><a href="#" id="nav-input" class="text-gray-600 hover:text-blue-700 hover:bg-gray-50 px-3 py-2 rounded-lg border-b-2 border-transparent transition-colors">財務數據輸入</a></li>
             </ul>
         </nav>
 
@@ -191,9 +297,9 @@
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between relative">
                         <div>
-                            <div class="flex items-center justify-between mb-2">
+                            <div class="flex flex-wrap items-center justify-between gap-1 mb-2">
                                 <div class="flex items-center space-x-1.5">
-                                    <h2 class="text-xl font-semibold text-gray-700">股票槓桿倍數</h2>
+                                    <h2 class="text-xl font-semibold text-gray-700 whitespace-nowrap">股票槓桿倍數</h2>
                                     <!-- Info Tooltip Button -->
                                     <button type="button" id="btn-leverage-info" class="text-gray-400 hover:text-indigo-600 focus:outline-none transition-colors" title="查看計算方式與說明" aria-label="查看計算方式與說明">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -245,7 +351,7 @@
                     <!-- Asset Allocation Pie Chart -->
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h2 class="text-xl font-semibold text-gray-700 mb-4">資產配置</h2>
-                        <canvas id="asset-allocation-chart"></canvas>
+                        <div class="max-w-sm mx-auto"><canvas id="asset-allocation-chart" role="img" aria-label="資產配置圓餅圖：各資產類別佔總資產比例，數值見下方明細表"></canvas></div>
                         
                         <!-- New: Holdings Table (方案 B) -->
                         <div class="mt-6 border-t pt-4">
@@ -255,8 +361,8 @@
                                     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                         <tr>
                                             <th class="px-2 py-2">標的</th>
-                                            <th class="px-2 py-2">大類</th>
-                                            <th class="px-2 py-2 text-right">股票市值</th>
+                                            <th class="px-2 py-2 hidden sm:table-cell">大類</th>
+                                            <th class="px-2 py-2 text-right">帳面市值</th>
                                             <th class="px-2 py-2 text-right">佔當下資產%</th>
                                         </tr>
                                     </thead>
@@ -271,7 +377,7 @@
                     <!-- Net Worth Growth Line Chart -->
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h2 class="text-xl font-semibold text-gray-700 mb-4">淨資產增長</h2>
-                        <canvas id="net-worth-growth-chart"></canvas>
+                        <canvas id="net-worth-growth-chart" role="img" aria-label="淨資產增長折線圖，各月數值見下方每月數據分析表"></canvas>
                         
                         <!-- New: Monthly Data Table -->
                         <div class="mt-6 overflow-x-auto">
@@ -293,9 +399,9 @@
                     </div>
                 </div>
                 <!-- Text Summary Section -->
-                <div class="bg-white p-4 rounded-lg shadow mb-8">
+                <div class="bg-white p-4 rounded-lg shadow mt-6 mb-8">
                     <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-lg font-semibold text-gray-700 italic">數據概覽</h2>
+                        <h2 class="text-lg font-semibold text-gray-700">數據概覽</h2>
                         <button id="btn-copy-summary" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded text-sm font-bold transition">
                             一鍵複製
                         </button>
@@ -391,11 +497,11 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                     <div class="bg-white p-6 rounded-lg shadow lg:col-span-2">
                         <h2 class="text-lg font-semibold text-gray-700 mb-4">每月現金流趨勢</h2>
-                        <div class="relative h-72"><canvas id="income-expense-chart"></canvas></div>
+                        <div class="relative h-72"><canvas id="income-expense-chart" role="img" aria-label="每月流入與流出長條圖及淨現金流折線，數值見下方表格"></canvas></div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h2 class="text-lg font-semibold text-gray-700 mb-4">本月流出結構</h2>
-                        <div class="relative h-72"><canvas id="expense-structure-chart"></canvas></div>
+                        <div class="relative h-72"><canvas id="expense-structure-chart" role="img" aria-label="當月流出結構圓餅圖"></canvas></div>
                     </div>
                 </div>
 
@@ -421,14 +527,14 @@
                 <!-- Summary -->
                 <div class="bg-white p-6 rounded-lg shadow mb-6">
                     <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-lg font-semibold text-gray-700 italic">數據概覽</h2>
+                        <h2 class="text-lg font-semibold text-gray-700">數據概覽</h2>
                         <button id="btn-copy-income-summary" type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-1.5 px-3 rounded text-sm transition-colors">一鍵複製</button>
                     </div>
                     <textarea id="income-text-summary" readonly class="w-full h-44 p-3 bg-gray-50 border border-gray-200 rounded-md font-mono text-sm focus:outline-none" placeholder="尚未載入現金流數據..."></textarea>
                 </div>
             </section>
 
-            <section id="input-page" class="page hidden">
+            <section id="input-page" class="page hidden" data-mobile-member="1">
                 <div class="mb-4">
                     <h1 class="text-3xl font-bold text-gray-800">財務數據輸入</h1>
                 </div>
@@ -478,16 +584,27 @@
                     </div>
 
                     <!-- Input Sub-tabs -->
-                    <div class="flex border-b border-gray-200 mb-6 space-x-2">
+                    <div class="flex border-b border-gray-200 mb-4 sm:mb-6 sm:space-x-2 whitespace-nowrap">
                         <button type="button" id="tab-btn-assets" class="py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
-                            <span>🏛️ 資產負債數據</span>
+                            <span>🏛️ 資產負債<span class="hidden sm:inline">數據</span></span>
                         </button>
                         <button type="button" id="tab-btn-income" class="py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
-                            <span>💵 現金流數據</span>
+                            <span>💵 現金流<span class="hidden sm:inline">數據</span></span>
                         </button>
                         <button type="button" id="tab-btn-json" class="py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
-                            <span>🧾 JSON 編輯</span>
+                            <span>🧾 JSON<span class="hidden sm:inline"> 編輯</span></span>
                         </button>
+                    </div>
+
+                    <!-- Mobile only: edit one member at a time instead of scrolling a 4-column grid -->
+                    <div id="mobile-member-picker" class="sm:hidden mb-4" role="group" aria-label="選擇要輸入的成員">
+                        <p class="text-xs text-gray-500 mb-1.5">手機版一次輸入一位成員：</p>
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <button type="button" class="mobile-member-btn py-2 rounded-lg text-sm font-semibold border" data-member-index="1" aria-pressed="true">成員1</button>
+                            <button type="button" class="mobile-member-btn py-2 rounded-lg text-sm font-semibold border" data-member-index="2" aria-pressed="false">成員2</button>
+                            <button type="button" class="mobile-member-btn py-2 rounded-lg text-sm font-semibold border" data-member-index="3" aria-pressed="false">成員3</button>
+                            <button type="button" class="mobile-member-btn py-2 rounded-lg text-sm font-semibold border" data-member-index="4" aria-pressed="false">成員4</button>
+                        </div>
                     </div>
 
                     <!-- TAB 1: Assets & Debts -->
@@ -830,6 +947,14 @@
         // Interest Breakdown Table Elements
 
         // --- Chart Instances ---
+        // Chart.js defaults matched to the light theme
+        Chart.defaults.color = '#4b5563';
+        Chart.defaults.borderColor = 'rgba(16, 24, 40, 0.08)';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+        Chart.defaults.elements.arc.borderColor = '#ffffff';
+        Chart.defaults.elements.arc.borderWidth = 2;
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(17, 24, 39, 0.92)';
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
         let assetAllocationChart;
         let netWorthGrowthChart;
         let incomeExpenseChart;
@@ -988,6 +1113,64 @@
         };
         const marketAssetKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
 
+        // --- Safety helpers ---
+        // Everything that comes from database.json or user input must pass through here before reaching innerHTML
+        function escapeHtml(value) {
+            return String(value === undefined || value === null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // Masked password dialog; resolves with the typed text, or null when cancelled
+        function askPassword(message) {
+            const modal = document.getElementById('password-modal');
+            const form = document.getElementById('password-form');
+            const input = document.getElementById('password-modal-input');
+            const cancelBtn = document.getElementById('password-modal-cancel');
+            document.getElementById('password-modal-msg').textContent = message;
+            input.value = '';
+            modal.classList.remove('hidden');
+            setTimeout(() => input.focus(), 50);
+            return new Promise(resolve => {
+                const finish = (result) => {
+                    modal.classList.add('hidden');
+                    input.value = '';
+                    form.removeEventListener('submit', onSubmit);
+                    cancelBtn.removeEventListener('click', onCancel);
+                    document.removeEventListener('keydown', onKey);
+                    resolve(result);
+                };
+                const onSubmit = (e) => { e.preventDefault(); finish(input.value); };
+                const onCancel = () => finish(null);
+                const onKey = (e) => { if (e.key === 'Escape') finish(null); };
+                form.addEventListener('submit', onSubmit);
+                cancelBtn.addEventListener('click', onCancel);
+                document.addEventListener('keydown', onKey);
+            });
+        }
+
+        // True when the text is non-empty but cannot be read as a number (parseFinancialInput would silently turn it into 0)
+        function isUnparsableAmount(text) {
+            const normalized = String(text ?? '').replace(/[\s,，]/g, '');
+            return normalized !== '' && !Number.isFinite(Number(normalized));
+        }
+
+        // Light structural check for data loaded from database.json (stricter rules live in validateDatabaseJson)
+        function checkLoadedDatabase(data) {
+            if (!Array.isArray(data)) return '資料最外層不是陣列';
+            const seen = new Set();
+            for (const item of data) {
+                if (!item || typeof item !== 'object' || Array.isArray(item)) return '含有非物件的月份紀錄';
+                if (typeof item.month !== 'string' || !/^\d{4}-(0[1-9]|1[0-2])$/.test(item.month)) return '含有格式錯誤的月份';
+                if (seen.has(item.month)) return `月份重複：${item.month}`;
+                seen.add(item.month);
+            }
+            return null;
+        }
+
         // --- Encryption Logic ---
         function encrypt(data, password) {
             const jsonString = JSON.stringify(data);
@@ -1032,6 +1215,20 @@
             }
         }
 
+        // Snapshot of the rows when the modal opened, so closing without saving can warn about lost edits
+        let detailModalSnapshot = '';
+        function serializeDetailRows() {
+            return JSON.stringify(Array.from(detailItemsContainer.querySelectorAll('.detail-row')).map(row => [
+                row.querySelector('.detail-name').value,
+                row.querySelector('.detail-value').value,
+                row.querySelector('.detail-leverage') ? row.querySelector('.detail-leverage').value : ''
+            ]));
+        }
+        function closeDetailModal() {
+            if (serializeDetailRows() !== detailModalSnapshot && !confirm('明細有尚未儲存的修改，確定要放棄嗎？')) return;
+            detailModal.classList.add('hidden');
+        }
+
         function openDetailModal(category, member) {
             currentEditing = { category, member };
             const categoryName = categoryLabels[category] || incomeExpenseDetailLabels[category];
@@ -1050,6 +1247,7 @@
             
             updateDetailTotal();
             detailModal.classList.remove('hidden');
+            detailModalSnapshot = serializeDetailRows();
         }
 
         function addDetailRow(name = '', value = 0, leverage = 1, showLeverage = true) {
@@ -1057,14 +1255,14 @@
             row.className = 'grid grid-cols-12 gap-2 items-center detail-row';
             const levVal = (leverage !== undefined && leverage !== null) ? leverage : 1;
             const leverageHtml = showLeverage
-                ? `<input type="number" step="any" placeholder="倍數" class="detail-leverage col-span-3 md:col-span-2 shadow-sm border rounded py-1.5 px-2 text-sm text-center font-medium text-indigo-700 bg-indigo-50" value="${levVal}" title="槓桿倍數 (原型為 1，正2填 2，反一填 -1)">`
+                ? `<input type="number" step="any" placeholder="倍數" class="detail-leverage col-span-3 md:col-span-2 shadow-sm border rounded py-1.5 px-2 text-sm text-center font-medium text-indigo-700 bg-indigo-50" value="${escapeHtml(levVal)}" title="槓桿倍數 (原型為 1，正2填 2，反一填 -1)">`
                 : '';
             const nameCols = showLeverage ? 'col-span-5 md:col-span-6' : 'col-span-7 md:col-span-8';
             const valueCols = showLeverage ? 'col-span-3' : 'col-span-4 md:col-span-3';
             row.innerHTML = `
-                <input type="text" placeholder="項目名稱" class="detail-name ${nameCols} shadow-sm border rounded py-1.5 px-2 text-sm" value="${name}">
+                <input type="text" placeholder="項目名稱" class="detail-name ${nameCols} shadow-sm border rounded py-1.5 px-2 text-sm" value="${escapeHtml(name)}">
                 ${leverageHtml}
-                <input type="text" inputmode="decimal" placeholder="金額" class="detail-value ${valueCols} shadow-sm border rounded py-1.5 px-2 text-sm text-right font-medium" value="${value}">
+                <input type="text" inputmode="decimal" placeholder="金額" class="detail-value ${valueCols} shadow-sm border rounded py-1.5 px-2 text-sm text-right font-medium" value="${escapeHtml(value)}">
                 <div class="col-span-1 text-center">
                     <button type="button" class="text-red-500 hover:text-red-700 btn-remove-detail inline-flex justify-center p-1" title="刪除">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -1109,12 +1307,20 @@
 
         btnSaveDetail.addEventListener('click', () => {
             const rows = detailItemsContainer.querySelectorAll('.detail-row');
+            const badValue = Array.from(rows).find(row => isUnparsableAmount(row.querySelector('.detail-value').value));
+            if (badValue) {
+                badValue.querySelector('.detail-value').classList.add('border-red-500', 'bg-red-50');
+                alert('有金額欄位含有無法辨識的內容（已標紅），請修正後再儲存。');
+                return;
+            }
             const details = Array.from(rows).map(row => {
                 const levInput = row.querySelector('.detail-leverage');
                 const item = {
                     name: row.querySelector('.detail-name').value.trim(),
                     value: parseFinancialInput(row.querySelector('.detail-value').value)
                 };
+                // A row with an amount but no name keeps its value instead of silently disappearing
+                if (item.name === '' && item.value !== 0) item.name = '未命名';
                 if (levInput) {
                     const levVal = parseFloat(levInput.value);
                     item.leverage = isNaN(levVal) ? 1 : levVal;
@@ -1139,10 +1345,10 @@
         });
 
         btnAddDetailRow.addEventListener('click', () => addDetailRow('', 0, 1, detailSupportedKeys.includes(currentEditing.category)));
-        btnCloseDetail.addEventListener('click', () => detailModal.classList.add('hidden'));
+        btnCloseDetail.addEventListener('click', () => closeDetailModal());
         if (detailModal) {
             detailModal.addEventListener('click', (e) => {
-                if (e.target === detailModal) detailModal.classList.add('hidden');
+                if (e.target === detailModal) closeDetailModal();
             });
         }
 
@@ -1176,7 +1382,7 @@
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (detailModal && !detailModal.classList.contains('hidden')) {
-                    detailModal.classList.add('hidden');
+                    closeDetailModal();
                 }
             }
         });
@@ -1193,9 +1399,11 @@
             [navDashboard, navIncome, navInput].forEach(nav => {
                 if (!nav) return;
                 if (nav === activeNav) {
-                    nav.className = 'text-blue-600 font-bold px-3 py-2 rounded-lg bg-blue-50 transition-colors';
+                    nav.className = 'text-blue-700 font-bold px-3 py-2 rounded-lg bg-blue-50 border-b-2 border-blue-600 transition-colors';
+                    nav.setAttribute('aria-current', 'page');
                 } else {
-                    nav.className = 'text-gray-600 hover:text-blue-700 px-3 py-2 rounded-lg transition-colors';
+                    nav.className = 'text-gray-600 hover:text-blue-700 hover:bg-gray-50 px-3 py-2 rounded-lg border-b-2 border-transparent transition-colors';
+                    nav.removeAttribute('aria-current');
                 }
             });
         }
@@ -1328,16 +1536,19 @@
                         tempDetails[type][member] = JSON.parse(JSON.stringify(val.details || []));
                     } else {
                         // Handle legacy structure: number
-                        el.value = (val !== undefined && val !== null) ? val : 0;
+                        el.value = plainAmount(val);
                     }
                     el.classList.add('bg-yellow-50');
                 }
             };
             
+            // Number-only fields: tolerate a stray { total } object instead of showing "[object Object]"
+            const plainAmount = (val) => (val && typeof val === 'object') ? (val.total || 0) : ((val !== undefined && val !== null) ? val : 0);
+
             const setDebtValue = (type, member, val) => {
                 const el = document.getElementById(`debt-${type}-${member}`);
                 if (el) {
-                    el.value = (val !== undefined && val !== null) ? val : 0;
+                    el.value = plainAmount(val);
                     el.classList.add('bg-yellow-50');
                 }
             };
@@ -1359,7 +1570,7 @@
             const setIncomeExpenseValue = (prefix, member, val) => {
                 const el = document.getElementById(`${prefix}-${member}`);
                 if (el) {
-                    el.value = (val !== undefined && val !== null) ? val : 0;
+                    el.value = plainAmount(val);
                     el.classList.add('bg-yellow-50');
                 }
             };
@@ -1734,7 +1945,7 @@
                     monthStatusBadge.textContent = isEdited ? '✏️ 有未存檔的修改' : '🗂️ 已暫存（尚未存檔）';
                 }
                 if (monthStatusHint) {
-                    monthStatusHint.innerHTML = `<span class="text-purple-800 font-semibold">「${selectedMonth}」的修改尚未存檔</span>，切換月份時會自動保留；全部完成後點擊下方「存檔」，或用「撤銷未存檔修改」還原。`;
+                    monthStatusHint.innerHTML = `<span class="text-purple-800 font-semibold">「${escapeHtml(selectedMonth)}」的修改尚未存檔</span>，切換月份時會自動保留；全部完成後點擊下方「存檔」，或用「撤銷未存檔修改」還原。`;
                 }
             } else if (entry) {
                 if (monthStatusBadge) {
@@ -1742,7 +1953,7 @@
                     monthStatusBadge.textContent = '📝 編輯歷史紀錄';
                 }
                 if (monthStatusHint) {
-                    monthStatusHint.innerHTML = `<span class="text-yellow-800 font-semibold">已自動載入「${selectedMonth}」之歷史資產、負債、收支與各項明細</span>，可直接修改數值。`;
+                    monthStatusHint.innerHTML = `<span class="text-yellow-800 font-semibold">已自動載入「${escapeHtml(selectedMonth)}」之歷史資產、負債、收支與各項明細</span>，可直接修改數值。`;
                 }
             } else {
                 if (monthStatusBadge) {
@@ -1750,7 +1961,7 @@
                     monthStatusBadge.textContent = '✨ 全新月份';
                 }
                 if (monthStatusHint) {
-                    monthStatusHint.innerHTML = `「${selectedMonth}」尚無歷史紀錄，可直接輸入全新數據，或點擊上方「帶入最新一期紀錄」快速填寫。`;
+                    monthStatusHint.innerHTML = `「${escapeHtml(selectedMonth)}」尚無歷史紀錄，可直接輸入全新數據，或點擊上方「帶入最新一期紀錄」快速填寫。`;
                 }
             }
 
@@ -1767,8 +1978,21 @@
             }
         }
 
+        // Mobile member picker (CSS hides the other member columns below 640px)
+        document.querySelectorAll('.mobile-member-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                inputPage.setAttribute('data-mobile-member', btn.dataset.memberIndex);
+                document.querySelectorAll('.mobile-member-btn').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+            });
+        });
+
         monthSelect.addEventListener('change', switchMonth);
-        assetInputForm.addEventListener('input', refreshMonthStatus);
+        // Re-reading ~100 inputs on every keystroke is wasteful; refresh once typing pauses
+        let refreshStatusTimer = null;
+        assetInputForm.addEventListener('input', () => {
+            clearTimeout(refreshStatusTimer);
+            refreshStatusTimer = setTimeout(refreshMonthStatus, 150);
+        });
         assetInputForm.addEventListener('submit', (e) => e.preventDefault());
 
         btnReloadCurrentMonth.addEventListener('click', () => {
@@ -1816,9 +2040,16 @@
             return value !== null && typeof value === 'object' && !Array.isArray(value);
         }
 
-        function validateAmountValue(value, path, errors) {
+        // Only these items have a detail popup; every other item must be a plain number
+        const JSON_DETAIL_KEYS = ['domesticStocks', 'subBrokerage', 'overseasBrokerage', 'other', 'interest', 'variable'];
+
+        function validateAmountValue(value, path, errors, allowDetails = true) {
             if (typeof value === 'number') {
                 if (!Number.isFinite(value)) errors.push(`${path}：不是有效數字`);
+                return;
+            }
+            if (!allowDetails) {
+                errors.push(`${path}：此項目只能是數字`);
                 return;
             }
             if (!isPlainObject(value)) {
@@ -1866,7 +2097,7 @@
                         errors.push(`${memberPath}：成員只能是 member1～member4`);
                         return;
                     }
-                    validateAmountValue(members[member], memberPath, errors);
+                    validateAmountValue(members[member], memberPath, errors, JSON_DETAIL_KEYS.includes(key));
                 });
             });
         }
@@ -2031,7 +2262,15 @@
             });
         }
 
-        btnExportDb.addEventListener('click', () => {
+        btnExportDb.addEventListener('click', async () => {
+            const badInputs = Array.from(document.querySelectorAll('#input-page input[inputmode="decimal"]')).filter(el => isUnparsableAmount(el.value));
+            document.querySelectorAll('#input-page input[inputmode="decimal"]').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
+            if (badInputs.length > 0) {
+                badInputs.forEach(el => el.classList.add('border-red-500', 'bg-red-50'));
+                badInputs[0].scrollIntoView({ block: 'center' });
+                alert(`有 ${badInputs.length} 個金額欄位含有無法辨識的內容（已標紅），請修正後再存檔，以免被當成 0。`);
+                return;
+            }
             captureCurrentDraft();
             if (rawData.length < loadedMonthCount) {
                 alert(`目前只有 ${rawData.length} 個月，少於載入時的 ${loadedMonthCount} 個月，為避免覆蓋資料已中止存檔。請重新整理頁面。`);
@@ -2046,9 +2285,9 @@
             try {
                 const savedMonths = [...pendingMonths].sort();
                 const promptMsg = currentSessionPassword
-                    ? "請確認或輸入「資產金庫密碼」以進行加密存檔："
+                    ? "請輸入「資產金庫密碼」以進行加密存檔：\n(若輸入與目前不同的新密碼，之後會要求再次確認)"
                     : "請設置「資產金庫密碼」以進行加密存檔：\n(此密碼將用於下次載入資料，請務必記住！)";
-                const password = prompt(promptMsg, currentSessionPassword || "");
+                const password = await askPassword(promptMsg);
                 if (!password) {
                     alert("取消存檔：必須設置密碼才能保護您的數據。");
                     return;
@@ -2056,7 +2295,7 @@
 
                 // Confirm password on first setup or if password was changed
                 if (password !== currentSessionPassword) {
-                    const confirmPassword = prompt("請「再次輸入」相同的資產金庫密碼以確認：");
+                    const confirmPassword = await askPassword("請「再次輸入」相同的資產金庫密碼以確認：");
                     if (password !== confirmPassword) {
                         alert("兩次輸入的密碼不一致，存檔已取消以避免數據鎖死，請重新操作。");
                         return;
@@ -2081,6 +2320,7 @@
                 // The downloaded file is now the saved baseline
                 rawData = normalized;
                 savedRawData = deepClone(normalized);
+                loadedMonthCount = normalized.length; // the new file is the baseline the guard protects
                 pendingMonths.clear();
                 updateUI();
 
@@ -2218,7 +2458,7 @@
             renderHoldingsTable(latestData, selectedMembers);
 
             // Update Income Statement UI
-            updateIncomeUI(processed, selectedMembers);
+            updateIncomeUI(selectedMembers);
 
             renderHistoryMonthPills();
             if (loadedMonth === null) {
@@ -2448,8 +2688,17 @@
                 const originalText = btnCopySummary.textContent;
                 btnCopySummary.textContent = '已複製！';
                 setTimeout(() => btnCopySummary.textContent = originalText, 2000);
-            });
+            }).catch(() => alert('無法寫入剪貼簿，內容已選取，請手動按 Ctrl/Cmd+C 複製。'));
         });
+
+        // Fixed colour per asset category so a slice keeps its colour across months and filters
+        const assetChartColors = {
+            cash: '#10b981',
+            domesticStocks: '#3b6fe0',
+            subBrokerage: '#f59e0b',
+            overseasBrokerage: '#8b5cf6',
+            realEstate: '#f2557a'
+        };
 
         function renderCharts(processedData) {
             const ctxPie = document.getElementById('asset-allocation-chart').getContext('2d');
@@ -2469,7 +2718,7 @@
                         labels: sortedAssetEntries.map(([key, value]) => `${categoryLabels[key]} (${((value / totalAssets) * 100).toFixed(1)}%)`),
                         datasets: [{
                             data: sortedAssetEntries.map(([_, value]) => value),
-                            backgroundColor: ['#4CAF50', '#2196F3', '#FFC107', '#F44336', '#9C27B0'],
+                            backgroundColor: sortedAssetEntries.map(([key]) => assetChartColors[key] || '#9E9E9E'),
                         }]
                     },
                     options: { responsive: true, plugins: { legend: { position: 'top' } } }
@@ -2482,8 +2731,10 @@
                         datasets: [{
                             label: '淨資產',
                             data: processedData.map(item => item.netWorth),
-                            borderColor: '#2196F3',
-                            tension: 0.1,
+                            borderColor: '#2f55d4',
+                            backgroundColor: 'rgba(47, 85, 212, 0.10)',
+                            pointBackgroundColor: '#2f55d4',
+                            tension: 0.2,
                             fill: true
                         }]
                     },
@@ -2521,14 +2772,17 @@
                     if (monthsDiff > 0 && startData.netWorth > 0 && item.netWorth > 0) {
                         const cagr = (Math.pow(item.netWorth / startData.netWorth, 12 / monthsDiff) - 1) * 100;
                         const sign = cagr >= 0 ? '+' : '';
-                        const colorClass = cagr >= 0 ? 'text-blue-600' : 'text-red-600';
-                        cagrHtml = `<span class="${colorClass}">${sign}${cagr.toFixed(1)}%</span>`;
+                        // Annualizing fewer than 12 months of history exaggerates the rate; keep it visible but muted
+                        const shortPeriod = monthsDiff < 12;
+                        const colorClass = shortPeriod ? 'text-gray-400' : (cagr >= 0 ? 'text-blue-600' : 'text-red-600');
+                        const hint = shortPeriod ? ' title="累積期間不足 12 個月，年化數字僅供參考"' : '';
+                        cagrHtml = `<span class="${colorClass}"${hint}>${sign}${cagr.toFixed(1)}%${shortPeriod ? '*' : ''}</span>`;
                     }
 
                     const row = document.createElement('tr');
                     row.className = 'border-b hover:bg-gray-50';
                     row.innerHTML = `
-                        <td class="px-2 py-3 font-medium">${item.month}</td>
+                        <td class="px-2 py-3 font-medium whitespace-nowrap">${escapeHtml(item.month)}</td>
                         <td class="px-2 py-3 text-right text-blue-600 font-bold">$${item.netWorth.toLocaleString()}</td>
                         <td class="px-2 py-3 text-right ${diff >= 0 ? 'text-green-600' : 'text-red-600'}">${prev ? (diff >= 0 ? '+' : '') + diff.toLocaleString() : '-'}</td>
                         <td class="px-2 py-3 text-center">${growthHtml}</td>
@@ -2536,6 +2790,8 @@
                     `;
                     tableBody.appendChild(row);
                 });
+            } else {
+                document.getElementById('monthly-data-table-body').innerHTML = '';
             }
         }
 
@@ -2648,17 +2904,17 @@
                 const pctClamped = Math.min(100, Math.max(0, parseFloat(pctOfCurrent) || 0));
                 const hasLev = item.leverage !== 1;
                 const levBadge = hasLev
-                    ? `<span class="ml-1.5 px-1.5 py-0.5 rounded text-xs font-semibold bg-indigo-100 text-indigo-700 whitespace-nowrap">${item.leverage}x</span>`
+                    ? `<span class="ml-1.5 px-1.5 py-0.5 rounded text-xs font-semibold bg-indigo-100 text-indigo-700 whitespace-nowrap">${escapeHtml(item.leverage)}x</span>`
                     : '';
 
                 const row = document.createElement('tr');
                 row.className = 'border-b hover:bg-gray-50';
                 row.innerHTML = `
                     <td class="px-2 py-3 font-semibold text-gray-800">
-                        <div class="flex items-center">${item.name}${levBadge}</div>
+                        <div class="flex items-center">${escapeHtml(item.name)}${levBadge}</div>
                     </td>
-                    <td class="px-2 py-3 text-gray-500">${item.categoryLabel}</td>
-                    <td class="px-2 py-3 text-right font-bold text-green-600">
+                    <td class="px-2 py-3 text-gray-500 hidden sm:table-cell whitespace-nowrap">${escapeHtml(item.categoryLabel)}</td>
+                    <td class="px-2 py-3 text-right font-bold text-green-600 whitespace-nowrap">
                         $${item.value.toLocaleString()}
                     </td>
                     <td class="px-2 py-3 text-right">
@@ -2795,10 +3051,7 @@
             if (ytdSubtext) ytdSubtext.textContent = `${latest.month.slice(0, 4)} 年 1 月至 ${latest.month}，共 ${latest.ytdMonths} 個月`;
         }
 
-        function updateIncomeUI(processedBalanceData = null, selectedMembers = getSelectedMembers()) {
-            if (!processedBalanceData) {
-                processedBalanceData = processData(rawData, selectedMembers, getSelectedCategories());
-            }
+        function updateIncomeUI(selectedMembers = getSelectedMembers()) {
             const processedIncome = addCashFlowMetrics(processIncomeData(rawData, selectedMembers));
             const latestIncome = processedIncome.length > 0 ? processedIncome[processedIncome.length - 1] : null;
 
@@ -2826,9 +3079,9 @@
                     data: {
                         labels: processedIncome.map(item => item.month),
                         datasets: [
-                            { type: 'bar', label: '流入', data: processedIncome.map(item => item.income.total), backgroundColor: 'rgba(34, 197, 94, 0.6)', yAxisID: 'y' },
-                            { type: 'bar', label: '流出', data: processedIncome.map(item => item.expense.total), backgroundColor: 'rgba(239, 68, 68, 0.6)', yAxisID: 'y' },
-                            { type: 'line', label: '淨現金流', data: processedIncome.map(item => item.netSavings), borderColor: '#2563eb', backgroundColor: '#2563eb', tension: 0.2, yAxisID: 'y' }
+                            { type: 'bar', label: '流入', data: processedIncome.map(item => item.income.total), backgroundColor: 'rgba(16, 185, 129, 0.85)', borderRadius: 4, yAxisID: 'y' },
+                            { type: 'bar', label: '流出', data: processedIncome.map(item => item.expense.total), backgroundColor: 'rgba(244, 63, 94, 0.80)', borderRadius: 4, yAxisID: 'y' },
+                            { type: 'line', label: '淨現金流', data: processedIncome.map(item => item.netSavings), borderColor: '#1e3a8a', backgroundColor: '#1e3a8a', tension: 0.2, yAxisID: 'y' }
                         ]
                     },
                     options: {
@@ -2855,7 +3108,7 @@
                         ],
                         datasets: [{
                             data: [latestIncome.expense.interest, latestIncome.expense.creditCard, latestIncome.expense.variable],
-                            backgroundColor: ['#a855f7', '#3b82f6', '#14b8a6']
+                            backgroundColor: ['#8b5cf6', '#3b6fe0', '#14b8a6']
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false }
@@ -2868,7 +3121,7 @@
             incomeMonthlyTableBody.innerHTML = '';
 
             if (!processedIncome || processedIncome.length === 0) {
-                incomeMonthlyTableBody.innerHTML = '<tr><td colspan="6" class="px-3 py-4 text-center text-gray-400">尚未載入現金流數據...</td></tr>';
+                incomeMonthlyTableBody.innerHTML = '<tr><td colspan="5" class="px-3 py-4 text-center text-gray-400">尚未載入現金流數據...</td></tr>';
                 return;
             }
 
@@ -2876,7 +3129,7 @@
                 const row = document.createElement('tr');
                 row.className = 'border-b hover:bg-gray-50';
                 row.innerHTML = `
-                    <td class="px-3 py-2.5 font-medium">${item.month}</td>
+                    <td class="px-3 py-2.5 font-medium whitespace-nowrap">${escapeHtml(item.month)}</td>
                     <td class="px-3 py-2.5 text-right text-green-600">$${item.income.total.toLocaleString()}</td>
                     <td class="px-3 py-2.5 text-right text-red-600">$${item.expense.total.toLocaleString()}</td>
                     <td class="px-3 py-2.5 text-right font-bold ${item.netSavings >= 0 ? 'text-blue-600' : 'text-red-600'}">${formatSignedMoney(item.netSavings)}</td>
@@ -2951,24 +3204,17 @@
                     const orig = btnCopyIncomeSummary.textContent;
                     btnCopyIncomeSummary.textContent = '已複製！';
                     setTimeout(() => btnCopyIncomeSummary.textContent = orig, 2000);
-                });
+                }).catch(() => alert('無法寫入剪貼簿，內容已選取，請手動按 Ctrl/Cmd+C 複製。'));
             });
         }
 
         btnUnlock.addEventListener('click', attemptUnlock);
-        unlockPasswordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptUnlock(); });
+        unlockPasswordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptUnlock(); });
 
         function attemptUnlock() {
             unlockError.classList.add('hidden');
             const password = unlockPasswordInput.value;
             
-            if (typeof encryptedDataStr === 'object') {
-                setDatabase(encryptedDataStr);
-                unlockOverlay.classList.add('hidden');
-                updateUI();
-                return;
-            }
-
             if (!password) {
                 unlockError.textContent = "請輸入密碼";
                 unlockError.classList.remove('hidden');
@@ -2976,9 +3222,16 @@
             }
 
             const decrypted = decrypt(encryptedDataStr, password);
+            const loadProblem = decrypted ? checkLoadedDatabase(decrypted) : null;
+            if (loadProblem) {
+                unlockError.textContent = `解密成功但資料格式異常（${loadProblem}），已停止載入。`;
+                unlockError.classList.remove('hidden');
+                return;
+            }
             if (decrypted) {
                 setDatabase(decrypted);
                 currentSessionPassword = password; // Remember verified password for current session
+                unlockPasswordInput.value = '';
                 unlockOverlay.classList.add('hidden');
                 updateUI();
             } else {
@@ -3005,10 +3258,8 @@
             }
             encryptedDataStr = fetchResult.data;
             if (fetchResult.type === 'plain') {
-                // Plaintext data doesn't need decryption
-                setDatabase(fetchResult.data);
-                unlockOverlay.classList.add('hidden');
-                updateUI();
+                // Plaintext database.json would bypass the vault password; refuse it
+                showLoadError('database.json 是未加密的明文，已拒絕載入。請先以「財務數據輸入」匯出加密版本取代');
             } else {
                 unlockOverlay.classList.remove('hidden');
                 setTimeout(() => unlockPasswordInput.focus(), 100);
