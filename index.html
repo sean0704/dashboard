@@ -2691,14 +2691,11 @@
             }).catch(() => alert('無法寫入剪貼簿，內容已選取，請手動按 Ctrl/Cmd+C 複製。'));
         });
 
-        // Fixed colour per asset category so a slice keeps its colour across months and filters
-        const assetChartColors = {
-            cash: '#10b981',
-            domesticStocks: '#3b6fe0',
-            subBrokerage: '#f59e0b',
-            overseasBrokerage: '#8b5cf6',
-            realEstate: '#f2557a'
-        };
+        // Rank-based ramp: darkest = largest share. Every step keeps >= 3:1 against the white card.
+        const PIE_RANK_COLORS = ['#172b6b', '#1f3fa8', '#2f55d4', '#4a6fe0', '#6b8fe6'];
+        // Fewer slices spread across the whole ramp so neighbouring ranks stay easy to tell apart
+        const pieRankColors = (count) => Array.from({ length: count }, (_, i) =>
+            PIE_RANK_COLORS[count <= 1 ? 0 : Math.round(i * (PIE_RANK_COLORS.length - 1) / (count - 1))]);
 
         function renderCharts(processedData) {
             const ctxPie = document.getElementById('asset-allocation-chart').getContext('2d');
@@ -2718,7 +2715,7 @@
                         labels: sortedAssetEntries.map(([key, value]) => `${categoryLabels[key]} (${((value / totalAssets) * 100).toFixed(1)}%)`),
                         datasets: [{
                             data: sortedAssetEntries.map(([_, value]) => value),
-                            backgroundColor: sortedAssetEntries.map(([key]) => assetChartColors[key] || '#9E9E9E'),
+                            backgroundColor: pieRankColors(sortedAssetEntries.length),
                         }]
                     },
                     options: { responsive: true, plugins: { legend: { position: 'top' } } }
@@ -3098,17 +3095,19 @@
             if (latestIncome && latestIncome.expense.total > 0) {
                 const expTotal = latestIncome.expense.total;
                 const pct = (value) => ((value / expTotal) * 100).toFixed(1);
+                // Largest share first so it takes the darkest colour, matching the asset pie
+                const expenseEntries = [
+                    ['借貸還款', latestIncome.expense.interest],
+                    ['信用卡費', latestIncome.expense.creditCard],
+                    ['其他流出', latestIncome.expense.variable]
+                ].filter(([, value]) => value > 0).sort((a, b) => b[1] - a[1]);
                 expenseStructureChart = new Chart(ctxStructure, {
                     type: 'pie',
                     data: {
-                        labels: [
-                            `借貸還款 (${pct(latestIncome.expense.interest)}%)`,
-                            `信用卡費 (${pct(latestIncome.expense.creditCard)}%)`,
-                            `其他流出 (${pct(latestIncome.expense.variable)}%)`
-                        ],
+                        labels: expenseEntries.map(([label, value]) => `${label} (${pct(value)}%)`),
                         datasets: [{
-                            data: [latestIncome.expense.interest, latestIncome.expense.creditCard, latestIncome.expense.variable],
-                            backgroundColor: ['#8b5cf6', '#3b6fe0', '#14b8a6']
+                            data: expenseEntries.map(([, value]) => value),
+                            backgroundColor: pieRankColors(expenseEntries.length)
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false }

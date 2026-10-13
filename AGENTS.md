@@ -73,7 +73,7 @@
 - **圖表引擎**：Chart.js (透過 CDN `@3.7.0`)。
 - **加密庫**：CryptoJS (AES-256，透過 CDN `@4.1.1`)。
 - **前端安全**：CDN 資源需附 SRI 雜湊與 `crossorigin`；以 meta 設定 Content-Security-Policy、`no-referrer`、`noindex`；寫入 `innerHTML` 的資料一律經 `escapeHtml` 轉義。
-- **視覺風格**：淺色「Clean Ledger」風格，配色集中於 `index.html` `<style>` 內的 CSS 變數；獲利/資產用深翠綠、虧損/負債用深玫瑰紅，文字對比需達 4.5:1。
+- **視覺風格**：淺色「Clean Ledger」風格，配色集中於 `index.html` `<style>` 內的 CSS 變數；獲利/資產用深翠綠、虧損/負債用深玫瑰紅，文字對比需達 4.5:1。圓餅圖依佔比排名配色（同一藍色系，越大越深），不依類別固定顏色。
 - **資料邏輯**：Vanilla JavaScript。
 
 **資料流與結構**：
