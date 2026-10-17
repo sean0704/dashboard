@@ -82,16 +82,81 @@
         nav ul a { border-radius: .6rem; }
         nav ul a[aria-current="page"] { background: var(--primary-soft) !important; color: var(--primary-dark) !important; border-bottom-color: var(--primary) !important; }
 
+        /* Input grid: label, four members, row total */
+        #input-page .input-row { grid-template-columns: minmax(7rem, 1.15fr) repeat(4, minmax(0, 1fr)) minmax(0, 1fr); }
+        #input-page .input-row input { font-size: .875rem; }
+        .input-grid-header { position: sticky; top: 0; z-index: 10; background: var(--surface); padding: .5rem 0; box-shadow: 0 1px 0 var(--border); }
+        .row-total { text-align: right; padding-right: .5rem; font-size: .875rem; font-weight: 600; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .row-total.is-warn { color: var(--warn); }
+        .row-total.is-warn::before { content: '⚠ '; }
+        @media (max-width: 767px) {
+            #input-page .input-row { grid-template-columns: minmax(6rem, 1.1fr) repeat(4, minmax(0, 1fr)); }
+            #input-page .input-row > :nth-child(6) { display: none; }
+        }
+
+        /* Input sections: hairline title with a gain/loss accent instead of tinted boxes */
+        .input-section-title { display: flex; align-items: center; gap: .5rem; font-weight: 700; font-size: 1rem; padding-bottom: .4rem; margin-bottom: .75rem; border-bottom: 1px solid var(--border); }
+        .input-section-title::before { content: ''; width: 4px; height: 1rem; border-radius: 2px; background: currentColor; }
+        .input-section-gain .input-section-title { color: var(--gain); }
+        .input-section-loss .input-section-title { color: var(--loss); }
+        .input-section .input-row + .input-row, .input-subsection .input-row + .input-row { margin-top: .5rem; }
+        .input-subsection { margin-bottom: .75rem; padding-bottom: .75rem; border-bottom: 1px dashed var(--border); }
+        .input-subsection-title { font-size: .875rem; font-weight: 700; color: var(--text-2); margin-bottom: .25rem; }
+
+        /* Popup-backed fields read as buttons, with the number of detail rows as a corner badge */
+        input.detail-field { background-color: #fff !important; border-style: dashed; border-color: #9fb2ea; color: var(--primary-dark); }
+        input.detail-field:hover { border-color: var(--primary); }
+        .detail-count { position: absolute; top: -.55rem; left: .35rem; padding: 0 .35rem; border-radius: 999px; font-size: .65rem; line-height: 1rem; background: var(--primary-soft); color: var(--primary-dark); border: 1px solid #c7d3f6; pointer-events: none; }
+
+        /* Field help: ⓘ button + popover (works on touch, unlike title tooltips) */
+        .help-btn { margin-left: .25rem; color: var(--muted); font-size: .8rem; line-height: 1; vertical-align: middle; }
+        .help-btn:hover, .help-btn[aria-expanded="true"] { color: var(--primary); }
+        .help-popover { position: absolute; z-index: 60; max-width: 18rem; padding: .5rem .75rem; border-radius: .5rem; background: rgba(17, 24, 39, .94); color: #fff; font-size: .8rem; line-height: 1.4; box-shadow: 0 8px 24px rgba(16, 24, 40, .2); }
+
+        /* Tab fill status */
+        .tab-status { font-size: .7rem; font-weight: 600; }
+        .tab-status.is-filled { color: var(--gain); }
+        .tab-status.is-empty { color: var(--muted); padding: 0 .4rem; border-radius: 999px; background: var(--surface-3); }
+
+        /* Sticky action bar at the bottom of the input form */
+        .input-action-bar { position: sticky; bottom: 0; z-index: 20; margin: 1.5rem -1.5rem -1.5rem; padding: .75rem 1.5rem; background: rgba(255, 255, 255, .97); border-top: 1px solid var(--border); border-radius: 0 0 .9rem .9rem; box-shadow: 0 -6px 16px rgba(16, 24, 40, .06); }
+        .input-summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem 1.25rem; margin-bottom: .5rem; font-size: .8rem; }
+        .input-summary:empty { display: none; }
+        .summary-item { display: inline-flex; align-items: baseline; gap: .35rem; white-space: nowrap; }
+        .summary-label { color: var(--muted); }
+        .summary-value { font-weight: 700; color: var(--text); font-size: .9rem; }
+        .summary-delta { color: var(--muted); }
+        .summary-delta.is-warn { color: var(--warn); font-weight: 600; }
+        .summary-caption { color: var(--muted); font-size: .75rem; }
+
+        /* Toasts for non-blocking feedback */
+        .toast-container { position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 70; display: flex; flex-direction: column; gap: .5rem; width: max-content; max-width: calc(100vw - 2rem); }
+        .toast { padding: .65rem 1rem; border-radius: .6rem; background: #fff; color: var(--text); border: 1px solid var(--border); border-left: 4px solid var(--primary); box-shadow: 0 10px 30px rgba(16, 24, 40, .15); font-size: .875rem; white-space: pre-line; cursor: pointer; }
+        .toast-success { border-left-color: var(--gain); }
+        .toast-error { border-left-color: var(--loss); }
+        .toast-info { border-left-color: var(--primary); }
+
         /* Mobile input: show the label column plus the chosen member only */
         .mobile-member-btn { background: #fff; color: var(--text-2); border-color: var(--border-strong); }
         .mobile-member-btn[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .mobile-member-btn[data-filled="true"]::after { content: ' ●'; font-size: .6rem; vertical-align: middle; color: var(--gain); }
+        .mobile-member-btn[aria-pressed="true"][data-filled="true"]::after { color: #fff; }
         @media (max-width: 639px) {
             #input-page [style*="min-width: 520px"] { min-width: 0 !important; }
-            #input-page .grid-cols-5 { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
-            #input-page[data-mobile-member="1"] .grid-cols-5 > :nth-child(n+3),
-            #input-page[data-mobile-member="2"] .grid-cols-5 > :nth-child(2), #input-page[data-mobile-member="2"] .grid-cols-5 > :nth-child(n+4),
-            #input-page[data-mobile-member="3"] .grid-cols-5 > :nth-child(-n+3):not(:first-child), #input-page[data-mobile-member="3"] .grid-cols-5 > :nth-child(5),
-            #input-page[data-mobile-member="4"] .grid-cols-5 > :nth-child(-n+4):not(:first-child) { display: none; }
+            #input-page .input-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+            #input-page .input-row > :nth-child(n+2) { display: none; }
+            #input-page[data-mobile-member="1"] .input-row > :nth-child(2),
+            #input-page[data-mobile-member="2"] .input-row > :nth-child(3),
+            #input-page[data-mobile-member="3"] .input-row > :nth-child(4),
+            #input-page[data-mobile-member="4"] .input-row > :nth-child(5) { display: block; }
+            /* Touch-friendly controls; 16px text also stops iOS from zooming into inputs */
+            #input-page input, #input-page select, #detail-modal input { min-height: 44px; font-size: 16px !important; }
+            #input-page .input-row label { font-size: .875rem; }
+            .input-action-bar { margin: 1rem -1rem -1rem; padding: .6rem 1rem; }
+            .input-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .25rem .5rem; }
+            .summary-item { flex-direction: column; align-items: flex-start; gap: 0; white-space: normal; }
+            .summary-delta { font-size: .7rem; }
+            .summary-caption { display: none; }
         }
 
         #app h1 { letter-spacing: -.01em; color: var(--text); }
@@ -538,33 +603,24 @@
                 <div class="mb-4">
                     <h1 class="text-3xl font-bold text-gray-800">財務數據輸入</h1>
                 </div>
-                <form id="asset-input-form" class="bg-white p-6 rounded-lg shadow">
-                    <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-                        <span class="text-xs font-semibold text-gray-500">表單操作（作用於整個表單）</span>
-                        <div class="flex flex-wrap items-center gap-2">
-                                <button type="button" id="btn-import-latest" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3.5 rounded text-sm focus:outline-none shadow-sm transition-colors whitespace-nowrap inline-flex items-center gap-1.5" title="從資料庫中最新一筆紀錄帶入所有資產、負債與收支損益">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
-                                    帶入最新一期紀錄
-                                </button>
-                                <button type="button" id="btn-clear-form" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-3 rounded text-sm focus:outline-none transition-colors whitespace-nowrap" title="將表單所有數值歸零">
-                                    清空表單
-                                </button>
-                        </div>
-                    </div>
-                    <div class="mb-6 p-4 rounded-lg bg-gray-50 border border-gray-200">
-                        <div class="flex flex-col md:flex-row md:items-end justify-between gap-3">
+                <form id="asset-input-form" class="bg-white p-4 sm:p-6 rounded-lg shadow">
+                    <div class="mb-5 p-4 rounded-lg bg-gray-50 border border-gray-200">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                             <div class="flex-grow">
                                 <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-                                    <label for="month-select" class="block text-gray-700 text-sm font-bold">月份：</label>
+                                    <label for="month-select" class="block text-gray-700 text-sm font-bold">月份</label>
                                     <span id="month-status-badge" class="hidden text-xs font-semibold px-2.5 py-0.5 rounded-full"></span>
                                 </div>
                                 <input type="month" id="month-select" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
                                 <p id="month-status-hint" class="text-xs text-gray-500 mt-1.5"></p>
                             </div>
-                            <div class="flex flex-wrap items-center gap-2 pt-1 md:pt-0">
-                                <button type="button" id="btn-reload-current-month" class="hidden bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2 px-3 rounded text-sm focus:outline-none shadow-sm transition-colors whitespace-nowrap inline-flex items-center gap-1.5 border border-yellow-600" title="撤銷此月尚未存檔的修改，還原為已存檔的版本">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                    撤銷未存檔修改
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" id="btn-import-latest" class="bg-white hover:bg-blue-50 border border-gray-300 text-gray-700 font-semibold py-2 px-3.5 rounded text-sm focus:outline-none transition-colors whitespace-nowrap inline-flex items-center gap-1.5" title="從最新一筆紀錄帶入所有資產、負債與收支">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+                                    帶入最新一期
+                                </button>
+                                <button type="button" id="btn-clear-form" class="bg-white border border-gray-300 text-gray-700 hover:text-red-700 hover:border-red-300 font-medium py-2 px-3 rounded text-sm focus:outline-none transition-colors whitespace-nowrap" title="將表單所有數值歸零">
+                                    清空表單
                                 </button>
                             </div>
                         </div>
@@ -572,27 +628,24 @@
                         <!-- 歷史月份快捷切換列 -->
                         <div id="history-months-container" class="mt-3 pt-3 border-t border-gray-200 hidden">
                             <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="text-xs font-semibold text-gray-500 whitespace-nowrap mr-1">月份總覽：</span>
+                                <span class="text-xs font-semibold text-gray-500 whitespace-nowrap mr-1">月份總覽</span>
                                 <div id="history-month-pills" class="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1"></div>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-gray-500">
-                                <span><span class="font-semibold text-gray-700">✓</span> 已存檔</span>
-                                <span><span class="font-semibold text-purple-700">●</span> 未存檔（尚未存檔的修改）</span>
-                                <span><span class="font-semibold text-blue-700">＋</span> 新月份（編輯中，尚無紀錄）</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Input Sub-tabs -->
-                    <div class="flex border-b border-gray-200 mb-4 sm:mb-6 sm:space-x-2 whitespace-nowrap">
-                        <button type="button" id="tab-btn-assets" class="py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
+                    <div class="flex items-end border-b border-gray-200 mb-4 sm:mb-6 sm:space-x-2 whitespace-nowrap overflow-x-auto">
+                        <button type="button" id="tab-btn-assets" class="py-2.5 px-3 sm:px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
                             <span>🏛️ 資產負債<span class="hidden sm:inline">數據</span></span>
+                            <span class="tab-status" data-tab-status="assets"></span>
                         </button>
-                        <button type="button" id="tab-btn-income" class="py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
+                        <button type="button" id="tab-btn-income" class="py-2.5 px-3 sm:px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
                             <span>💵 現金流<span class="hidden sm:inline">數據</span></span>
+                            <span class="tab-status" data-tab-status="income"></span>
                         </button>
-                        <button type="button" id="tab-btn-json" class="py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5">
-                            <span>🧾 JSON<span class="hidden sm:inline"> 編輯</span></span>
+                        <button type="button" id="tab-btn-json" class="ml-auto py-2.5 px-3 text-sm font-medium text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5" title="進階：直接編輯解密後的完整資料">
+                            <span>🧾 JSON<span class="hidden sm:inline"> 編輯（進階）</span></span>
                         </button>
                     </div>
 
@@ -608,53 +661,50 @@
                     </div>
 
                     <!-- TAB 1: Assets & Debts -->
-                    <div id="tab-section-assets" class="mb-6 overflow-x-auto">
+                    <div id="tab-section-assets" class="mb-6">
                         <div class="space-y-4" style="min-width: 520px;">
                             <!-- Header -->
-                            <div class="grid grid-cols-5 gap-2 font-bold text-gray-700">
-                                <div class="col-span-1">項目</div>
+                            <div class="input-row input-grid-header grid gap-2 font-bold text-gray-700">
+                                <div>項目</div>
                                 <div class="text-center">成員1</div>
                                 <div class="text-center">成員2</div>
                                 <div class="text-center">成員3</div>
                                 <div class="text-center">成員4</div>
+                                <div class="text-right pr-2">合計</div>
                             </div>
                             
                             <!-- Asset Inputs -->
-                            <div class="p-3 bg-green-50 rounded-lg border border-green-200">
-                                <div class="flex items-center justify-between mb-3 border-b border-green-200 pb-1.5">
-                                    <h3 class="font-bold text-base text-green-900 flex items-center gap-1.5">
-                                        <span>🟢 資產</span>
-                                    </h3>
-                                </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                            <div class="input-section input-section-gain">
+                                <h3 class="input-section-title">資產</h3>
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="新台幣與外幣活期、定存及流動現金">現金</label>
                                     <input type="number" id="asset-cash-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="asset-cash-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="asset-cash-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="asset-cash-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="台股上市櫃股票、ETF，點擊編輯標的明細與槓桿倍數">國內股票</label>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="domesticStocks" data-member="member1" title="編輯成員1國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="domesticStocks" data-member="member2" title="編輯成員2國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="domesticStocks" data-member="member3" title="編輯成員3國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-domesticStocks-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="domesticStocks" data-member="member4" title="編輯成員4國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員1國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="domesticStocks" data-member="member1" title="編輯成員1國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員2國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="domesticStocks" data-member="member2" title="編輯成員2國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員3國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="domesticStocks" data-member="member3" title="編輯成員3國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-domesticStocks-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員4國內股票明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="domesticStocks" data-member="member4" title="編輯成員4國內股票明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="國內券商複委託持有之海外美股/ETF，點擊編輯標的明細與槓桿倍數">複委託</label>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="subBrokerage" data-member="member1" title="編輯成員1複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="subBrokerage" data-member="member2" title="編輯成員2複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="subBrokerage" data-member="member3" title="編輯成員3複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-subBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="subBrokerage" data-member="member4" title="編輯成員4複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員1複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="subBrokerage" data-member="member1" title="編輯成員1複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員2複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="subBrokerage" data-member="member2" title="編輯成員2複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員3複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="subBrokerage" data-member="member3" title="編輯成員3複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-subBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員4複委託明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="subBrokerage" data-member="member4" title="編輯成員4複委託明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="Firstrade, IB 等海外直接券商資產，點擊編輯標的明細與槓桿倍數">海外券商</label>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member1" title="編輯成員1海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member2" title="編輯成員2海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member3" title="編輯成員3海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member4" title="編輯成員4海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員1海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member1" title="編輯成員1海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員2海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member2" title="編輯成員2海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員3海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member3" title="編輯成員3海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="asset-overseasBrokerage-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員4海外券商明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="overseasBrokerage" data-member="member4" title="編輯成員4海外券商明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center">
+                                <div class="input-row grid gap-2 items-center">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="自住或投資不動產當前預估淨市值">房產</label>
                                     <input type="number" id="asset-real-estate-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="asset-real-estate-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
@@ -664,48 +714,44 @@
                             </div>
 
                             <!-- Debt Inputs -->
-                            <div class="p-3 bg-red-50 rounded-lg border border-red-200">
-                                <div class="flex items-center justify-between mb-3 border-b border-red-200 pb-1.5">
-                                    <h3 class="font-bold text-base text-red-900 flex items-center gap-1.5">
-                                        <span>🔴 負債</span>
-                                    </h3>
-                                </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                            <div class="input-section input-section-loss">
+                                <h3 class="input-section-title">負債</h3>
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="購屋自備或分期本息償還之一般房屋貸款本金餘額">一般型房貸</label>
                                     <input type="number" id="debt-mortgage-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-mortgage-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-mortgage-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-mortgage-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="房屋增貸第一期未償還本金餘額">增貸型房貸 (一)</label>
                                     <input type="number" id="debt-refinanceMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-refinanceMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-refinanceMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-refinanceMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="房屋增貸第二期未償還本金餘額">增貸型房貸 (二)</label>
                                     <input type="number" id="debt-refinanceMortgage2-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-refinanceMortgage2-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-refinanceMortgage2-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-refinanceMortgage2-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="可隨借隨還之循環型理財房貸已動用本金餘額">理財型房貸</label>
                                     <input type="number" id="debt-revolvingMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-revolvingMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-revolvingMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-revolvingMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="個人無擔保信用貸款剩餘本金">信用貸款</label>
                                     <input type="number" id="debt-personalLoan-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-personalLoan-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-personalLoan-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-personalLoan-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center">
+                                <div class="input-row grid gap-2 items-center">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="股票向券商或銀行擔保借款之未償本金餘額">股票質押</label>
                                     <input type="number" id="debt-stockLoan-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="debt-stockLoan-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
@@ -717,104 +763,93 @@
                     </div>
 
                     <!-- TAB 2: Income & Expenses (P&L) -->
-                    <div id="tab-section-income" class="mb-6 hidden overflow-x-auto">
+                    <div id="tab-section-income" class="mb-6 hidden">
                         <div class="space-y-4" style="min-width: 520px;">
                             <!-- Header -->
-                            <div class="grid grid-cols-5 gap-2 font-bold text-gray-700">
-                                <div class="col-span-1">項目</div>
+                            <div class="input-row input-grid-header grid gap-2 font-bold text-gray-700">
+                                <div>項目</div>
                                 <div class="text-center">成員1</div>
                                 <div class="text-center">成員2</div>
                                 <div class="text-center">成員3</div>
                                 <div class="text-center">成員4</div>
+                                <div class="text-right pr-2">合計</div>
                             </div>
 
                             <!-- Income Inputs -->
-                            <div class="p-3 bg-green-50 rounded-lg border border-green-200">
-                                <div class="flex items-center justify-between mb-3 border-b border-green-200 pb-1.5">
-                                    <h3 class="font-bold text-base text-green-900 flex items-center gap-1.5">
-                                        <span>🟢 流入</span>
-                                    </h3>
-                                </div>
+                            <div class="input-section input-section-gain">
+                                <h3 class="input-section-title">流入</h3>
 
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="薪資、年終獎金、津貼、兼職所得">薪資</label>
                                     <input type="number" id="income-salary-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-salary-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-salary-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="income-salary-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
-                                <div class="grid grid-cols-5 gap-2 items-center">
+                                <div class="input-row grid gap-2 items-center">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="房租收入、副業、利息、非經常性收入">其他流入</label>
-                                    <div class="relative"><input type="number" id="income-other-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1其他流入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="other" data-member="member1" title="編輯成員1其他流入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="income-other-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2其他流入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="other" data-member="member2" title="編輯成員2其他流入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="income-other-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3其他流入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="other" data-member="member3" title="編輯成員3其他流入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="income-other-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4其他流入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="other" data-member="member4" title="編輯成員4其他流入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="income-other-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員1其他流入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="other" data-member="member1" title="編輯成員1其他流入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="income-other-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員2其他流入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="other" data-member="member2" title="編輯成員2其他流入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="income-other-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員3其他流入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="other" data-member="member3" title="編輯成員3其他流入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="income-other-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員4其他流入明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="other" data-member="member4" title="編輯成員4其他流入明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
                             </div>
 
                             <!-- Expense Inputs -->
-                            <div class="p-3 bg-red-50 rounded-lg border border-red-200">
-                                <div class="flex items-center justify-between mb-3 border-b border-red-200 pb-1.5">
-                                    <h3 class="font-bold text-base text-red-900 flex items-center gap-1.5">
-                                        <span>🔴 流出</span>
-                                    </h3>
-                                </div>
+                            <div class="input-section input-section-loss">
+                                <h3 class="input-section-title">流出</h3>
 
                                 <!-- Loan Expense (6 loan categories, one input per loan) -->
-                                <div class="mb-3 p-2.5 bg-purple-50 rounded-lg border border-purple-200">
-                                    <div class="flex items-center justify-between mb-2.5 border-b border-purple-200 pb-1.5">
-                                        <div class="flex items-center space-x-1.5">
-                                            <span class="text-sm font-bold text-purple-900">🟣 借貸支出</span>
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mb-2.5">（本+利）請填每月應繳總額；（利息）請填當月實付利息。</p>
-                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-subsection">
+                                    <h4 class="input-subsection-title">借貸支出</h4>
+                                    <p class="text-xs text-gray-500 mb-2.5">（本+利）填每月應繳總額；（利息）填當月實付利息。</p>
+                                    <div class="input-row grid gap-2 items-center mb-2">
                                         <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="一般購屋房貸每月應繳總額（本金＋利息）">一般房貸（本+利）</label>
-                                        <input type="number" id="expense-interest-mortgage-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-mortgage-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-mortgage-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-mortgage-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-mortgage-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-mortgage-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-mortgage-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-mortgage-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     </div>
-                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <div class="input-row grid gap-2 items-center mb-2">
                                         <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="房屋增貸第一期每月應繳總額（本金＋利息）">增貸(一)（本+利）</label>
-                                        <input type="number" id="expense-interest-refinanceMortgage-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-refinanceMortgage-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-refinanceMortgage-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-refinanceMortgage-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     </div>
-                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <div class="input-row grid gap-2 items-center mb-2">
                                         <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="房屋增貸第二期每月應繳總額（本金＋利息）">增貸(二)（本+利）</label>
-                                        <input type="number" id="expense-interest-refinanceMortgage2-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-refinanceMortgage2-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-refinanceMortgage2-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-refinanceMortgage2-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage2-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage2-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage2-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-refinanceMortgage2-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     </div>
-                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <div class="input-row grid gap-2 items-center mb-2">
                                         <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="理財型房貸循環動用之當月實付利息">理財房貸（利息）</label>
-                                        <input type="number" id="expense-interest-revolvingMortgage-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-revolvingMortgage-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-revolvingMortgage-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-revolvingMortgage-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-revolvingMortgage-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-revolvingMortgage-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-revolvingMortgage-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-revolvingMortgage-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     </div>
-                                    <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                    <div class="input-row grid gap-2 items-center mb-2">
                                         <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="個人信用貸款每月應繳總額（本金＋利息）">信用貸款（本+利）</label>
-                                        <input type="number" id="expense-interest-personalLoan-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-personalLoan-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-personalLoan-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-personalLoan-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-personalLoan-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-personalLoan-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-personalLoan-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-personalLoan-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     </div>
-                                    <div class="grid grid-cols-5 gap-2 items-center">
+                                    <div class="input-row grid gap-2 items-center">
                                         <label class="col-span-1 text-xs sm:text-sm font-medium text-gray-700" title="股票質押借款之當月實付利息">股票質押（利息）</label>
-                                        <input type="number" id="expense-interest-stockLoan-member1" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-stockLoan-member2" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-stockLoan-member3" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
-                                        <input type="number" id="expense-interest-stockLoan-member4" class="shadow-sm border border-purple-200 rounded w-full py-1 px-2 text-right font-medium text-purple-800" value="0">
+                                        <input type="number" id="expense-interest-stockLoan-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-stockLoan-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-stockLoan-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                        <input type="number" id="expense-interest-stockLoan-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     </div>
                                 </div>
 
 
                                 <!-- Credit Card Payment -->
-                                <div class="grid grid-cols-5 gap-2 items-center mb-2">
+                                <div class="input-row grid gap-2 items-center mb-2">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="信用卡當期應繳金額。注意：刷卡消費若也記在其他流出，會重複計算">信用卡費</label>
                                     <input type="number" id="expense-creditcard-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-creditcard-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
@@ -823,12 +858,12 @@
                                 </div>
 
                                 <!-- Variable Expense -->
-                                <div class="grid grid-cols-5 gap-2 items-center">
+                                <div class="input-row grid gap-2 items-center">
                                     <label class="col-span-1 text-sm font-medium text-gray-700" title="房租/管理費、保險、稅金、孝親費、飲食伙食、交通、日常購物、娛樂社交等">其他流出</label>
-                                    <div class="relative"><input type="number" id="expense-variable-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員1其他流出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="variable" data-member="member1" title="編輯成員1其他流出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="expense-variable-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員2其他流出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="variable" data-member="member2" title="編輯成員2其他流出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="expense-variable-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員3其他流出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="variable" data-member="member3" title="編輯成員3其他流出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
-                                    <div class="relative"><input type="number" id="expense-variable-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer" value="0" readonly title="點擊編輯成員4其他流出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600 btn-edit-member-detail" data-category="variable" data-member="member4" title="編輯成員4其他流出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="expense-variable-member1" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員1其他流出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="variable" data-member="member1" title="編輯成員1其他流出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="expense-variable-member2" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員2其他流出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="variable" data-member="member2" title="編輯成員2其他流出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="expense-variable-member3" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員3其他流出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="variable" data-member="member3" title="編輯成員3其他流出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
+                                    <div class="relative"><input type="number" id="expense-variable-member4" class="shadow-sm border rounded w-full py-1 px-2 pr-6 text-right cursor-pointer detail-field" value="0" readonly title="點擊編輯成員4其他流出明細"><button type="button" class="absolute right-1 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 btn-edit-member-detail" data-category="variable" data-member="member4" title="編輯成員4其他流出明細"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path></svg></button></div>
                                 </div>
                             </div>
                         </div>
@@ -837,7 +872,7 @@
                     <!-- TAB 3: Raw JSON editor (decrypted working copy, including unsaved changes) -->
                     <div id="tab-section-json" class="mb-6 hidden">
                         <div class="mb-3 p-3 rounded-lg bg-yellow-50 border border-yellow-300 text-xs text-yellow-900">
-                            此處顯示的是<strong>解密後的完整資料</strong>（含未存檔修改），請勿截圖或分享。套用後的變更會進入未存檔狀態，仍需按下方「存檔」才會寫入檔案。
+                            此處顯示的是<strong>解密後的完整資料</strong>（含未套用修改），請勿截圖或分享。套用後的變更會進入「已套用（尚未匯出）」狀態，仍需按下方「匯出」才會寫入檔案。
                         </div>
                         <textarea id="json-editor" spellcheck="false" class="w-full h-96 p-3 font-mono text-xs bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
                         <div class="flex flex-wrap items-center gap-2 mt-3">
@@ -848,25 +883,36 @@
                         <div id="json-status" class="hidden mt-3 p-3 rounded-lg text-sm whitespace-pre-line"></div>
                     </div>
 
-                    <div class="mt-6 pt-4 border-t border-gray-200">
-                        <div id="staged-panel" class="hidden mb-4 p-3 rounded-lg bg-purple-50 border border-purple-200">
-                            <div class="text-sm font-bold text-purple-800 mb-2">
-                                待存檔的月份（<span id="staged-count">0</span> 筆）
+                    <!-- Sticky action bar: live totals, unexported months, undo / apply / export -->
+                    <div id="input-action-bar" class="input-action-bar">
+                        <div id="input-summary" class="input-summary"></div>
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                            <div id="staged-panel" class="flex items-center gap-2 min-w-0 flex-1">
+                                <span id="staged-label" class="text-xs font-semibold text-gray-600 whitespace-nowrap">尚未匯出（<span id="staged-count">0</span>）</span>
+                                <span id="staged-empty" class="text-xs text-gray-500 whitespace-nowrap">✓ 所有修改皆已匯出</span>
+                                <ul id="staged-month-list" class="flex gap-1.5 overflow-x-auto"></ul>
                             </div>
-                            <ul id="staged-month-list" class="flex flex-wrap gap-2"></ul>
-                            <p class="text-xs text-purple-700 mt-2">點擊月份可切換查看；撤銷請使用表單上方的「撤銷未存檔修改」。</p>
-                        </div>
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                            <button type="button" id="btn-export-db" disabled class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded focus:outline-none shadow transition-colors">
-                                存檔（匯出加密 database.json）
-                            </button>
-                            <p class="text-xs text-gray-500">切換月份時會自動保留未存檔的修改，可連續填寫多個月份後一次存檔；存檔的檔案需覆蓋專案中的 database.json。</p>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <button type="button" id="btn-reload-current-month" class="hidden bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-semibold py-2 px-3 rounded text-sm focus:outline-none transition-colors whitespace-nowrap inline-flex items-center gap-1.5" title="撤銷此月尚未套用的修改，還原為最後套用的版本">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    <span>撤銷<span class="hidden sm:inline">本月修改</span></span>
+                                </button>
+                                <button type="button" id="btn-apply-changes" disabled class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 sm:px-5 rounded focus:outline-none shadow transition-colors whitespace-nowrap">
+                                    套用<span class="hidden sm:inline">修改</span>
+                                </button>
+                                <button type="button" id="btn-export-db" disabled class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 sm:px-5 rounded focus:outline-none shadow transition-colors whitespace-nowrap">
+                                    匯出<span class="hidden sm:inline">加密 database.json</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </form>
             </section>
         </main>
     </div>
+
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+    <div id="help-popover" class="help-popover hidden" role="tooltip"></div>
 
     <script>
         // --- DOM Elements ---
@@ -889,9 +935,15 @@
         const btnClearForm = document.getElementById('btn-clear-form');
         const historyMonthsContainer = document.getElementById('history-months-container');
         const historyMonthPills = document.getElementById('history-month-pills');
+        const btnApplyChanges = document.getElementById('btn-apply-changes');
         const btnExportDb = document.getElementById('btn-export-db');
         const stagedPanel = document.getElementById('staged-panel');
+        const stagedLabel = document.getElementById('staged-label');
+        const stagedEmpty = document.getElementById('staged-empty');
         const stagedCount = document.getElementById('staged-count');
+        const inputSummary = document.getElementById('input-summary');
+        const toastContainer = document.getElementById('toast-container');
+        const helpPopover = document.getElementById('help-popover');
         const stagedMonthList = document.getElementById('staged-month-list');
         const assetInputForm = document.getElementById('asset-input-form');
         const memberCheckboxes = document.querySelectorAll('.member-checkbox');
@@ -959,10 +1011,11 @@
         let netWorthGrowthChart;
         let incomeExpenseChart;
         let expenseStructureChart;
-        let rawData = []; // Working copy: saved data + staged (unexported) months
-        let savedRawData = []; // Snapshot of data as loaded/exported, used to discard staged changes
+        let rawData = []; // Working copy: exported data + applied and unapplied changes
+        let exportedRawData = []; // Snapshot of data as loaded/exported, used to find unexported months
+        let appliedRawData = []; // Snapshot as of the last apply, used to discard unapplied changes
         let loadedMonthCount = 0; // Months in the file when it was loaded; export must never write fewer
-        const pendingMonths = new Set(); // Months staged in this session but not yet exported
+        const pendingMonths = new Set(); // Months edited in this session but not yet applied
         let encryptedDataStr = null; // Store the original encrypted string from server
         let currentSessionPassword = ''; // Retain verified password in session to avoid accidental lockout
 
@@ -1158,6 +1211,22 @@
             return normalized !== '' && !Number.isFinite(Number(normalized));
         }
 
+        function formatAmount(value) {
+            return parseFinancialInput(value).toLocaleString('en-US');
+        }
+
+        // Non-blocking feedback; dismissed on click or after `duration` ms
+        function showToast(message, type = 'success', duration = 4000) {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+            toast.textContent = message;
+            const remove = () => toast.remove();
+            toast.addEventListener('click', remove);
+            toastContainer.appendChild(toast);
+            setTimeout(remove, duration);
+        }
+
         // Light structural check for data loaded from database.json (stricter rules live in validateDatabaseJson)
         function checkLoadedDatabase(data) {
             if (!Array.isArray(data)) return '資料最外層不是陣列';
@@ -1310,7 +1379,7 @@
             const badValue = Array.from(rows).find(row => isUnparsableAmount(row.querySelector('.detail-value').value));
             if (badValue) {
                 badValue.querySelector('.detail-value').classList.add('border-red-500', 'bg-red-50');
-                alert('有金額欄位含有無法辨識的內容（已標紅），請修正後再儲存。');
+                showToast('有金額欄位含有無法辨識的內容（已標紅），請修正後再儲存。', 'error');
                 return;
             }
             const details = Array.from(rows).map(row => {
@@ -1337,7 +1406,7 @@
             const mainInputId = `${detailInputPrefix[currentEditing.category]}-${currentEditing.member}`;
             const mainInput = document.getElementById(mainInputId);
             if (mainInput) {
-                mainInput.value = total;
+                mainInput.value = formatAmount(total);
             }
 
             detailModal.classList.add('hidden');
@@ -1439,20 +1508,28 @@
         const btnJsonApply = document.getElementById('btn-json-apply');
         const btnJsonReload = document.getElementById('btn-json-reload');
         const tabSectionJson = document.getElementById('tab-section-json');
+        // The JSON editor is an advanced tool, so its tab sits at the right in a quieter style
         const inputTabs = [
-            { button: tabBtnAssets, section: tabSectionAssets },
-            { button: tabBtnIncome, section: tabSectionIncome },
-            { button: tabBtnJson, section: tabSectionJson }
+            { key: 'assets', button: tabBtnAssets, section: tabSectionAssets },
+            { key: 'income', button: tabBtnIncome, section: tabSectionIncome },
+            { key: 'json', button: tabBtnJson, section: tabSectionJson, advanced: true }
         ];
-        const TAB_ACTIVE_CLASS = 'py-2.5 px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
-        const TAB_INACTIVE_CLASS = 'py-2.5 px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+        const TAB_ACTIVE_CLASS = 'py-2.5 px-3 sm:px-4 font-bold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+        const TAB_INACTIVE_CLASS = 'py-2.5 px-3 sm:px-4 font-bold text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+        const ADVANCED_TAB_ACTIVE_CLASS = 'ml-auto py-2.5 px-3 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+        const ADVANCED_TAB_INACTIVE_CLASS = 'ml-auto py-2.5 px-3 text-sm font-medium text-gray-500 hover:text-blue-600 focus:outline-none transition-colors flex items-center gap-1.5';
+        let activeInputTab = 'assets';
 
         function activateInputTab(active) {
             inputTabs.forEach(tab => {
                 const isActive = tab.button === active.button;
                 tab.section.classList.toggle('hidden', !isActive);
-                tab.button.className = isActive ? TAB_ACTIVE_CLASS : TAB_INACTIVE_CLASS;
+                tab.button.className = tab.advanced
+                    ? (isActive ? ADVANCED_TAB_ACTIVE_CLASS : ADVANCED_TAB_INACTIVE_CLASS)
+                    : (isActive ? TAB_ACTIVE_CLASS : TAB_INACTIVE_CLASS);
             });
+            activeInputTab = active.key;
+            refreshInputInsights();
         }
 
         tabBtnAssets.addEventListener('click', () => activateInputTab(inputTabs[0]));
@@ -1518,6 +1595,7 @@
                     }
                 });
             }
+            formatAmountInputs();
         }
 
         function fillFormWithData(item) {
@@ -1664,9 +1742,205 @@
                 setDetailedIncomeExpenseValue('variable', memberId, is.expense && is.expense.variable && is.expense.variable[memberId]);
                 setInterestValues(memberId, is.expense && is.expense.interest && is.expense.interest[memberId]);
             }
+            formatAmountInputs();
         }
 
-        // --- Month Switching, Unsaved Drafts & Save ---
+        // --- Input Page Helpers: amount format, row totals, comparison with the previous month, field help ---
+        const MEMBER_IDS = ['member1', 'member2', 'member3', 'member4'];
+
+        // Show amounts with thousands separators; unparsable text stays as typed so it can be flagged
+        function formatAmountInputs() {
+            document.querySelectorAll('#input-page input[inputmode="decimal"]').forEach(el => {
+                if (!isUnparsableAmount(el.value)) el.value = formatAmount(el.value);
+            });
+        }
+
+        assetInputForm.addEventListener('focusout', (e) => {
+            const el = e.target;
+            if (el.matches('input[inputmode="decimal"]:not([readonly])') && !isUnparsableAmount(el.value)) {
+                el.value = formatAmount(el.value);
+            }
+        });
+        // Select the whole amount on focus so typing replaces it
+        assetInputForm.addEventListener('focusin', (e) => {
+            const el = e.target;
+            if (el.matches('input[inputmode="decimal"]:not([readonly])')) setTimeout(() => el.select(), 0);
+        });
+
+        // Every member row of the two input tabs, keyed by its input id prefix (e.g. "debt-mortgage"), with a total cell
+        const inputRows = Array.from(document.querySelectorAll('#input-page .input-row:not(.input-grid-header)')).map(row => {
+            const inputs = Array.from(row.querySelectorAll('input'));
+            const totalEl = document.createElement('div');
+            totalEl.className = 'row-total';
+            row.appendChild(totalEl);
+            return { prefix: inputs[0].id.replace(/-member1$/, ''), inputs, totalEl };
+        });
+
+        function amountOf(value) {
+            return (value && typeof value === 'object') ? parseFinancialInput(value.total) : parseFinancialInput(value);
+        }
+
+        // One member's amount for a form row, read from a stored record; null when the record has no per-row value
+        function getRecordRowValue(record, prefix, member) {
+            const assets = record.assets || {};
+            const is = record.incomeStatement || {};
+            const income = is.income || {};
+            const expense = is.expense || {};
+            const assetKeys = { 'asset-cash': 'cash', 'asset-domesticStocks': 'domesticStocks', 'asset-subBrokerage': 'subBrokerage', 'asset-overseasBrokerage': 'overseasBrokerage', 'asset-real-estate': 'realEstate' };
+            const groups = { 'income-salary': income.salary, 'income-other': income.other, 'expense-creditcard': expense.creditCard, 'expense-variable': expense.variable };
+            if (assetKeys[prefix]) return amountOf((assets[assetKeys[prefix]] || {})[member]);
+            if (prefix in groups) return amountOf((groups[prefix] || {})[member]);
+            if (prefix.startsWith('debt-')) return amountOf(((record.debts || {})[prefix.slice('debt-'.length)] || {})[member]);
+            if (prefix.startsWith('expense-interest-')) {
+                const interest = (expense.interest || {})[member];
+                if (!interest || typeof interest !== 'object') return null;
+                const label = categoryLabels[prefix.slice('expense-interest-'.length)];
+                return (interest.details || []).filter(d => (d.name || '').trim() === label).reduce((sum, d) => sum + parseFinancialInput(d.value), 0);
+            }
+            return null;
+        }
+
+        function summarizeRecord(record) {
+            const sumGroups = (groups) => Object.values(groups || {}).reduce((sum, group) =>
+                sum + Object.values(group || {}).reduce((s, v) => s + amountOf(v), 0), 0);
+            const is = record.incomeStatement || {};
+            const result = { assets: sumGroups(record.assets), debts: sumGroups(record.debts), inflow: sumGroups(is.income), outflow: sumGroups(is.expense) };
+            result.net = result.assets - result.debts;
+            result.netFlow = result.inflow - result.outflow;
+            return result;
+        }
+
+        function getPreviousRecord(month) {
+            return rawData.reduce((prev, item) => (item.month < month && (!prev || item.month > prev.month)) ? item : prev, null);
+        }
+
+        function updateDetailCounts() {
+            document.querySelectorAll('#input-page .btn-edit-member-detail').forEach(btn => {
+                const list = (tempDetails[btn.dataset.category] || {})[btn.dataset.member] || [];
+                let badge = btn.parentElement.querySelector('.detail-count');
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'detail-count';
+                    btn.parentElement.appendChild(badge);
+                }
+                badge.textContent = `${list.length} 筆`;
+                badge.classList.toggle('hidden', list.length === 0);
+            });
+        }
+
+        // Balance-sheet totals jumping more than this vs. the previous month are flagged as possible typos
+        const SUMMARY_WARN_RATIO = 0.2;
+        // A row total this many times larger or smaller than last month usually means an extra or missing digit
+        const ROW_WARN_FACTOR = 3;
+
+        function renderInputSummary(month, prev) {
+            if (!inputSummary) return;
+            if (activeInputTab === 'json' || !month) {
+                inputSummary.innerHTML = '';
+                return;
+            }
+            const cur = summarizeRecord(collectFormData(month));
+            // Comparing an empty form would flag every total as a 100% drop
+            const isEmpty = cur.assets === 0 && cur.debts === 0 && cur.inflow === 0 && cur.outflow === 0;
+            const before = prev && !isEmpty ? summarizeRecord(prev) : null;
+            const items = activeInputTab === 'assets'
+                ? [['總資產', 'assets', true], ['總負債', 'debts', true], ['淨資產', 'net', true]]
+                : [['流入', 'inflow', false], ['流出', 'outflow', false], ['淨現金流', 'netFlow', false]];
+            const html = items.map(([label, key, checkJump]) => {
+                let delta = '';
+                if (before) {
+                    const diff = cur[key] - before[key];
+                    const ratio = before[key] !== 0 ? diff / Math.abs(before[key]) : null;
+                    const isWarn = checkJump && ratio !== null && Math.abs(ratio) > SUMMARY_WARN_RATIO;
+                    const sign = diff > 0 ? '+' : diff < 0 ? '−' : '±';
+                    const pct = ratio === null ? '' : `（${sign}${Math.abs(ratio * 100).toFixed(1)}%）`;
+                    const warnTitle = isWarn ? ' title="與上期差異超過 20%，請確認數字是否正確"' : '';
+                    delta = `<span class="summary-delta${isWarn ? ' is-warn' : ''}"${warnTitle}>${isWarn ? '⚠ ' : ''}${sign}${Math.abs(diff).toLocaleString('en-US')}${pct}</span>`;
+                }
+                return `<span class="summary-item"><span class="summary-label">${label}</span><span class="summary-value">${cur[key].toLocaleString('en-US')}</span>${delta}</span>`;
+            }).join('');
+            const caption = before ? `較上期 ${escapeHtml(prev.month)}` : (isEmpty ? '尚未輸入數據' : '無上期資料可比較');
+            inputSummary.innerHTML = `${html}<span class="summary-caption">${caption}</span>`;
+        }
+
+        // Row totals, typo warnings, tab / member fill markers and the summary in the action bar
+        function refreshInputInsights() {
+            const month = getSelectedMonth();
+            const prev = month ? getPreviousRecord(month) : null;
+            const memberFilled = MEMBER_IDS.map(() => false);
+            const tabFilled = { assets: false, income: false };
+            inputRows.forEach(row => {
+                const values = row.inputs.map(el => parseFinancialInput(el.value));
+                const total = values.reduce((a, b) => a + b, 0);
+                values.forEach((v, i) => { if (v !== 0) memberFilled[i] = true; });
+                if (values.some(v => v !== 0)) {
+                    tabFilled[/^(asset|debt)-/.test(row.prefix) ? 'assets' : 'income'] = true;
+                }
+
+                let prevTotal = null;
+                if (prev) {
+                    const prevValues = MEMBER_IDS.map(m => getRecordRowValue(prev, row.prefix, m));
+                    if (!prevValues.includes(null)) prevTotal = prevValues.reduce((a, b) => a + b, 0);
+                }
+                const isWarn = prevTotal > 0 && total > 0 && (total / prevTotal >= ROW_WARN_FACTOR || prevTotal / total >= ROW_WARN_FACTOR);
+                row.totalEl.textContent = total.toLocaleString('en-US');
+                row.totalEl.classList.toggle('is-warn', isWarn);
+                row.totalEl.title = prevTotal === null ? '' : `上期（${prev.month}）：${prevTotal.toLocaleString('en-US')}${isWarn ? '\n與上期相差 3 倍以上，請確認是否多打或少打位數' : ''}`;
+            });
+
+            document.querySelectorAll('[data-tab-status]').forEach(el => {
+                const filled = tabFilled[el.dataset.tabStatus];
+                el.textContent = filled ? '✓' : '未填';
+                el.className = `tab-status ${filled ? 'is-filled' : 'is-empty'}`;
+            });
+            document.querySelectorAll('.mobile-member-btn').forEach(btn => {
+                btn.dataset.filled = String(memberFilled[Number(btn.dataset.memberIndex) - 1]);
+            });
+            updateDetailCounts();
+            renderInputSummary(month, prev);
+        }
+
+        // Field help: the label's title becomes an ⓘ button, so the explanation also works on touch screens
+        let helpAnchor = null;
+        function hideHelp() {
+            helpPopover.classList.add('hidden');
+            if (helpAnchor) helpAnchor.setAttribute('aria-expanded', 'false');
+            helpAnchor = null;
+        }
+        document.querySelectorAll('#input-page .input-row label[title]').forEach(label => {
+            const text = label.getAttribute('title');
+            label.removeAttribute('title');
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'help-btn';
+            btn.textContent = 'ⓘ';
+            btn.setAttribute('aria-label', `${label.textContent.trim()}說明`);
+            btn.setAttribute('aria-expanded', 'false');
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wasOpen = helpAnchor === btn;
+                hideHelp();
+                if (wasOpen) return;
+                helpPopover.textContent = text;
+                helpPopover.classList.remove('hidden');
+                const rect = btn.getBoundingClientRect();
+                const maxLeft = window.scrollX + document.documentElement.clientWidth - helpPopover.offsetWidth - 8;
+                helpPopover.style.left = `${Math.max(window.scrollX + 8, Math.min(rect.left + window.scrollX - 8, maxLeft))}px`;
+                helpPopover.style.top = `${rect.bottom + window.scrollY + 6}px`;
+                helpAnchor = btn;
+                btn.setAttribute('aria-expanded', 'true');
+            });
+            label.appendChild(btn);
+        });
+        document.addEventListener('click', (e) => {
+            if (helpAnchor && !helpPopover.contains(e.target)) hideHelp();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && helpAnchor) hideHelp();
+        });
+        window.addEventListener('resize', () => { if (helpAnchor) hideHelp(); });
+
+        // --- Month Switching, Drafts, Apply & Export ---
         let loadedMonth = null; // Month currently shown in the input form
         let loadedSnapshot = ''; // Form contents right after loading; differs from current form = unsaved edits
 
@@ -1681,7 +1955,8 @@
         // Replace the working data with the given baseline and clear every unsaved change
         function setDatabase(data) {
             rawData = data;
-            savedRawData = deepClone(data);
+            exportedRawData = deepClone(data);
+            appliedRawData = deepClone(data);
             loadedMonthCount = data.length;
             pendingMonths.clear();
             loadedMonth = null;
@@ -1780,11 +2055,22 @@
             return loadedMonth !== null && JSON.stringify(collectFormData(loadedMonth)) !== loadedSnapshot;
         }
 
-        function hasUnsavedChanges() {
+        function hasUnappliedChanges() {
             return pendingMonths.size > 0 || hasFormChanges();
         }
 
-        // If the form was edited for the month being shown, keep that month as an unsaved draft
+        // Months whose working copy differs from the exported file, including months deleted since the export
+        function getUnexportedMonths() {
+            const diff = diffDatabases(exportedRawData, rawData);
+            return new Set([...diff.added, ...diff.removed, ...diff.changed]);
+        }
+
+        // True while anything would be lost by closing the page: unapplied edits or applied but unexported months
+        function hasUnsavedChanges() {
+            return hasUnappliedChanges() || getUnexportedMonths().size > 0;
+        }
+
+        // If the form was edited for the month being shown, keep that month as an unapplied draft
         function captureCurrentDraft() {
             if (!hasFormChanges()) return;
             const draft = collectFormData(loadedMonth);
@@ -1799,16 +2085,16 @@
             loadedSnapshot = JSON.stringify(draft);
         }
 
-        // Undo unsaved changes for one month: restore the saved version, or remove it if it was never saved
+        // Undo unapplied changes for one month: restore the applied version, or remove it if it was never applied
         function discardPendingMonth(month) {
-            const savedEntry = savedRawData.find(item => item.month === month);
+            const appliedEntry = appliedRawData.find(item => item.month === month);
             rawData = rawData.filter(item => item.month !== month);
-            if (savedEntry) rawData.push(deepClone(savedEntry));
+            if (appliedEntry) rawData.push(deepClone(appliedEntry));
             rawData.sort((a, b) => a.month.localeCompare(b.month));
             pendingMonths.delete(month);
         }
 
-        // Undo unsaved changes for one month and, if it is on screen, reload the form from the restored data
+        // Undo unapplied changes for one month and, if it is on screen, reload the form from the restored data
         function discardMonth(month) {
             discardPendingMonth(month);
             if (month === loadedMonth) {
@@ -1848,19 +2134,20 @@
             updateUI();
         }
 
-        // Status of one month: saved (in saved data), draft (unsaved changes), or new (being edited, no record yet)
-        function getMonthState(month) {
-            if (pendingMonths.has(month) || (month === loadedMonth && hasFormChanges())) return 'draft';
-            if (rawData.some(item => item.month === month)) return 'saved';
-            return 'new';
+        // Status of one month: draft (unapplied edits), applied (not yet exported), exported, or new (being edited, no record yet)
+        function getMonthState(month, unexportedMonths, formChanged) {
+            if (pendingMonths.has(month) || (month === loadedMonth && formChanged)) return 'draft';
+            if (!rawData.some(item => item.month === month)) return 'new';
+            return unexportedMonths.has(month) ? 'applied' : 'exported';
         }
 
         const MONTH_STATE_BADGE = {
-            saved: { text: '✓', classes: 'text-gray-500' },
-            draft: { text: '● 未存檔', classes: 'text-purple-700 font-semibold' },
+            exported: { text: '✓', classes: 'text-gray-500' },
+            draft: { text: '✏️ 未套用', classes: 'text-orange-700 font-semibold' },
+            applied: { text: '● 已套用', classes: 'text-purple-700 font-semibold' },
             new: { text: '＋ 編輯中', classes: 'text-blue-700 font-semibold' }
         };
-        const MONTH_STATE_TEXT = { saved: '✓ 已存檔', draft: '● 未存檔', new: '＋ 編輯中' };
+        const MONTH_STATE_TEXT = { exported: '✓ 已匯出', draft: '✏️ 未套用', applied: '● 已套用（未匯出）', new: '＋ 編輯中' };
         const RECENT_MONTH_LIMIT = 12;
 
         function createMonthChip(month, state, isSelected) {
@@ -1871,10 +2158,12 @@
                 isSelected
                     ? 'bg-blue-600 text-white border-blue-600 font-bold shadow-sm'
                     : state === 'draft'
-                        ? 'bg-purple-50 text-gray-800 border-purple-300 hover:bg-purple-100'
-                        : state === 'new'
-                            ? 'bg-white text-gray-800 border-dashed border-blue-400 hover:bg-blue-50'
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-400'
+                        ? 'bg-orange-50 text-gray-800 border-orange-300 hover:bg-orange-100'
+                        : state === 'applied'
+                            ? 'bg-purple-50 text-gray-800 border-purple-300 hover:bg-purple-100'
+                            : state === 'new'
+                                ? 'bg-white text-gray-800 border-dashed border-blue-400 hover:bg-blue-50'
+                                : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-400'
             );
             const label = document.createElement('span');
             label.textContent = month;
@@ -1903,11 +2192,14 @@
 
             historyMonthsContainer.classList.remove('hidden');
             historyMonthPills.innerHTML = '';
+            const unexportedMonths = getUnexportedMonths();
+            const formChanged = hasFormChanges();
+            const stateOf = (month) => getMonthState(month, unexportedMonths, formChanged);
             const recentMonths = allMonths.slice(-RECENT_MONTH_LIMIT);
             const olderMonths = allMonths.slice(0, -RECENT_MONTH_LIMIT);
 
             recentMonths.forEach(month => {
-                historyMonthPills.appendChild(createMonthChip(month, getMonthState(month), month === selectedMonth));
+                historyMonthPills.appendChild(createMonthChip(month, stateOf(month), month === selectedMonth));
             });
 
             if (olderMonths.length > 0) {
@@ -1920,7 +2212,7 @@
                 placeholder.disabled = true;
                 selectEl.add(placeholder);
                 olderMonths.forEach(month => {
-                    selectEl.add(new Option(`${month}　${MONTH_STATE_TEXT[getMonthState(month)]}`, month, false, month === selectedMonth));
+                    selectEl.add(new Option(`${month}　${MONTH_STATE_TEXT[stateOf(month)]}`, month, false, month === selectedMonth));
                 });
                 selectEl.addEventListener('change', () => {
                     monthSelect.value = selectEl.value;
@@ -1935,17 +2227,26 @@
             const entry = selectedMonth ? rawData.find(item => item.month === selectedMonth) : null;
             const isDraft = pendingMonths.has(selectedMonth);
             const isEdited = hasFormChanges();
+            const unexportedMonths = getUnexportedMonths();
 
             if (!selectedMonth) {
                 if (monthStatusBadge) monthStatusBadge.className = 'hidden';
                 if (monthStatusHint) monthStatusHint.textContent = '';
             } else if (isEdited || isDraft) {
                 if (monthStatusBadge) {
-                    monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-300';
-                    monthStatusBadge.textContent = isEdited ? '✏️ 有未存檔的修改' : '🗂️ 已暫存（尚未存檔）';
+                    monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 border border-orange-300';
+                    monthStatusBadge.textContent = '✏️ 有未套用的修改';
                 }
                 if (monthStatusHint) {
-                    monthStatusHint.innerHTML = `<span class="text-purple-800 font-semibold">「${escapeHtml(selectedMonth)}」的修改尚未存檔</span>，切換月份時會自動保留；全部完成後點擊下方「存檔」，或用「撤銷未存檔修改」還原。`;
+                    monthStatusHint.innerHTML = `<span class="text-orange-800 font-semibold">「${escapeHtml(selectedMonth)}」有未套用的修改</span>，切換月份會自動保留。`;
+                }
+            } else if (entry && unexportedMonths.has(selectedMonth)) {
+                if (monthStatusBadge) {
+                    monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-300';
+                    monthStatusBadge.textContent = '● 已套用（尚未匯出）';
+                }
+                if (monthStatusHint) {
+                    monthStatusHint.innerHTML = `<span class="text-purple-800 font-semibold">「${escapeHtml(selectedMonth)}」已套用，尚未匯出</span>，重新整理頁面會遺失。`;
                 }
             } else if (entry) {
                 if (monthStatusBadge) {
@@ -1953,7 +2254,7 @@
                     monthStatusBadge.textContent = '📝 編輯歷史紀錄';
                 }
                 if (monthStatusHint) {
-                    monthStatusHint.innerHTML = `<span class="text-yellow-800 font-semibold">已自動載入「${escapeHtml(selectedMonth)}」之歷史資產、負債、收支與各項明細</span>，可直接修改數值。`;
+                    monthStatusHint.innerHTML = `已載入「${escapeHtml(selectedMonth)}」的紀錄，可直接修改。`;
                 }
             } else {
                 if (monthStatusBadge) {
@@ -1961,7 +2262,7 @@
                     monthStatusBadge.textContent = '✨ 全新月份';
                 }
                 if (monthStatusHint) {
-                    monthStatusHint.innerHTML = `「${escapeHtml(selectedMonth)}」尚無歷史紀錄，可直接輸入全新數據，或點擊上方「帶入最新一期紀錄」快速填寫。`;
+                    monthStatusHint.innerHTML = `「${escapeHtml(selectedMonth)}」尚無紀錄，可點「帶入最新一期」快速填寫。`;
                 }
             }
 
@@ -1969,13 +2270,17 @@
                 btnReloadCurrentMonth.classList.toggle('hidden', !isEdited && !isDraft);
             }
             renderHistoryMonthPills();
-            renderStagedPanel();
-            if (btnExportDb) {
-                const canSave = hasUnsavedChanges();
-                btnExportDb.disabled = !canSave;
-                btnExportDb.classList.toggle('opacity-50', !canSave);
-                btnExportDb.classList.toggle('cursor-not-allowed', !canSave);
-            }
+            renderStagedPanel(unexportedMonths, isEdited);
+            const setButtonEnabled = (btn, enabled) => {
+                if (!btn) return;
+                btn.disabled = !enabled;
+                btn.classList.toggle('opacity-50', !enabled);
+                btn.classList.toggle('cursor-not-allowed', !enabled);
+            };
+            const canApply = isEdited || pendingMonths.size > 0;
+            setButtonEnabled(btnApplyChanges, canApply);
+            setButtonEnabled(btnExportDb, canApply || unexportedMonths.size > 0);
+            refreshInputInsights();
         }
 
         // Mobile member picker (CSS hides the other member columns below 640px)
@@ -1989,7 +2294,10 @@
         monthSelect.addEventListener('change', switchMonth);
         // Re-reading ~100 inputs on every keystroke is wasteful; refresh once typing pauses
         let refreshStatusTimer = null;
-        assetInputForm.addEventListener('input', () => {
+        assetInputForm.addEventListener('input', (e) => {
+            if (e.target.classList.contains('border-red-500') && !isUnparsableAmount(e.target.value)) {
+                e.target.classList.remove('border-red-500', 'bg-red-50');
+            }
             clearTimeout(refreshStatusTimer);
             refreshStatusTimer = setTimeout(refreshMonthStatus, 150);
         });
@@ -1998,10 +2306,10 @@
         btnReloadCurrentMonth.addEventListener('click', () => {
             const selectedMonth = getSelectedMonth();
             if (!pendingMonths.has(selectedMonth) && !hasFormChanges()) return;
-            const hasSaved = savedRawData.some(item => item.month === selectedMonth);
-            const message = hasSaved
-                ? `確定要撤銷「${selectedMonth}」的未存檔修改，還原為已存檔的版本嗎？`
-                : `「${selectedMonth}」尚未存檔，撤銷後將移除此月的所有修改。確定要撤銷嗎？`;
+            const hasApplied = appliedRawData.some(item => item.month === selectedMonth);
+            const message = hasApplied
+                ? `確定要撤銷「${selectedMonth}」的未套用修改，還原為最後套用的版本嗎？`
+                : `「${selectedMonth}」尚未套用過，撤銷後將移除此月的所有修改。確定要撤銷嗎？`;
             if (confirm(message)) {
                 discardMonth(selectedMonth);
             }
@@ -2016,13 +2324,13 @@
 
         btnImportLatest.addEventListener('click', () => {
             if (!rawData || rawData.length === 0) {
-                alert('目前沒有歷史資料可供帶入！');
+                showToast('目前沒有歷史資料可供帶入。', 'info');
                 return;
             }
             const sortedData = [...rawData].sort((a, b) => b.month.localeCompare(a.month));
             const latestEntry = sortedData[0];
 
-            if (confirm(`是否要從最新一期「${latestEntry.month}」的紀錄帶入資產、負債、收支與各項明細？這將會覆蓋您目前輸入的內容。`)) {
+            if (confirm(`要從最新一期「${latestEntry.month}」帶入資產、負債、收支與各項明細嗎？目前表單的內容會被覆蓋。`)) {
                 fillFormWithData(latestEntry);
                 refreshMonthStatus();
             }
@@ -2203,22 +2511,15 @@
                 return;
             }
 
-            if (diff.removed.length > 0 && !confirm(`此次會刪除以下月份：${diff.removed.join('、')}\n確定要刪除嗎？（刪除前可用各月份的「撤銷未存檔修改」還原）`)) {
+            if (diff.removed.length > 0 && !confirm(`此次會刪除以下月份：${diff.removed.join('、')}\n確定要刪除嗎？（套用後無法撤銷；匯出前可重新整理頁面放棄所有未匯出的變更）`)) {
                 setJsonStatus(['已取消套用。'], 'info');
                 return;
             }
 
-            // Rebuild the pending set: any month that differs from the saved copy, including deletions of saved months
+            // The editor content becomes the applied baseline; months that differ from the file show up as unexported
             rawData = next;
+            appliedRawData = deepClone(next);
             pendingMonths.clear();
-            const savedMap = new Map(savedRawData.map(item => [item.month, monthSignature(item)]));
-            const nextMap = new Map(next.map(item => [item.month, monthSignature(item)]));
-            nextMap.forEach((signature, month) => {
-                if (savedMap.get(month) !== signature) pendingMonths.add(month);
-            });
-            savedMap.forEach((signature, month) => {
-                if (!nextMap.has(month)) pendingMonths.add(month);
-            });
             // A confirmed deletion lowers the floor the export guard checks against
             loadedMonthCount = Math.min(loadedMonthCount, next.length);
 
@@ -2231,7 +2532,7 @@
             if (diff.added.length) summary.push(`新增：${diff.added.join('、')}`);
             if (diff.changed.length) summary.push(`修改：${diff.changed.join('、')}`);
             if (diff.removed.length) summary.push(`刪除：${diff.removed.join('、')}`);
-            summary.push('變更尚未寫入檔案，請按下方「存檔」。');
+            summary.push('變更尚未寫入檔案，請按下方「匯出加密 database.json」。');
             setJsonStatus(summary, 'success');
         }
 
@@ -2239,20 +2540,27 @@
         btnJsonApply.addEventListener('click', applyJsonEditor);
         btnJsonReload.addEventListener('click', refreshJsonEditor);
 
-        // --- Batch Save (export) ---
-        function renderStagedPanel() {
+        // --- Apply & Export ---
+        function renderStagedPanel(unexportedMonths, formChanged) {
             if (!stagedPanel) return;
-            const months = [...pendingMonths].sort();
-            stagedPanel.classList.toggle('hidden', months.length === 0);
+            const draftMonths = new Set(pendingMonths);
+            if (formChanged && loadedMonth) draftMonths.add(loadedMonth);
+            const months = [...new Set([...draftMonths, ...unexportedMonths])].sort();
+            stagedLabel.classList.toggle('hidden', months.length === 0);
+            stagedEmpty.classList.toggle('hidden', months.length > 0);
             stagedCount.textContent = months.length;
             stagedMonthList.innerHTML = '';
             months.forEach(month => {
+                const isDraft = draftMonths.has(month);
+                const isDeleted = !isDraft && !rawData.some(item => item.month === month);
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'inline-flex items-center text-xs px-2.5 py-1 rounded-full bg-white border border-purple-300 text-purple-800 hover:bg-purple-100';
-                btn.textContent = month;
-                btn.title = `切換到 ${month}`;
+                btn.className = 'inline-flex items-center text-xs px-2.5 py-1 rounded-full bg-white border hover:bg-purple-100 ' + (
+                    isDraft ? 'border-orange-300 text-orange-800' : 'border-purple-300 text-purple-800'
+                );
+                btn.textContent = `${month} ${isDraft ? '✏️' : isDeleted ? '🗑️' : '●'}`;
+                btn.title = isDeleted ? `${month}：已刪除（尚未匯出）` : `切換到 ${month}`;
                 btn.addEventListener('click', () => {
                     monthSelect.value = month;
                     switchMonth();
@@ -2262,34 +2570,64 @@
             });
         }
 
-        btnExportDb.addEventListener('click', async () => {
-            const badInputs = Array.from(document.querySelectorAll('#input-page input[inputmode="decimal"]')).filter(el => isUnparsableAmount(el.value));
-            document.querySelectorAll('#input-page input[inputmode="decimal"]').forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
+        // Unparsable amounts are flagged in red and block apply/export so they are never stored as 0
+        function validateAmountInputs(actionLabel) {
+            const inputs = document.querySelectorAll('#input-page input[inputmode="decimal"]');
+            const badInputs = Array.from(inputs).filter(el => isUnparsableAmount(el.value));
+            inputs.forEach(el => el.classList.remove('border-red-500', 'bg-red-50'));
             if (badInputs.length > 0) {
                 badInputs.forEach(el => el.classList.add('border-red-500', 'bg-red-50'));
                 badInputs[0].scrollIntoView({ block: 'center' });
-                alert(`有 ${badInputs.length} 個金額欄位含有無法辨識的內容（已標紅），請修正後再存檔，以免被當成 0。`);
-                return;
+                showToast(`有 ${badInputs.length} 個金額欄位含有無法辨識的內容（已標紅），請修正後再${actionLabel}，以免被當成 0。`, 'error', 6000);
+                return false;
             }
+            return true;
+        }
+
+        // Make every draft month part of the applied baseline; returns the months that were applied
+        function applyPendingChanges() {
             captureCurrentDraft();
+            const appliedMonths = [...pendingMonths].sort();
+            appliedRawData = deepClone(rawData);
+            pendingMonths.clear();
+            return appliedMonths;
+        }
+
+        btnApplyChanges.addEventListener('click', () => {
+            if (!validateAmountInputs('套用')) return;
+            const appliedMonths = applyPendingChanges();
+            updateUI();
+            if (appliedMonths.length === 0) {
+                showToast('目前沒有需要套用的修改。', 'info');
+                return;
+            }
+            showToast(`已套用：${appliedMonths.join('、')}\n儀表板已更新；完成後請按「匯出」寫入檔案。`);
+        });
+
+        btnExportDb.addEventListener('click', async () => {
+            if (!validateAmountInputs('匯出')) return;
+            // Exporting writes what is on screen, so unapplied edits are applied first
+            applyPendingChanges();
             if (rawData.length < loadedMonthCount) {
-                alert(`目前只有 ${rawData.length} 個月，少於載入時的 ${loadedMonthCount} 個月，為避免覆蓋資料已中止存檔。請重新整理頁面。`);
+                updateUI();
+                alert(`目前只有 ${rawData.length} 個月，少於載入時的 ${loadedMonthCount} 個月，為避免覆蓋資料已中止匯出。請重新整理頁面。`);
                 return;
             }
-            if (pendingMonths.size === 0) {
-                alert('目前沒有需要存檔的變更。');
-                refreshMonthStatus();
+            const exportedMonths = [...getUnexportedMonths()].sort();
+            if (exportedMonths.length === 0) {
+                showToast('目前沒有需要匯出的變更。', 'info');
+                updateUI();
                 return;
             }
+            updateUI();
 
             try {
-                const savedMonths = [...pendingMonths].sort();
                 const promptMsg = currentSessionPassword
-                    ? "請輸入「資產金庫密碼」以進行加密存檔：\n(若輸入與目前不同的新密碼，之後會要求再次確認)"
-                    : "請設置「資產金庫密碼」以進行加密存檔：\n(此密碼將用於下次載入資料，請務必記住！)";
+                    ? "請輸入「資產金庫密碼」以進行加密匯出：\n(若輸入與目前不同的新密碼，之後會要求再次確認)"
+                    : "請設置「資產金庫密碼」以進行加密匯出：\n(此密碼將用於下次載入資料，請務必記住！)";
                 const password = await askPassword(promptMsg);
                 if (!password) {
-                    alert("取消存檔：必須設置密碼才能保護您的數據。");
+                    showToast('已取消匯出：必須設定密碼才能保護資料。', 'info');
                     return;
                 }
 
@@ -2297,7 +2635,7 @@
                 if (password !== currentSessionPassword) {
                     const confirmPassword = await askPassword("請「再次輸入」相同的資產金庫密碼以確認：");
                     if (password !== confirmPassword) {
-                        alert("兩次輸入的密碼不一致，存檔已取消以避免數據鎖死，請重新操作。");
+                        alert("兩次輸入的密碼不一致，匯出已取消以避免數據鎖死，請重新操作。");
                         return;
                     }
                 }
@@ -2317,23 +2655,22 @@
                     URL.revokeObjectURL(url);
                 }, 1000);
 
-                // The downloaded file is now the saved baseline
+                // The downloaded file is now both the exported and the applied baseline
                 rawData = normalized;
-                savedRawData = deepClone(normalized);
+                exportedRawData = deepClone(normalized);
+                appliedRawData = deepClone(normalized);
                 loadedMonthCount = normalized.length; // the new file is the baseline the guard protects
                 pendingMonths.clear();
                 updateUI();
 
-                setTimeout(() => {
-                    alert(`加密存檔成功（本次包含：${savedMonths.join('、')}）。\n請將下載的「database.json」覆蓋掉專案中的同名檔案。`);
-                }, 100);
+                showToast(`加密匯出成功（本次包含：${exportedMonths.join('、')}）\n請用下載的 database.json 覆蓋專案中的同名檔案。`, 'success', 10000);
             } catch (err) {
-                console.error("存檔失敗:", err);
-                alert("存檔失敗: " + (err.message || err));
+                console.error("匯出失敗:", err);
+                alert("匯出失敗: " + (err.message || err));
             }
         });
 
-        // Warn before leaving the page while changes have not been saved
+        // Warn before leaving the page while changes have not been exported
         window.addEventListener('beforeunload', (e) => {
             if (hasUnsavedChanges()) {
                 e.preventDefault();
