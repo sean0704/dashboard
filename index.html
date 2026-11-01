@@ -532,7 +532,7 @@
                             </div>
                             <p class="text-3xl font-bold text-red-600">$<span id="expense-total-amount">0</span></p>
                         </div>
-                        <p id="expense-breakdown-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">借貸還款: $0 | 信用卡費: $0 | 其他流出: $0</p>
+                        <p id="expense-breakdown-subtext" class="text-xs text-gray-500 mt-2 font-mono leading-tight">借貸還款: $0 | 信用卡費1: $0 | 信用卡費2: $0 | 其他流出: $0</p>
                     </div>
 
                     <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
@@ -848,13 +848,22 @@
                                 </div>
 
 
-                                <!-- Credit Card Payment -->
+                                <!-- Credit Card Payment 1 -->
                                 <div class="input-row grid gap-2 items-center mb-2">
-                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="信用卡當期應繳金額。注意：刷卡消費若也記在其他流出，會重複計算">信用卡費</label>
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="信用卡1當期應繳金額。注意：刷卡消費若也記在其他流出，會重複計算">信用卡費1</label>
                                     <input type="number" id="expense-creditcard-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-creditcard-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-creditcard-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                     <input type="number" id="expense-creditcard-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                </div>
+
+                                <!-- Credit Card Payment 2 -->
+                                <div class="input-row grid gap-2 items-center mb-2">
+                                    <label class="col-span-1 text-sm font-medium text-gray-700" title="信用卡2當期應繳金額。注意：刷卡消費若也記在其他流出，會重複計算">信用卡費2</label>
+                                    <input type="number" id="expense-creditcard2-member1" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="expense-creditcard2-member2" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="expense-creditcard2-member3" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
+                                    <input type="number" id="expense-creditcard2-member4" class="shadow-sm border rounded w-full py-1 px-2 text-right" value="0">
                                 </div>
 
                                 <!-- Variable Expense -->
@@ -1106,6 +1115,7 @@
                     delete incomeStatement.expense.fixed;
                     normalizeDetailedMap(incomeStatement.expense.variable);
                     normalizeNumberMap(incomeStatement.expense.creditCard);
+                    normalizeNumberMap(incomeStatement.expense.creditCard2);
                     const interest = incomeStatement.expense.interest;
                     if (interest) {
                         Object.keys(interest).forEach(member => {
@@ -1542,7 +1552,7 @@
         // --- Import & Form Population Logic ---
         const incomeExpensePrefixes = [
             'income-salary', 'income-other',
-            'expense-creditcard', 'expense-variable'
+            'expense-creditcard', 'expense-creditcard2', 'expense-variable'
         ];
 
         function defaultIncomeStatement() {
@@ -1554,6 +1564,7 @@
                 expense: {
                     interest: { member1: 0, member2: 0, member3: 0, member4: 0 },
                     creditCard: { member1: 0, member2: 0, member3: 0, member4: 0 },
+                    creditCard2: { member1: 0, member2: 0, member3: 0, member4: 0 },
                     variable: { member1: 0, member2: 0, member3: 0, member4: 0 }
                 }
             };
@@ -1739,6 +1750,7 @@
                 setIncomeExpenseValue('income-salary', memberId, is.income && is.income.salary && is.income.salary[memberId]);
                 setDetailedIncomeExpenseValue('other', memberId, is.income && is.income.other && is.income.other[memberId]);
                 setIncomeExpenseValue('expense-creditcard', memberId, is.expense && is.expense.creditCard && is.expense.creditCard[memberId]);
+                setIncomeExpenseValue('expense-creditcard2', memberId, is.expense && is.expense.creditCard2 && is.expense.creditCard2[memberId]);
                 setDetailedIncomeExpenseValue('variable', memberId, is.expense && is.expense.variable && is.expense.variable[memberId]);
                 setInterestValues(memberId, is.expense && is.expense.interest && is.expense.interest[memberId]);
             }
@@ -1787,7 +1799,7 @@
             const income = is.income || {};
             const expense = is.expense || {};
             const assetKeys = { 'asset-cash': 'cash', 'asset-domesticStocks': 'domesticStocks', 'asset-subBrokerage': 'subBrokerage', 'asset-overseasBrokerage': 'overseasBrokerage', 'asset-real-estate': 'realEstate' };
-            const groups = { 'income-salary': income.salary, 'income-other': income.other, 'expense-creditcard': expense.creditCard, 'expense-variable': expense.variable };
+            const groups = { 'income-salary': income.salary, 'income-other': income.other, 'expense-creditcard': expense.creditCard, 'expense-creditcard2': expense.creditCard2, 'expense-variable': expense.variable };
             if (assetKeys[prefix]) return amountOf((assets[assetKeys[prefix]] || {})[member]);
             if (prefix in groups) return amountOf((groups[prefix] || {})[member]);
             if (prefix.startsWith('debt-')) return amountOf(((record.debts || {})[prefix.slice('debt-'.length)] || {})[member]);
@@ -2023,7 +2035,7 @@
                         salary: {}, other: {}
                     },
                     expense: {
-                        interest: {}, creditCard: {}, variable: {}
+                        interest: {}, creditCard: {}, creditCard2: {}, variable: {}
                     }
                 }
             };
@@ -2046,6 +2058,7 @@
                 data.incomeStatement.income.other[memberId] = getDetailedIncomeExpenseValue('other', memberId);
                 data.incomeStatement.expense.interest[memberId] = getInterestValue(memberId);
                 data.incomeStatement.expense.creditCard[memberId] = getIncomeExpenseValue('expense-creditcard', memberId);
+                data.incomeStatement.expense.creditCard2[memberId] = getIncomeExpenseValue('expense-creditcard2', memberId);
                 data.incomeStatement.expense.variable[memberId] = getDetailedIncomeExpenseValue('variable', memberId);
             }
             return data;
@@ -2342,7 +2355,7 @@
         const JSON_MEMBER_KEYS = ['member1', 'member2', 'member3', 'member4'];
         const JSON_ASSET_KEYS = ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage', 'realEstate'];
         const JSON_INCOME_KEYS = ['salary', 'other'];
-        const JSON_EXPENSE_KEYS = ['interest', 'creditCard', 'variable'];
+        const JSON_EXPENSE_KEYS = ['interest', 'creditCard', 'creditCard2', 'variable'];
 
         function isPlainObject(value) {
             return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -3283,8 +3296,9 @@
 
                 const interest = sumForMembers(is.expense && is.expense.interest);
                 const creditCard = sumForMembers(is.expense && is.expense.creditCard);
+                const creditCard2 = sumForMembers(is.expense && is.expense.creditCard2);
                 const variable = sumForMembers(is.expense && is.expense.variable);
-                const totalExpense = interest + creditCard + variable;
+                const totalExpense = interest + creditCard + creditCard2 + variable;
 
                 const netSavings = totalIncome - totalExpense;
                 const savingsRate = totalIncome > 0 ? (netSavings / totalIncome) * 100 : 0;
@@ -3293,7 +3307,7 @@
                 return {
                     month: item.month,
                     income: { salary, other: otherIncome, total: totalIncome },
-                    expense: { interest, creditCard, variable, total: totalExpense },
+                    expense: { interest, creditCard, creditCard2, variable, total: totalExpense },
                     netSavings,
                     savingsRate,
                     interestRatio,
@@ -3328,7 +3342,7 @@
                 if (expenseInterestAmount) expenseInterestAmount.textContent = '0';
                 if (incomeNetSavings) incomeNetSavings.textContent = '0';
                 if (incomeBreakdownSubtext) incomeBreakdownSubtext.textContent = '薪資: $0 | 其他: $0';
-                if (expenseBreakdownSubtext) expenseBreakdownSubtext.textContent = '借貸還款: $0 | 信用卡費: $0 | 其他流出: $0';
+                if (expenseBreakdownSubtext) expenseBreakdownSubtext.textContent = '借貸還款: $0 | 信用卡費1: $0 | 信用卡費2: $0 | 其他流出: $0';
                 if (incomeInterestRatioBadge) incomeInterestRatioBadge.textContent = '還款負擔 0%';
                 if (incomeSavingsRateBadge) incomeSavingsRateBadge.textContent = '儲蓄率 0%';
                 if (ytdValue) ytdValue.textContent = '$0';
@@ -3342,7 +3356,7 @@
 
             if (expenseTotalAmount) expenseTotalAmount.textContent = latest.expense.total.toLocaleString();
             if (expenseBreakdownSubtext) {
-                expenseBreakdownSubtext.textContent = `借貸還款: $${latest.expense.interest.toLocaleString()} | 信用卡費: $${latest.expense.creditCard.toLocaleString()} | 其他流出: $${latest.expense.variable.toLocaleString()}`;
+                expenseBreakdownSubtext.textContent = `借貸還款: $${latest.expense.interest.toLocaleString()} | 信用卡費1: $${latest.expense.creditCard.toLocaleString()} | 信用卡費2: $${latest.expense.creditCard2.toLocaleString()} | 其他流出: $${latest.expense.variable.toLocaleString()}`;
             }
 
             if (expenseInterestAmount) expenseInterestAmount.textContent = latest.expense.interest.toLocaleString();
@@ -3435,7 +3449,8 @@
                 // Largest share first so it takes the darkest colour, matching the asset pie
                 const expenseEntries = [
                     ['借貸還款', latestIncome.expense.interest],
-                    ['信用卡費', latestIncome.expense.creditCard],
+                    ['信用卡費1', latestIncome.expense.creditCard],
+                    ['信用卡費2', latestIncome.expense.creditCard2],
                     ['其他流出', latestIncome.expense.variable]
                 ].filter(([, value]) => value > 0).sort((a, b) => b[1] - a[1]);
                 expenseStructureChart = new Chart(ctxStructure, {
@@ -3520,7 +3535,8 @@
 
             text += `二、流出:\n`;
             text += `  • 借貸還款: $${latestIncome.expense.interest.toLocaleString()}${loanPart} (佔流入 ${latestIncome.interestRatio.toFixed(1)}%)\n`;
-            text += `  • 信用卡費: $${latestIncome.expense.creditCard.toLocaleString()}\n`;
+            text += `  • 信用卡費1: $${latestIncome.expense.creditCard.toLocaleString()}\n`;
+            text += `  • 信用卡費2: $${latestIncome.expense.creditCard2.toLocaleString()}\n`;
             text += `  • 其他流出: $${latestIncome.expense.variable.toLocaleString()}\n`;
             text += `  [總流出] $${latestIncome.expense.total.toLocaleString()}\n\n`;
 

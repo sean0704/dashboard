@@ -55,7 +55,7 @@
 - **收入分類**：薪資（`salary`）、其他流入（`other`）。
 - **支出分類**：
   - **借貸支出**：單獨拆分房貸、增貸、信貸、股票質押等融資成本，每筆貸款每月填寫一格：本+利貸款（一般房貸、增貸(一)、增貸(二)、信用貸款）填寫每月應繳總額（本金＋利息），理財房貸與股票質押填寫利息；所有數值存為 `interest`。注意：本+利的本金會計入現金流出，因此淨現金流即為含本金償還後的實際結餘；比照負債 6 大分類，直接於輸入表單中依序展開「一般房貸」、「增貸(一)」、「增貸(二)」、「理財房貸」、「信用貸款」與「股票質押」（各一格），各成員直接鍵入當月實付利息，免開彈窗直覺流暢，系統自動加總帶入損益分析並標準化留存項目明細。
-  - **信用卡費（`creditCard`）**：信用卡當期應繳金額，獨立分類；與其他流出的刷卡消費可能重複計算，淨現金流會因此偏低。
+  - **信用卡費1（`creditCard`）、信用卡費2（`creditCard2`）**：兩張（或兩類）信用卡當期應繳金額，各自獨立分類並於分析畫面分開顯示；舊資料缺少 `creditCard2` 時視為 0。與其他流出的刷卡消費可能重複計算，淨現金流會因此偏低。
   - **其他流出（`variable`）**：房租、管理費、保險、稅金、孝親費、伙食、交通、日常購物、娛樂休閒。（其他流入、其他流出可點擊輸入明細，同資產明細彈窗但無槓桿欄，合計自動帶回主欄位）
 
 **視覺化分析與現金流戰情室：**
@@ -87,7 +87,7 @@
   - **家庭損益項目（向後相容）**：
     `incomeStatement: { income: { salary: {}, dividend: {}, other: {} }, expense: { interest: {}, fixed: {}, variable: {} } }`
     其中 `expense.interest[memberId]` 支援明細物件 `{ total: number, details: [{ name: string, value: number }] }`，亦相容舊版 `number`。
-  - **可為明細物件的項目**僅限：`domesticStocks`、`subBrokerage`、`overseasBrokerage`、`income.other`、`expense.interest`、`expense.variable`；其餘項目（現金、房產、各類負債、薪資、信用卡費）只能是 `number`。
+  - **可為明細物件的項目**僅限：`domesticStocks`、`subBrokerage`、`overseasBrokerage`、`income.other`、`expense.interest`、`expense.variable`；其餘項目（現金、房產、各類負債、薪資、信用卡費1、信用卡費2）只能是 `number`。
   - 舊版 `dividend`、`fixed` 欄位於匯出時移除，JSON 編輯器不接受。
 - **資料儲存**：`database.json` 儲存 AES 密文字串。
 - **合併邏輯**：產出個股明細、借貸支出明細與數據概覽時，需將不同成員持有的相同標的或借貸項目（IgnoreCase 或 Trim）合併加總。
