@@ -185,6 +185,12 @@
             <div class="mb-4">
                 <input type="password" id="unlock-password" autocomplete="current-password" aria-label="資產金庫密碼" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="輸入密碼...">
                 <p id="unlock-error" role="alert" class="text-red-500 text-sm mt-2 hidden">密碼錯誤，請再試一次</p>
+                <div id="unlock-file-fallback" class="hidden mt-3 p-3 rounded-lg bg-gray-50 border border-gray-200 text-sm text-gray-700">
+                    <p id="unlock-file-hint" class="mb-2">網頁無法自行讀取 <code>database.json</code>，可改為手動選擇該檔案載入：</p>
+                    <input type="file" id="unlock-file-input" accept=".json,application/json" class="hidden">
+                    <button type="button" id="btn-unlock-file" class="w-full bg-white hover:bg-blue-50 border border-gray-300 text-gray-700 font-semibold py-2 rounded-lg transition-colors">選擇 database.json…</button>
+                    <p id="unlock-file-name" class="text-xs text-gray-500 mt-2 hidden"></p>
+                </div>
             </div>
             <button id="btn-unlock" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transform active:scale-95 transition">
                 解鎖並載入數據
@@ -210,7 +216,7 @@
 
     <!-- Asset Detail Modal -->
     <div id="detail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-40" role="dialog" aria-modal="true" aria-labelledby="detail-modal-title">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+        <div id="detail-modal-box" tabindex="-1" class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white outline-none">
             <div class="mt-3">
                 <div class="flex justify-between items-center pb-3 border-b">
                     <h3 class="text-xl font-bold text-gray-900" id="detail-modal-title">資產明細編輯</h3>
@@ -538,7 +544,7 @@
                     <div class="bg-white p-6 rounded-lg shadow flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-1">
-                                <h2 class="text-lg font-semibold text-gray-700" title="淨現金流 = 流入 − 流出（流出含借貸還款的利息與本金）；儲蓄率 = 淨現金流 ÷ 流入">本月淨現金流 ⓘ</h2>
+                                <h2 class="text-lg font-semibold text-gray-700">本月淨現金流<button type="button" class="help-btn" data-help="淨現金流 = 流入 − 流出（流出含借貸還款的利息與本金）；儲蓄率 = 淨現金流 ÷ 流入" aria-label="本月淨現金流說明" aria-expanded="false">ⓘ</button></h2>
                                 <span id="income-savings-rate-badge" class="text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-800">儲蓄率 0%</span>
                             </div>
                             <p id="income-net-savings-container" class="text-3xl font-bold text-blue-600"><span id="income-net-savings">0</span></p>
@@ -611,7 +617,7 @@
                                     <label for="month-select" class="block text-gray-700 text-sm font-bold">月份</label>
                                     <span id="month-status-badge" class="hidden text-xs font-semibold px-2.5 py-0.5 rounded-full"></span>
                                 </div>
-                                <input type="month" id="month-select" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <input type="month" id="month-select" placeholder="YYYY-MM" pattern="\d{4}-(0[1-9]|1[0-2])" autocomplete="off" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
                                 <p id="month-status-hint" class="text-xs text-gray-500 mt-1.5"></p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
@@ -1008,14 +1014,17 @@
         // Interest Breakdown Table Elements
 
         // --- Chart Instances ---
-        // Chart.js defaults matched to the light theme
-        Chart.defaults.color = '#4b5563';
-        Chart.defaults.borderColor = 'rgba(16, 24, 40, 0.08)';
-        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif';
-        Chart.defaults.elements.arc.borderColor = '#ffffff';
-        Chart.defaults.elements.arc.borderWidth = 2;
-        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(17, 24, 39, 0.92)';
-        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        // Chart.js defaults matched to the light theme (skipped when the CDN failed; initializeApp reports it)
+        const chartLibReady = typeof Chart !== 'undefined';
+        if (chartLibReady) {
+            Chart.defaults.color = '#4b5563';
+            Chart.defaults.borderColor = 'rgba(16, 24, 40, 0.08)';
+            Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+            Chart.defaults.elements.arc.borderColor = '#ffffff';
+            Chart.defaults.elements.arc.borderWidth = 2;
+            Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(17, 24, 39, 0.92)';
+            Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        }
         let assetAllocationChart;
         let netWorthGrowthChart;
         let incomeExpenseChart;
@@ -1053,93 +1062,53 @@
             return Number.isFinite(parsed) ? Math.round(parsed) : 0;
         }
 
+        // Canonical form of one month record: integer amounts everywhere, { total, details } kept only where a
+        // detail popup exists, legacy keys migrated. Used for storage, for the signature that detects changes,
+        // and for data loaded from the file (so old string amounts can never leak into the sums).
         function normalizeRecordForStorage(record) {
-            const normalized = JSON.parse(JSON.stringify(record));
-            const normalizeNumberMap = (group) => {
-                if (!group) return;
-                Object.keys(group).forEach(key => {
-                    if (typeof group[key] === 'number' || typeof group[key] === 'string') {
-                        group[key] = parseFinancialInput(group[key]);
+            const normalized = deepClone(record);
+            const normalizeMemberValue = (value, allowDetails) => {
+                if (isPlainObject(value)) {
+                    if (!allowDetails) return parseFinancialInput(value.total);
+                    value.total = parseFinancialInput(value.total);
+                    if (Array.isArray(value.details)) {
+                        value.details.forEach(detail => { detail.value = parseFinancialInput(detail.value); });
                     }
-                });
+                    return value;
+                }
+                return parseFinancialInput(value);
             };
-            const normalizeDetailedMap = (group) => {
-                if (!group) return;
-                Object.keys(group).forEach(member => {
-                    const value = group[member];
-                    if (value && typeof value === 'object' && !Array.isArray(value)) {
-                        value.total = parseFinancialInput(value.total);
-                        if (Array.isArray(value.details)) {
-                            value.details.forEach(detail => {
-                                detail.value = parseFinancialInput(detail.value);
-                            });
-                        }
-                    } else {
-                        group[member] = parseFinancialInput(value);
-                    }
+            const normalizeGroups = (groups) => {
+                if (!isPlainObject(groups)) return;
+                Object.keys(groups).forEach(category => {
+                    const group = groups[category];
+                    if (!isPlainObject(group)) return;
+                    const allowDetails = JSON_DETAIL_KEYS.includes(category);
+                    Object.keys(group).forEach(member => { group[member] = normalizeMemberValue(group[member], allowDetails); });
                 });
-            };
-            const normalizeMemberGroups = (groups) => {
-                if (!groups) return;
-                Object.keys(groups).forEach(category => normalizeNumberMap(groups[category]));
             };
 
-            normalizeMemberGroups(normalized.debts);
-
-            if (normalized.assets) {
-                Object.keys(normalized.assets).forEach(category => {
-                    const group = normalized.assets[category];
-                    if (!group) return;
-                    Object.keys(group).forEach(member => {
-                        const value = group[member];
-                        if (value && typeof value === 'object' && !Array.isArray(value)) {
-                            value.total = parseFinancialInput(value.total);
-                            if (Array.isArray(value.details)) {
-                                value.details.forEach(detail => {
-                                    detail.value = parseFinancialInput(detail.value);
-                                });
-                            }
-                        } else {
-                            group[member] = parseFinancialInput(value);
-                        }
-                    });
-                });
+            if (isPlainObject(normalized.assets) && normalized.assets['real-estate'] !== undefined) {
+                // Very old exports used the input id instead of the camelCase key
+                normalized.assets.realEstate = normalized.assets.realEstate || normalized.assets['real-estate'];
+                delete normalized.assets['real-estate'];
             }
+            normalizeGroups(normalized.assets);
+            normalizeGroups(normalized.debts);
 
             const incomeStatement = normalized.incomeStatement;
-            if (incomeStatement) {
-                normalizeMemberGroups(incomeStatement.income);
-                normalizeDetailedMap(incomeStatement.income && incomeStatement.income.other);
-                if (incomeStatement.income) delete incomeStatement.income.dividend;
-                if (incomeStatement.expense) {
-                    delete incomeStatement.expense.fixed;
-                    normalizeDetailedMap(incomeStatement.expense.variable);
-                    normalizeNumberMap(incomeStatement.expense.creditCard);
-                    normalizeNumberMap(incomeStatement.expense.creditCard2);
-                    const interest = incomeStatement.expense.interest;
-                    if (interest) {
-                        Object.keys(interest).forEach(member => {
-                            const value = interest[member];
-                            if (value && typeof value === 'object' && !Array.isArray(value)) {
-                                value.total = parseFinancialInput(value.total);
-                                if (Array.isArray(value.details)) {
-                                    value.details.forEach(detail => {
-                                        detail.value = parseFinancialInput(detail.value);
-                                    });
-                                }
-                            } else {
-                                interest[member] = parseFinancialInput(value);
-                            }
-                        });
-                    }
-                }
+            if (isPlainObject(incomeStatement)) {
+                if (isPlainObject(incomeStatement.income)) delete incomeStatement.income.dividend;
+                if (isPlainObject(incomeStatement.expense)) delete incomeStatement.expense.fixed;
+                normalizeGroups(incomeStatement.income);
+                normalizeGroups(incomeStatement.expense);
             }
 
             return normalized;
         }
 
         function normalizeDatabaseForStorage(database) {
-            return database.map(normalizeRecordForStorage);
+            return database.map(normalizeRecordForStorage).sort((a, b) => a.month.localeCompare(b.month));
         }
 
         // --- Global State for Input Form Details ---
@@ -1162,8 +1131,22 @@
         };
         const assetKeys = ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage', 'realEstate'];
         const debtKeys = ['mortgage', 'refinanceMortgage', 'refinanceMortgage2', 'revolvingMortgage', 'personalLoan', 'stockLoan'];
+        const MEMBER_IDS = ['member1', 'member2', 'member3', 'member4'];
+        const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+        const isValidMonth = (month) => typeof month === 'string' && MONTH_RE.test(month);
+        // Market holdings with a per-member detail popup (name / leverage / book value)
         const detailSupportedKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
-        // Input id prefix used when writing the popup total back to the form
+        // Only these items may be { total, details } objects; every other item is a plain number
+        const JSON_DETAIL_KEYS = ['domesticStocks', 'subBrokerage', 'overseasBrokerage', 'other', 'interest', 'variable'];
+        // Loan names accepted in interest details (current labels plus the short forms older files used)
+        const DEBT_KEY_BY_NAME = {
+            '一般型房貸': 'mortgage', '一般房貸': 'mortgage', '房貸': 'mortgage',
+            '增貸型房貸 (一)': 'refinanceMortgage', '增貸型房貸(一)': 'refinanceMortgage', '增貸(一)': 'refinanceMortgage',
+            '增貸型房貸 (二)': 'refinanceMortgage2', '增貸型房貸(二)': 'refinanceMortgage2', '增貸(二)': 'refinanceMortgage2',
+            '理財型房貸': 'revolvingMortgage', '理財房貸': 'revolvingMortgage',
+            '信用貸款': 'personalLoan', '信貸': 'personalLoan',
+            '股票質押': 'stockLoan', '質押': 'stockLoan'
+        };
         // Income/expense items that use the per-member detail popup (no leverage column)
         const incomeExpenseDetailPrefix = { other: 'income-other', variable: 'expense-variable' };
         const incomeExpenseDetailLabels = { other: '其他流入', variable: '其他流出' };
@@ -1174,7 +1157,7 @@
             overseasBrokerage: 'asset-overseasBrokerage',
             ...incomeExpenseDetailPrefix
         };
-        const marketAssetKeys = ['domesticStocks', 'subBrokerage', 'overseasBrokerage'];
+        const marketAssetKeys = detailSupportedKeys;
 
         // --- Safety helpers ---
         // Everything that comes from database.json or user input must pass through here before reaching innerHTML
@@ -1237,6 +1220,23 @@
             setTimeout(remove, duration);
         }
 
+        // Copy text; falls back to the selection + execCommand when the async clipboard API is unavailable (plain http)
+        async function copyText(text, sourceEl) {
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                } catch (e) { /* fall through to the legacy path */ }
+            }
+            try {
+                sourceEl.focus();
+                sourceEl.select();
+                return document.execCommand('copy');
+            } catch (e) {
+                return false;
+            }
+        }
+
         // Light structural check for data loaded from database.json (stricter rules live in validateDatabaseJson)
         function checkLoadedDatabase(data) {
             if (!Array.isArray(data)) return '資料最外層不是陣列';
@@ -1251,19 +1251,88 @@
         }
 
         // --- Encryption Logic ---
-        function encrypt(data, password) {
-            const jsonString = JSON.stringify(data);
-            return CryptoJS.AES.encrypt(jsonString, password).toString();
+        // Current format (v2): WebCrypto PBKDF2-SHA256 (600k iterations) + AES-256-GCM, written as a JSON envelope.
+        // database.json is public on GitHub Pages, so the slow key derivation is what makes offline guessing expensive.
+        // Legacy format: CryptoJS passphrase mode ("U2FsdGVkX1…", MD5 single-pass KDF); still readable, no longer written.
+        const VAULT_FORMAT = 'financial-dashboard-vault';
+        const VAULT_VERSION = 2;
+        const PBKDF2_ITERATIONS = 600000;
+        const MAX_PBKDF2_ITERATIONS = 10000000;
+        const hasWebCrypto = typeof crypto !== 'undefined' && !!crypto.subtle && typeof TextEncoder !== 'undefined';
+
+        function bytesToBase64(bytes) {
+            const u8 = new Uint8Array(bytes);
+            let binary = '';
+            for (let i = 0; i < u8.length; i += 0x8000) {
+                binary += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+            }
+            return btoa(binary);
         }
 
-        function decrypt(encryptedString, password) {
+        function base64ToBytes(text) {
+            return Uint8Array.from(atob(text), c => c.charCodeAt(0));
+        }
+
+        function isVaultEnvelope(value) {
+            return isPlainObject(value) && value.format === VAULT_FORMAT && typeof value.data === 'string';
+        }
+
+        async function deriveVaultKey(password, salt, iterations) {
+            const baseKey = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+            return crypto.subtle.deriveKey(
+                { name: 'PBKDF2', hash: 'SHA-256', salt, iterations },
+                baseKey,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt', 'decrypt']
+            );
+        }
+
+        // Resolves with the text to write into database.json
+        async function encrypt(data, password) {
+            const jsonString = JSON.stringify(data);
+            if (!hasWebCrypto) {
+                // Insecure context (plain http on a LAN address): WebCrypto is unavailable, keep the legacy format
+                return CryptoJS.AES.encrypt(jsonString, password).toString();
+            }
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const key = await deriveVaultKey(password, salt, PBKDF2_ITERATIONS);
+            const cipherText = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(jsonString));
+            return JSON.stringify({
+                format: VAULT_FORMAT,
+                version: VAULT_VERSION,
+                cipher: 'AES-256-GCM',
+                kdf: 'PBKDF2-SHA256',
+                iterations: PBKDF2_ITERATIONS,
+                salt: bytesToBase64(salt),
+                iv: bytesToBase64(iv),
+                data: bytesToBase64(cipherText)
+            });
+        }
+
+        // `payload` is a v2 envelope object or the legacy cipher string. Resolves null on a wrong password;
+        // throws (with .fatal) when the environment cannot decrypt at all, so the user gets a real reason.
+        async function decrypt(payload, password) {
+            const fatal = (message) => Object.assign(new Error(message), { fatal: true });
             try {
-                const bytes = CryptoJS.AES.decrypt(encryptedString, password);
-                const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+                let decryptedText;
+                if (isVaultEnvelope(payload)) {
+                    if (!hasWebCrypto) throw fatal('此瀏覽器環境不支援 WebCrypto，請改用 https 或 localhost 開啟');
+                    const iterations = Number(payload.iterations);
+                    if (!Number.isInteger(iterations) || iterations < 1 || iterations > MAX_PBKDF2_ITERATIONS) throw fatal('檔案的金鑰衍生參數異常');
+                    const key = await deriveVaultKey(password, base64ToBytes(payload.salt), iterations);
+                    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: base64ToBytes(payload.iv) }, key, base64ToBytes(payload.data));
+                    decryptedText = new TextDecoder().decode(plain);
+                } else {
+                    if (typeof CryptoJS === 'undefined') throw fatal('加密函式庫載入失敗，無法讀取舊格式檔案');
+                    decryptedText = CryptoJS.AES.decrypt(payload, password).toString(CryptoJS.enc.Utf8);
+                }
                 if (!decryptedText) return null;
                 return JSON.parse(decryptedText);
             } catch (e) {
-                return null;
+                if (e && e.fatal) throw e;
+                return null; // wrong password: AES-GCM tag mismatch, malformed UTF-8 or unparsable JSON
             }
         }
 
@@ -1303,12 +1372,20 @@
                 row.querySelector('.detail-leverage') ? row.querySelector('.detail-leverage').value : ''
             ]));
         }
+        // Focus moves into the dialog when it opens and back to the field that opened it when it closes
+        let detailModalReturnFocus = null;
+        function hideDetailModal() {
+            detailModal.classList.add('hidden');
+            if (detailModalReturnFocus && document.body.contains(detailModalReturnFocus)) detailModalReturnFocus.focus();
+            detailModalReturnFocus = null;
+        }
         function closeDetailModal() {
             if (serializeDetailRows() !== detailModalSnapshot && !confirm('明細有尚未儲存的修改，確定要放棄嗎？')) return;
-            detailModal.classList.add('hidden');
+            hideDetailModal();
         }
 
         function openDetailModal(category, member) {
+            detailModalReturnFocus = document.activeElement;
             currentEditing = { category, member };
             const categoryName = categoryLabels[category] || incomeExpenseDetailLabels[category];
             detailModalTitle.textContent = `${categoryName} 明細 - ${member.replace('member', '成員')}`;
@@ -1327,6 +1404,10 @@
             updateDetailTotal();
             detailModal.classList.remove('hidden');
             detailModalSnapshot = serializeDetailRows();
+            // Desktop: start typing right away; phones: land on the dialog so the keyboard does not pop up unasked
+            const firstName = detailItemsContainer.querySelector('.detail-name');
+            if (firstName && window.matchMedia('(min-width: 640px)').matches) firstName.focus();
+            else document.getElementById('detail-modal-box').focus();
         }
 
         function addDetailRow(name = '', value = 0, leverage = 1, showLeverage = true) {
@@ -1357,8 +1438,30 @@
             row.querySelector('.detail-value').addEventListener('input', updateDetailTotal);
             const levInputEl = row.querySelector('.detail-leverage');
             if (levInputEl) levInputEl.addEventListener('input', updateDetailTotal);
-            
+            // Enter = next row's same field; on the last row it appends a new one (fast keyboard entry)
+            row.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter' || !e.target.matches('input')) return;
+                e.preventDefault();
+                const field = e.target.className.split(' ')[0];
+                let next = row.nextElementSibling;
+                if (!next) {
+                    addDetailRow('', 0, 1, showLeverage);
+                    next = detailItemsContainer.lastElementChild;
+                }
+                const target = next.querySelector(`.${field}`) || next.querySelector('.detail-name');
+                if (target) target.focus();
+            });
+
             detailItemsContainer.appendChild(row);
+        }
+
+        // Leverage: empty means 1; anything else must be a finite number
+        function readLeverage(input) {
+            if (!input) return 1;
+            const text = input.value.trim();
+            if (text === '') return 1;
+            const n = Number(text);
+            return Number.isFinite(n) ? n : NaN;
         }
 
         function updateDetailTotal() {
@@ -1369,9 +1472,8 @@
 
             rows.forEach(row => {
                 const val = parseFinancialInput(row.querySelector('.detail-value').value);
-                const levInput = row.querySelector('.detail-leverage');
-                const levVal = levInput ? parseFloat(levInput.value) : 1;
-                const leverage = isNaN(levVal) ? 1 : levVal;
+                const levVal = readLeverage(row.querySelector('.detail-leverage'));
+                const leverage = Number.isNaN(levVal) ? 1 : levVal;
                 if (leverage !== 1) hasLeverage = true;
                 totalValue += val;
                 totalExposure += val * leverage;
@@ -1392,6 +1494,12 @@
                 showToast('有金額欄位含有無法辨識的內容（已標紅），請修正後再儲存。', 'error');
                 return;
             }
+            const badLeverage = Array.from(rows).find(row => Number.isNaN(readLeverage(row.querySelector('.detail-leverage'))));
+            if (badLeverage) {
+                badLeverage.querySelector('.detail-leverage').classList.add('border-red-500', 'bg-red-50');
+                showToast('槓桿倍數必須是數字（原型 1、正2 填 2、反一填 -1），請修正後再儲存。', 'error');
+                return;
+            }
             const details = Array.from(rows).map(row => {
                 const levInput = row.querySelector('.detail-leverage');
                 const item = {
@@ -1400,10 +1508,7 @@
                 };
                 // A row with an amount but no name keeps its value instead of silently disappearing
                 if (item.name === '' && item.value !== 0) item.name = '未命名';
-                if (levInput) {
-                    const levVal = parseFloat(levInput.value);
-                    item.leverage = isNaN(levVal) ? 1 : levVal;
-                }
+                if (levInput) item.leverage = readLeverage(levInput);
                 return item;
             }).filter(item => item.name !== '');
 
@@ -1419,7 +1524,7 @@
                 mainInput.value = formatAmount(total);
             }
 
-            detailModal.classList.add('hidden');
+            hideDetailModal();
             refreshMonthStatus();
         });
 
@@ -1491,20 +1596,20 @@
             e.preventDefault();
             showPage(dashboardPage);
             updateNavStyles(navDashboard);
+            renderDashboardPage();
         });
 
         navIncome.addEventListener('click', (e) => {
             e.preventDefault();
             showPage(incomePage);
             updateNavStyles(navIncome);
-            updateIncomeUI();
+            renderIncomePage();
         });
 
         navInput.addEventListener('click', (e) => {
             e.preventDefault();
             showPage(inputPage);
             updateNavStyles(navInput);
-            renderHistoryMonthPills();
             if (loadedMonth === null) {
                 loadMonthIntoForm(getSelectedMonth());
             } else {
@@ -1572,40 +1677,11 @@
 
         function clearForm(clearHighlight = true) {
             tempDetails = {};
-            for (let i = 1; i <= 4; i++) {
-                const memberId = `member${i}`;
-                ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage'].forEach(type => {
-                    const el = document.getElementById(`asset-${type}-${memberId}`);
-                    if (el) {
-                        el.value = 0;
-                        if (clearHighlight) el.classList.remove('bg-yellow-50');
-                    }
-                });
-                const reEl = document.getElementById(`asset-real-estate-${memberId}`);
-                if (reEl) {
-                    reEl.value = 0;
-                    if (clearHighlight) reEl.classList.remove('bg-yellow-50');
-                }
-                debtKeys.forEach(type => {
-                    const el = document.getElementById(`debt-${type}-${memberId}`);
-                    if (el) {
-                        el.value = 0;
-                        if (clearHighlight) el.classList.remove('bg-yellow-50');
-                    }
-                    const interestEl = document.getElementById(`expense-interest-${type}-${memberId}`);
-                    if (interestEl) {
-                        interestEl.value = 0;
-                        if (clearHighlight) interestEl.classList.remove('bg-yellow-50');
-                    }
-                });
-                incomeExpensePrefixes.forEach(prefix => {
-                    const el = document.getElementById(`${prefix}-${memberId}`);
-                    if (el) {
-                        el.value = 0;
-                        if (clearHighlight) el.classList.remove('bg-yellow-50');
-                    }
-                });
-            }
+            inputRows.forEach(row => row.inputs.forEach(el => {
+                el.value = 0;
+                el.classList.remove('border-red-500', 'bg-red-50');
+                if (clearHighlight) el.classList.remove('bg-yellow-50');
+            }));
             formatAmountInputs();
         }
 
@@ -1664,15 +1740,6 @@
                 }
             };
 
-            const debtKeyByName = {
-                '一般型房貸': 'mortgage', '一般房貸': 'mortgage', '房貸': 'mortgage',
-                '增貸型房貸 (一)': 'refinanceMortgage', '增貸型房貸(一)': 'refinanceMortgage', '增貸(一)': 'refinanceMortgage',
-                '增貸型房貸 (二)': 'refinanceMortgage2', '增貸型房貸(二)': 'refinanceMortgage2', '增貸(二)': 'refinanceMortgage2',
-                '理財型房貸': 'revolvingMortgage', '理財房貸': 'revolvingMortgage',
-                '信用貸款': 'personalLoan', '信貸': 'personalLoan',
-                '股票質押': 'stockLoan', '質押': 'stockLoan'
-            };
-
             const setInterestValues = (memberId, interestData) => {
                 // Initialize all 6 inputs to 0
                 debtKeys.forEach(type => {
@@ -1691,7 +1758,7 @@
                     details.forEach(d => {
                         const name = (d.name || '').trim();
                         const val = parseFinancialInput(d.value);
-                        const matchedKey = debtKeyByName[name];
+                        const matchedKey = DEBT_KEY_BY_NAME[name];
                         if (matchedKey) {
                             const el = document.getElementById(`expense-interest-${matchedKey}-${memberId}`);
                             if (el) {
@@ -1702,7 +1769,7 @@
                     });
 
                     // If there was unmapped detail or no details but total > 0
-                            const total = parseFinancialInput(interestData.total);
+                    const total = parseFinancialInput(interestData.total);
                     const remainder = total - matchedSum;
                     if (remainder > 0) {
                         let targetKey = 'mortgage';
@@ -1758,7 +1825,6 @@
         }
 
         // --- Input Page Helpers: amount format, row totals, comparison with the previous month, field help ---
-        const MEMBER_IDS = ['member1', 'member2', 'member3', 'member4'];
 
         // Show amounts with thousands separators; unparsable text stays as typed so it can be flagged
         function formatAmountInputs() {
@@ -1805,9 +1871,10 @@
             if (prefix.startsWith('debt-')) return amountOf(((record.debts || {})[prefix.slice('debt-'.length)] || {})[member]);
             if (prefix.startsWith('expense-interest-')) {
                 const interest = (expense.interest || {})[member];
-                if (!interest || typeof interest !== 'object') return null;
-                const label = categoryLabels[prefix.slice('expense-interest-'.length)];
-                return (interest.details || []).filter(d => (d.name || '').trim() === label).reduce((sum, d) => sum + parseFinancialInput(d.value), 0);
+                if (interest === undefined || interest === null || interest === 0) return 0;
+                if (typeof interest !== 'object') return null; // legacy lump sum with no per-loan split
+                const key = prefix.slice('expense-interest-'.length);
+                return (interest.details || []).filter(d => DEBT_KEY_BY_NAME[(d.name || '').trim()] === key).reduce((sum, d) => sum + parseFinancialInput(d.value), 0);
             }
             return null;
         }
@@ -1877,7 +1944,7 @@
 
         // Row totals, typo warnings, tab / member fill markers and the summary in the action bar
         function refreshInputInsights() {
-            const month = getSelectedMonth();
+            const month = isValidMonth(getSelectedMonth()) ? getSelectedMonth() : '';
             const prev = month ? getPreviousRecord(month) : null;
             const memberFilled = MEMBER_IDS.map(() => false);
             const tabFilled = { assets: false, income: false };
@@ -1912,39 +1979,44 @@
             renderInputSummary(month, prev);
         }
 
-        // Field help: the label's title becomes an ⓘ button, so the explanation also works on touch screens
+        // Field help: ⓘ buttons (`.help-btn[data-help]`) open a popover, so explanations also work on touch screens.
+        // Input labels carry their text as a title attribute, which is turned into such a button here.
         let helpAnchor = null;
         function hideHelp() {
             helpPopover.classList.add('hidden');
             if (helpAnchor) helpAnchor.setAttribute('aria-expanded', 'false');
             helpAnchor = null;
         }
+        function toggleHelp(btn) {
+            const wasOpen = helpAnchor === btn;
+            hideHelp();
+            if (wasOpen) return;
+            helpPopover.textContent = btn.dataset.help;
+            helpPopover.classList.remove('hidden');
+            const rect = btn.getBoundingClientRect();
+            const maxLeft = window.scrollX + document.documentElement.clientWidth - helpPopover.offsetWidth - 8;
+            helpPopover.style.left = `${Math.max(window.scrollX + 8, Math.min(rect.left + window.scrollX - 8, maxLeft))}px`;
+            helpPopover.style.top = `${rect.bottom + window.scrollY + 6}px`;
+            helpAnchor = btn;
+            btn.setAttribute('aria-expanded', 'true');
+        }
         document.querySelectorAll('#input-page .input-row label[title]').forEach(label => {
-            const text = label.getAttribute('title');
-            label.removeAttribute('title');
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'help-btn';
             btn.textContent = 'ⓘ';
+            btn.dataset.help = label.getAttribute('title');
+            label.removeAttribute('title');
             btn.setAttribute('aria-label', `${label.textContent.trim()}說明`);
             btn.setAttribute('aria-expanded', 'false');
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const wasOpen = helpAnchor === btn;
-                hideHelp();
-                if (wasOpen) return;
-                helpPopover.textContent = text;
-                helpPopover.classList.remove('hidden');
-                const rect = btn.getBoundingClientRect();
-                const maxLeft = window.scrollX + document.documentElement.clientWidth - helpPopover.offsetWidth - 8;
-                helpPopover.style.left = `${Math.max(window.scrollX + 8, Math.min(rect.left + window.scrollX - 8, maxLeft))}px`;
-                helpPopover.style.top = `${rect.bottom + window.scrollY + 6}px`;
-                helpAnchor = btn;
-                btn.setAttribute('aria-expanded', 'true');
-            });
             label.appendChild(btn);
         });
         document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.help-btn[data-help]');
+            if (btn) {
+                toggleHelp(btn);
+                return;
+            }
             if (helpAnchor && !helpPopover.contains(e.target)) hideHelp();
         });
         document.addEventListener('keydown', (e) => {
@@ -1966,10 +2038,11 @@
 
         // Replace the working data with the given baseline and clear every unsaved change
         function setDatabase(data) {
-            rawData = data;
-            exportedRawData = deepClone(data);
-            appliedRawData = deepClone(data);
-            loadedMonthCount = data.length;
+            const normalized = normalizeDatabaseForStorage(data);
+            rawData = normalized;
+            exportedRawData = deepClone(normalized);
+            appliedRawData = deepClone(normalized);
+            loadedMonthCount = normalized.length;
             pendingMonths.clear();
             loadedMonth = null;
         }
@@ -2118,9 +2191,11 @@
         }
 
         function loadMonthIntoForm(month) {
-            if (!month) {
+            if (!month || !isValidMonth(month)) {
+                // Empty or malformed (text fallback of <input type="month">): nothing is tracked until it is fixed
                 loadedMonth = null;
                 loadedSnapshot = '';
+                if (month) clearForm();
                 refreshMonthStatus();
                 return;
             }
@@ -2141,6 +2216,9 @@
             if (month === loadedMonth) {
                 refreshMonthStatus();
                 return;
+            }
+            if (month && !isValidMonth(month)) {
+                showToast(`月份「${month}」格式不正確，請使用 YYYY-MM（例如 2026-09）。`, 'error');
             }
             captureCurrentDraft();
             loadMonthIntoForm(month);
@@ -2193,10 +2271,10 @@
         }
 
         // Shows the most recent months as chips (oldest first); older months go into a dropdown
-        function renderHistoryMonthPills() {
+        function renderHistoryMonthPills(unexportedMonths = getUnexportedMonths(), formChanged = hasFormChanges()) {
             if (!historyMonthPills || !historyMonthsContainer) return;
             const selectedMonth = getSelectedMonth();
-            const allMonths = [...new Set([...rawData.map(item => item.month), ...(selectedMonth ? [selectedMonth] : [])])].sort();
+            const allMonths = [...new Set([...rawData.map(item => item.month), ...(isValidMonth(selectedMonth) ? [selectedMonth] : [])])].sort();
             if (allMonths.length === 0) {
                 historyMonthsContainer.classList.add('hidden');
                 historyMonthPills.innerHTML = '';
@@ -2205,8 +2283,6 @@
 
             historyMonthsContainer.classList.remove('hidden');
             historyMonthPills.innerHTML = '';
-            const unexportedMonths = getUnexportedMonths();
-            const formChanged = hasFormChanges();
             const stateOf = (month) => getMonthState(month, unexportedMonths, formChanged);
             const recentMonths = allMonths.slice(-RECENT_MONTH_LIMIT);
             const olderMonths = allMonths.slice(0, -RECENT_MONTH_LIMIT);
@@ -2242,9 +2318,12 @@
             const isEdited = hasFormChanges();
             const unexportedMonths = getUnexportedMonths();
 
-            if (!selectedMonth) {
-                if (monthStatusBadge) monthStatusBadge.className = 'hidden';
-                if (monthStatusHint) monthStatusHint.textContent = '';
+            if (!selectedMonth || !isValidMonth(selectedMonth)) {
+                if (monthStatusBadge) {
+                    monthStatusBadge.className = selectedMonth ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-300' : 'hidden';
+                    monthStatusBadge.textContent = '⚠ 月份格式錯誤';
+                }
+                if (monthStatusHint) monthStatusHint.textContent = selectedMonth ? '請輸入 YYYY-MM 格式的月份（例如 2026-09），表單才會開始記錄。' : '';
             } else if (isEdited || isDraft) {
                 if (monthStatusBadge) {
                     monthStatusBadge.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 border border-orange-300';
@@ -2282,7 +2361,7 @@
             if (btnReloadCurrentMonth) {
                 btnReloadCurrentMonth.classList.toggle('hidden', !isEdited && !isDraft);
             }
-            renderHistoryMonthPills();
+            renderHistoryMonthPills(unexportedMonths, isEdited);
             renderStagedPanel(unexportedMonths, isEdited);
             const setButtonEnabled = (btn, enabled) => {
                 if (!btn) return;
@@ -2352,17 +2431,12 @@
         // --- Raw JSON editor ---
         const jsonEditor = document.getElementById('json-editor');
         const jsonStatus = document.getElementById('json-status');
-        const JSON_MEMBER_KEYS = ['member1', 'member2', 'member3', 'member4'];
-        const JSON_ASSET_KEYS = ['cash', 'domesticStocks', 'subBrokerage', 'overseasBrokerage', 'realEstate'];
         const JSON_INCOME_KEYS = ['salary', 'other'];
         const JSON_EXPENSE_KEYS = ['interest', 'creditCard', 'creditCard2', 'variable'];
 
         function isPlainObject(value) {
             return value !== null && typeof value === 'object' && !Array.isArray(value);
         }
-
-        // Only these items have a detail popup; every other item must be a plain number
-        const JSON_DETAIL_KEYS = ['domesticStocks', 'subBrokerage', 'overseasBrokerage', 'other', 'interest', 'variable'];
 
         function validateAmountValue(value, path, errors, allowDetails = true) {
             if (typeof value === 'number') {
@@ -2414,7 +2488,7 @@
                 }
                 Object.keys(members).forEach(member => {
                     const memberPath = `${path}.${key}.${member}`;
-                    if (!JSON_MEMBER_KEYS.includes(member)) {
+                    if (!MEMBER_IDS.includes(member)) {
                         errors.push(`${memberPath}：成員只能是 member1～member4`);
                         return;
                     }
@@ -2451,7 +2525,7 @@
                 if (seenMonths.has(month)) errors.push(`${month}：月份重複`);
                 seenMonths.add(month);
 
-                validateGroup(item.assets, `${month}.assets`, JSON_ASSET_KEYS, errors);
+                validateGroup(item.assets, `${month}.assets`, assetKeys, errors);
                 validateGroup(item.debts, `${month}.debts`, debtKeys, errors);
                 if (item.incomeStatement !== undefined) {
                     if (!isPlainObject(item.incomeStatement)) {
@@ -2466,8 +2540,16 @@
             return errors.length ? { ok: false, errors } : { ok: true, data };
         }
 
+        // Records are replaced (never mutated in place) whenever they change, so a signature can be cached per object.
+        // This keeps the change detection that runs after every keystroke cheap even with years of history.
+        const signatureCache = new WeakMap();
         function monthSignature(record) {
-            return JSON.stringify(normalizeRecordForStorage(record));
+            let signature = signatureCache.get(record);
+            if (signature === undefined) {
+                signature = JSON.stringify(normalizeRecordForStorage(record));
+                signatureCache.set(record, signature);
+            }
+            return signature;
         }
 
         // Compares two record lists by month and content
@@ -2567,9 +2649,10 @@
                 const isDraft = draftMonths.has(month);
                 const isDeleted = !isDraft && !rawData.some(item => item.month === month);
                 const li = document.createElement('li');
+                li.className = 'flex-shrink-0';
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'inline-flex items-center text-xs px-2.5 py-1 rounded-full bg-white border hover:bg-purple-100 ' + (
+                btn.className = 'inline-flex items-center whitespace-nowrap text-xs px-2.5 py-1 rounded-full bg-white border hover:bg-purple-100 ' + (
                     isDraft ? 'border-orange-300 text-orange-800' : 'border-purple-300 text-purple-800'
                 );
                 btn.textContent = `${month} ${isDraft ? '✏️' : isDeleted ? '🗑️' : '●'}`;
@@ -2654,8 +2737,17 @@
                 }
                 currentSessionPassword = password;
 
-                const normalized = normalizeDatabaseForStorage(deepClone(rawData).sort((a, b) => a.month.localeCompare(b.month)));
-                const encryptedStr = encrypt(normalized, password);
+                const normalized = normalizeDatabaseForStorage(deepClone(rawData));
+                btnExportDb.disabled = true;
+                let encryptedStr;
+                try {
+                    encryptedStr = await encrypt(normalized, password);
+                } finally {
+                    btnExportDb.disabled = false;
+                }
+                if (!hasWebCrypto) {
+                    showToast('此環境不支援 WebCrypto，已改用舊版加密格式（金鑰衍生較弱）。建議改以 https 或 localhost 開啟後再匯出。', 'info', 8000);
+                }
                 const blob = new Blob([encryptedStr], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -2692,18 +2784,26 @@
         });
 
         // --- Data Fetching and Processing ---
+        // Classifies the raw text of database.json: v2 envelope, legacy cipher string, or (refused) plaintext
+        function parseDatabaseText(rawText) {
+            const text = String(rawText || '').trim();
+            if (text === '') throw new Error('檔案是空的');
+            if (text.startsWith('[') || text.startsWith('{')) {
+                const parsed = JSON.parse(text);
+                if (isVaultEnvelope(parsed)) return { type: 'encrypted', data: parsed };
+                return { type: 'plain', data: parsed };
+            }
+            // Legacy CryptoJS cipher strings are OpenSSL "Salted__" blobs, always base64-prefixed U2FsdGVkX1
+            if (!text.startsWith('U2FsdGVkX1')) throw new Error('不是可辨識的 database.json 內容');
+            return { type: 'encrypted', data: text };
+        }
+
         async function fetchData() {
             try {
                 // Cache-busting query + no-store so a stale copy of database.json is never shown
                 const response = await fetch(`./database.json?t=${Date.now()}`, { cache: 'no-store' });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const text = (await response.text()).trim();
-                if (text === '') throw new Error('檔案是空的');
-
-                if (text.startsWith('[') || text.startsWith('{')) {
-                    return { type: 'plain', data: JSON.parse(text) };
-                }
-                return { type: 'encrypted', data: text };
+                return parseDatabaseText(await response.text());
             } catch (error) {
                 console.error('載入 database.json 失敗:', error);
                 // Returning an empty database here would let a later export overwrite the real data
@@ -2796,21 +2896,42 @@
             });
         }
 
-        function updateUI() {
+        // A hidden page is only marked stale; it is drawn when its nav link is clicked. This keeps month switches
+        // and applies on the input page from rebuilding four charts and three tables nobody can see.
+        const stalePages = { dashboard: true, income: true };
+
+        function renderDashboardPage(force = false) {
+            if (!force && !stalePages.dashboard) return;
+            if (dashboardPage.classList.contains('hidden')) {
+                stalePages.dashboard = true;
+                return;
+            }
             const selectedMembers = getSelectedMembers();
-            const selectedCategories = getSelectedCategories();
-            const processed = processData(rawData, selectedMembers, selectedCategories);
+            const processed = processData(rawData, selectedMembers, getSelectedCategories());
             const latestData = processed.length > 0 ? processed[processed.length - 1] : null;
-            
             updateOverviewCards(latestData);
             updateTextSummary(latestData, selectedMembers);
             renderCharts(processed);
+            renderMonthlyTable(processed);
             renderHoldingsTable(latestData, selectedMembers);
+            stalePages.dashboard = false;
+        }
 
-            // Update Income Statement UI
-            updateIncomeUI(selectedMembers);
+        function renderIncomePage(force = false) {
+            if (!force && !stalePages.income) return;
+            if (incomePage.classList.contains('hidden')) {
+                stalePages.income = true;
+                return;
+            }
+            updateIncomeUI();
+            stalePages.income = false;
+        }
 
-            renderHistoryMonthPills();
+        function updateUI() {
+            stalePages.dashboard = true;
+            stalePages.income = true;
+            renderDashboardPage();
+            renderIncomePage();
             if (loadedMonth === null) {
                 loadMonthIntoForm(getSelectedMonth());
             } else {
@@ -3032,14 +3153,23 @@
             textSummary.value = summaryText;
         }
 
-        btnCopySummary.addEventListener('click', () => {
-            textSummary.select();
-            navigator.clipboard.writeText(textSummary.value).then(() => {
-                const originalText = btnCopySummary.textContent;
-                btnCopySummary.textContent = '已複製！';
-                setTimeout(() => btnCopySummary.textContent = originalText, 2000);
-            }).catch(() => alert('無法寫入剪貼簿，內容已選取，請手動按 Ctrl/Cmd+C 複製。'));
-        });
+        // Copy a summary textarea and flash the button label
+        function bindCopyButton(button, source) {
+            if (!button || !source) return;
+            const originalText = button.textContent;
+            button.addEventListener('click', async () => {
+                if (await copyText(source.value, source)) {
+                    button.textContent = '已複製！';
+                    setTimeout(() => { button.textContent = originalText; }, 2000);
+                } else {
+                    source.focus();
+                    source.select();
+                    showToast('無法寫入剪貼簿，內容已選取，請手動按 Ctrl/Cmd+C 複製。', 'error', 6000);
+                }
+            });
+        }
+        bindCopyButton(btnCopySummary, textSummary);
+        bindCopyButton(btnCopyIncomeSummary, incomeTextSummary);
 
         // Rank-based ramp: darkest = largest share. Every step keeps >= 3:1 against the white card.
         const PIE_RANK_COLORS = ['#172b6b', '#1f3fa8', '#2f55d4', '#4a6fe0', '#6b8fe6'];
@@ -3047,19 +3177,31 @@
         const pieRankColors = (count) => Array.from({ length: count }, (_, i) =>
             PIE_RANK_COLORS[count <= 1 ? 0 : Math.round(i * (PIE_RANK_COLORS.length - 1) / (count - 1))]);
 
+        // Feed new data into an existing chart (no flicker, no re-layout) or create it; null config removes it
+        function upsertChart(chart, canvasId, config) {
+            if (!chartLibReady) return undefined;
+            if (!config) {
+                if (chart) chart.destroy();
+                return undefined;
+            }
+            if (chart && chart.config.type === config.type) {
+                chart.data = config.data;
+                chart.options = config.options;
+                chart.update();
+                return chart;
+            }
+            if (chart) chart.destroy();
+            return new Chart(document.getElementById(canvasId).getContext('2d'), config);
+        }
+
         function renderCharts(processedData) {
-            const ctxPie = document.getElementById('asset-allocation-chart').getContext('2d');
-            const ctxLine = document.getElementById('net-worth-growth-chart').getContext('2d');
-
-            if (assetAllocationChart) assetAllocationChart.destroy();
-            if (netWorthGrowthChart) netWorthGrowthChart.destroy();
-
-            if (processedData.length > 0) {
-                const latest = processedData[processedData.length - 1];
+            const latest = processedData.length > 0 ? processedData[processedData.length - 1] : null;
+            let pieConfig = null;
+            let lineConfig = null;
+            if (latest) {
                 const totalAssets = latest.totalAssets || 1;
                 const sortedAssetEntries = Object.entries(latest.assets).filter(([_, value]) => value > 0).sort((a, b) => b[1] - a[1]);
-
-                assetAllocationChart = new Chart(ctxPie, {
+                pieConfig = {
                     type: 'pie',
                     data: {
                         labels: sortedAssetEntries.map(([key, value]) => `${categoryLabels[key]} (${((value / totalAssets) * 100).toFixed(1)}%)`),
@@ -3069,9 +3211,8 @@
                         }]
                     },
                     options: { responsive: true, plugins: { legend: { position: 'top' } } }
-                });
-
-                netWorthGrowthChart = new Chart(ctxLine, {
+                };
+                lineConfig = {
                     type: 'line',
                     data: {
                         labels: processedData.map(item => item.month),
@@ -3085,15 +3226,21 @@
                             fill: true
                         }]
                     },
-                    options: { 
-                        responsive: true, 
-                        scales: { y: { ticks: { callback: (value) => '$' + value.toLocaleString() } } } 
+                    options: {
+                        responsive: true,
+                        scales: { y: { ticks: { callback: (value) => '$' + value.toLocaleString() } } }
                     }
-                });
+                };
+            }
+            assetAllocationChart = upsertChart(assetAllocationChart, 'asset-allocation-chart', pieConfig);
+            netWorthGrowthChart = upsertChart(netWorthGrowthChart, 'net-worth-growth-chart', lineConfig);
+        }
 
-                const tableBody = document.getElementById('monthly-data-table-body');
-                tableBody.innerHTML = ''; 
-                
+        // Monthly net worth table: change, MoM growth and CAGR since the first record
+        function renderMonthlyTable(processedData) {
+            const tableBody = document.getElementById('monthly-data-table-body');
+            tableBody.innerHTML = '';
+            if (processedData.length > 0) {
                 const startData = processedData[0];
                 const startYM = parseYearMonth(startData.month);
                 const reversedData = [...processedData].reverse();
@@ -3137,8 +3284,6 @@
                     `;
                     tableBody.appendChild(row);
                 });
-            } else {
-                document.getElementById('monthly-data-table-body').innerHTML = '';
             }
         }
 
@@ -3410,19 +3555,11 @@
         }
 
         function renderIncomeCharts(processedIncome, latestIncome) {
-            const elTrend = document.getElementById('income-expense-chart');
-            const elStructure = document.getElementById('expense-structure-chart');
-            if (!elTrend || !elStructure) return;
-
-            const ctxTrend = elTrend.getContext('2d');
-            const ctxStructure = elStructure.getContext('2d');
-
-            if (incomeExpenseChart) incomeExpenseChart.destroy();
-            if (expenseStructureChart) expenseStructureChart.destroy();
-
             const money = (value) => '$' + value.toLocaleString();
+            let trendConfig = null;
+            let structureConfig = null;
             if (processedIncome && processedIncome.length > 0) {
-                incomeExpenseChart = new Chart(ctxTrend, {
+                trendConfig = {
                     type: 'bar',
                     data: {
                         labels: processedIncome.map(item => item.month),
@@ -3440,7 +3577,7 @@
                             y: { ticks: { callback: money } }
                         }
                     }
-                });
+                };
             }
 
             if (latestIncome && latestIncome.expense.total > 0) {
@@ -3453,7 +3590,7 @@
                     ['信用卡費2', latestIncome.expense.creditCard2],
                     ['其他流出', latestIncome.expense.variable]
                 ].filter(([, value]) => value > 0).sort((a, b) => b[1] - a[1]);
-                expenseStructureChart = new Chart(ctxStructure, {
+                structureConfig = {
                     type: 'pie',
                     data: {
                         labels: expenseEntries.map(([label, value]) => `${label} (${pct(value)}%)`),
@@ -3463,8 +3600,10 @@
                         }]
                     },
                     options: { responsive: true, maintainAspectRatio: false }
-                });
+                };
             }
+            incomeExpenseChart = upsertChart(incomeExpenseChart, 'income-expense-chart', trendConfig);
+            expenseStructureChart = upsertChart(expenseStructureChart, 'expense-structure-chart', structureConfig);
         }
 
         function renderIncomeMonthlyTable(processedIncome) {
@@ -3548,74 +3687,118 @@
             incomeTextSummary.value = text;
         }
 
-        if (btnCopyIncomeSummary) {
-            btnCopyIncomeSummary.addEventListener('click', () => {
-                if (!incomeTextSummary) return;
-                incomeTextSummary.select();
-                navigator.clipboard.writeText(incomeTextSummary.value).then(() => {
-                    const orig = btnCopyIncomeSummary.textContent;
-                    btnCopyIncomeSummary.textContent = '已複製！';
-                    setTimeout(() => btnCopyIncomeSummary.textContent = orig, 2000);
-                }).catch(() => alert('無法寫入剪貼簿，內容已選取，請手動按 Ctrl/Cmd+C 複製。'));
-            });
-        }
-
         btnUnlock.addEventListener('click', attemptUnlock);
         unlockPasswordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptUnlock(); });
 
-        function attemptUnlock() {
+        let unlocking = false;
+        async function attemptUnlock() {
+            if (unlocking) return;
             unlockError.classList.add('hidden');
             const password = unlockPasswordInput.value;
-            
+
             if (!password) {
                 unlockError.textContent = "請輸入密碼";
                 unlockError.classList.remove('hidden');
                 return;
             }
 
-            const decrypted = decrypt(encryptedDataStr, password);
-            const loadProblem = decrypted ? checkLoadedDatabase(decrypted) : null;
-            if (loadProblem) {
-                unlockError.textContent = `解密成功但資料格式異常（${loadProblem}），已停止載入。`;
+            // Key derivation takes a moment on purpose; show it instead of looking frozen
+            unlocking = true;
+            btnUnlock.disabled = true;
+            btnUnlock.textContent = '解密中…';
+            try {
+                const decrypted = await decrypt(encryptedDataStr, password);
+                const loadProblem = decrypted ? checkLoadedDatabase(decrypted) : null;
+                if (loadProblem) {
+                    unlockError.textContent = `解密成功但資料格式異常（${loadProblem}），已停止載入。`;
+                    unlockError.classList.remove('hidden');
+                } else if (decrypted) {
+                    setDatabase(decrypted);
+                    currentSessionPassword = password; // Remember verified password for current session
+                    unlockPasswordInput.value = '';
+                    unlockOverlay.classList.add('hidden');
+                    updateUI();
+                } else {
+                    unlockError.textContent = "密碼錯誤，請再試一次";
+                    unlockError.classList.remove('hidden');
+                }
+            } catch (err) {
+                unlockError.textContent = `無法解密：${err.message || err}`;
                 unlockError.classList.remove('hidden');
-                return;
-            }
-            if (decrypted) {
-                setDatabase(decrypted);
-                currentSessionPassword = password; // Remember verified password for current session
-                unlockPasswordInput.value = '';
-                unlockOverlay.classList.add('hidden');
-                updateUI();
-            } else {
-                unlockError.textContent = "密碼錯誤，請再試一次";
-                unlockError.classList.remove('hidden');
+            } finally {
+                unlocking = false;
+                btnUnlock.disabled = false;
+                btnUnlock.textContent = '解鎖並載入數據';
             }
         }
 
-        function showLoadError(message) {
+        const unlockFileFallback = document.getElementById('unlock-file-fallback');
+        const unlockFileInput = document.getElementById('unlock-file-input');
+        const unlockFileName = document.getElementById('unlock-file-name');
+
+        function showLoadError(message, { allowFilePicker = true, verbatim = false } = {}) {
             unlockOverlay.classList.remove('hidden');
             unlockPasswordInput.disabled = true;
             btnUnlock.disabled = true;
-            unlockError.textContent = `無法載入 database.json（${message}）。為避免覆蓋既有資料，已停止編輯，請確認檔案後重新整理頁面。`;
+            const isFileUrl = location.protocol === 'file:';
+            const reason = verbatim ? message : (isFileUrl
+                ? '直接以檔案方式（file://）開啟時，瀏覽器不允許網頁讀取旁邊的 database.json'
+                : `無法載入 database.json（${message}）`);
+            unlockError.textContent = `${reason}。為避免覆蓋既有資料，已停止編輯。`;
             unlockError.classList.remove('hidden');
+            if (allowFilePicker) {
+                document.getElementById('unlock-file-hint').textContent = isFileUrl
+                    ? '可改為手動選擇 database.json 載入；或以本機伺服器開啟（例如在專案目錄執行 python3 -m http.server 8765 後瀏覽 http://localhost:8765/）。'
+                    : '可改為手動選擇 database.json 載入，或確認檔案後重新整理頁面。';
+                unlockFileFallback.classList.remove('hidden');
+            }
         }
+
+        // Shared by the automatic fetch and the manual file picker
+        function applyLoadedDatabase(result) {
+            if (result.type === 'plain') {
+                // Plaintext database.json would bypass the vault password; refuse it
+                showLoadError('database.json 是未加密的明文，已拒絕載入。請先以「財務數據輸入」匯出加密版本取代', { allowFilePicker: false, verbatim: true });
+                return;
+            }
+            encryptedDataStr = result.data;
+            unlockFileFallback.classList.add('hidden');
+            unlockError.classList.add('hidden');
+            unlockPasswordInput.disabled = false;
+            btnUnlock.disabled = false;
+            unlockOverlay.classList.remove('hidden');
+            setTimeout(() => unlockPasswordInput.focus(), 100);
+        }
+
+        document.getElementById('btn-unlock-file').addEventListener('click', () => unlockFileInput.click());
+        unlockFileInput.addEventListener('change', async () => {
+            const file = unlockFileInput.files && unlockFileInput.files[0];
+            if (!file) return;
+            try {
+                const result = parseDatabaseText(await file.text());
+                unlockFileName.textContent = `已選擇：${file.name}`;
+                unlockFileName.classList.remove('hidden');
+                applyLoadedDatabase(result);
+            } catch (err) {
+                unlockError.textContent = `無法讀取「${file.name}」（${err.message || err}），請確認選擇的是匯出的 database.json。`;
+                unlockError.classList.remove('hidden');
+            } finally {
+                unlockFileInput.value = '';
+            }
+        });
 
         async function initializeApp() {
             const today = new Date();
             monthSelect.value = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+            if (!chartLibReady) {
+                showToast('圖表函式庫 Chart.js 載入失敗，圖表將無法顯示（數據卡與表格不受影響）。', 'error', 10000);
+            }
             const fetchResult = await fetchData();
             if (fetchResult.type === 'error') {
                 showLoadError(fetchResult.message);
                 return;
             }
-            encryptedDataStr = fetchResult.data;
-            if (fetchResult.type === 'plain') {
-                // Plaintext database.json would bypass the vault password; refuse it
-                showLoadError('database.json 是未加密的明文，已拒絕載入。請先以「財務數據輸入」匯出加密版本取代');
-            } else {
-                unlockOverlay.classList.remove('hidden');
-                setTimeout(() => unlockPasswordInput.focus(), 100);
-            }
+            applyLoadedDatabase(fetchResult);
         }
         initializeApp();
     </script>
