@@ -3582,14 +3582,19 @@
             }
             cashFlowPanelMonth = item.month;
             const money = (value) => '$' + value.toLocaleString();
+            // Same colour dot as the chart legend, so panel rows map to bar segments at a glance
+            const dot = (color) => `<span class="inline-block w-2.5 h-2.5 rounded-full mr-1.5 align-middle" style="background-color: ${color};"></span>`;
+            const shareCol = (text) => `<span class="inline-block w-12 text-right text-gray-400 text-xs">${text}</span>`;
             const column = (title, total, series, bucket, section, colorClass) => {
-                let html = `<div><div class="flex justify-between font-semibold ${colorClass}"><span>${title}</span><span>${money(total)}</span></div>`;
+                let html = `<div><div class="flex justify-between font-semibold ${colorClass}"><span>${title}</span><span>${money(total)}${shareCol('')}</span></div>`;
                 series.forEach(s => {
-                    html += `<div class="flex justify-between text-gray-700 mt-1"><span>${escapeHtml(s.label)}</span><span>${money(bucket[s.key])}</span></div>`;
+                    // Share of this side's total (inflow or outflow) in a fixed-width column so amounts stay aligned
+                    const share = total > 0 ? `${((bucket[s.key] / total) * 100).toFixed(1)}%` : '';
+                    html += `<div class="flex justify-between text-gray-700 mt-1"><span>${dot(s.color)}${escapeHtml(s.label)}</span><span>${money(bucket[s.key])}${shareCol(share)}</span></div>`;
                     if (!s.hasDetails) return;
                     const details = getIncomeStatementDetails(item, section, s.key, selectedMembers);
                     [...details].sort((a, b) => b[1] - a[1]).forEach(([name, value]) => {
-                        html += `<div class="flex justify-between text-gray-500 text-xs pl-4"><span>· ${escapeHtml(name)}</span><span>${money(value)}</span></div>`;
+                        html += `<div class="flex justify-between text-gray-500 text-xs pl-5"><span>· ${escapeHtml(name)}</span><span>${money(value)}${shareCol('')}</span></div>`;
                     });
                 });
                 return html + '</div>';
@@ -3601,7 +3606,7 @@
                     ${column('流入合計', item.income.total, CASHFLOW_INFLOW_SERIES, item.income, 'income', 'text-green-700')}
                     ${column('流出合計', item.expense.total, CASHFLOW_OUTFLOW_SERIES, item.expense, 'expense', 'text-red-700')}
                     <div>
-                        <div class="flex justify-between font-semibold ${netClass}"><span>淨現金流</span><span>${formatSignedMoney(item.netSavings)}</span></div>
+                        <div class="flex justify-between font-semibold ${netClass}"><span>${dot('#1e3a8a')}淨現金流</span><span>${formatSignedMoney(item.netSavings)}</span></div>
                         <div class="flex justify-between text-gray-700 mt-1"><span>儲蓄率</span><span>${item.savingsRate.toFixed(1)}%</span></div>
                         <div class="flex justify-between text-gray-700 mt-1"><span>還款負擔</span><span>${item.interestRatio.toFixed(1)}%</span></div>
                     </div>
