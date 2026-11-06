@@ -569,6 +569,10 @@
                     <div class="bg-white p-6 rounded-lg shadow lg:col-span-2">
                         <h2 class="text-lg font-semibold text-gray-700 mb-4">每月現金流趨勢</h2>
                         <div class="relative h-72"><canvas id="income-expense-chart" role="img" aria-label="每月流入與流出長條圖及淨現金流折線，數值見下方表格"></canvas></div>
+                        <!-- Fixed detail panel: updated on hover instead of a floating tooltip, so it never jumps -->
+                        <div id="income-expense-detail" class="mt-4 pt-3 border-t text-sm" style="border-color: var(--border);" aria-live="polite">
+                            <p class="text-gray-400">將滑鼠移到柱子上可查看該月份明細</p>
+                        </div>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow">
                         <h2 class="text-lg font-semibold text-gray-700 mb-4">本月流出結構</h2>
@@ -3549,12 +3553,62 @@
             const latestIncome = processedIncome.length > 0 ? processedIncome[processedIncome.length - 1] : null;
 
             renderCashFlowCards(latestIncome);
-            renderIncomeCharts(processedIncome, latestIncome);
+            renderIncomeCharts(processedIncome, latestIncome, selectedMembers);
             renderIncomeMonthlyTable(processedIncome);
             updateIncomeTextSummary(latestIncome, selectedMembers);
         }
 
-        function renderIncomeCharts(processedIncome, latestIncome) {
+        // Trend chart stacks: inflow in greens, outflow in roses (darkest = usually largest).
+        // hasDetails: the detail panel also lists that category's merged per-item breakdown.
+        const CASHFLOW_INFLOW_SERIES = [
+            { key: 'salary', label: '薪資', color: '#047857' },
+            { key: 'other', label: '其他流入', color: '#6ee7b7', hasDetails: true }
+        ];
+        const CASHFLOW_OUTFLOW_SERIES = [
+            { key: 'interest', label: '借貸還款', color: '#be123c', hasDetails: true },
+            { key: 'creditCard', label: '信用卡費1', color: '#f43f5e' },
+            { key: 'creditCard2', label: '信用卡費2', color: '#fb7185' },
+            { key: 'variable', label: '其他流出', color: '#fecdd3', hasDetails: true }
+        ];
+        let cashFlowPanelMonth = null; // Month shown in the fixed panel; kept across re-renders while it still exists
+
+        // Fills the fixed panel under the trend chart with one month's inflow/outflow breakdown and details
+        function renderCashFlowMonthPanel(item, selectedMembers) {
+            const panel = document.getElementById('income-expense-detail');
+            if (!panel) return;
+            if (!item) {
+                panel.innerHTML = '<p class="text-gray-400">將滑鼠移到柱子上可查看該月份明細</p>';
+                return;
+            }
+            cashFlowPanelMonth = item.month;
+            const money = (value) => '$' + value.toLocaleString();
+            const column = (title, total, series, bucket, section, colorClass) => {
+                let html = `<div><div class="flex justify-between font-semibold ${colorClass}"><span>${title}</span><span>${money(total)}</span></div>`;
+                series.forEach(s => {
+                    html += `<div class="flex justify-between text-gray-700 mt-1"><span>${escapeHtml(s.label)}</span><span>${money(bucket[s.key])}</span></div>`;
+                    if (!s.hasDetails) return;
+                    const details = getIncomeStatementDetails(item, section, s.key, selectedMembers);
+                    [...details].sort((a, b) => b[1] - a[1]).forEach(([name, value]) => {
+                        html += `<div class="flex justify-between text-gray-500 text-xs pl-4"><span>· ${escapeHtml(name)}</span><span>${money(value)}</span></div>`;
+                    });
+                });
+                return html + '</div>';
+            };
+            const netClass = item.netSavings < 0 ? 'text-red-600' : 'text-blue-600';
+            panel.innerHTML = `
+                <div class="font-semibold text-gray-800 mb-2">${escapeHtml(item.month)}</div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-4">
+                    ${column('流入合計', item.income.total, CASHFLOW_INFLOW_SERIES, item.income, 'income', 'text-green-700')}
+                    ${column('流出合計', item.expense.total, CASHFLOW_OUTFLOW_SERIES, item.expense, 'expense', 'text-red-700')}
+                    <div>
+                        <div class="flex justify-between font-semibold ${netClass}"><span>淨現金流</span><span>${formatSignedMoney(item.netSavings)}</span></div>
+                        <div class="flex justify-between text-gray-700 mt-1"><span>儲蓄率</span><span>${item.savingsRate.toFixed(1)}%</span></div>
+                        <div class="flex justify-between text-gray-700 mt-1"><span>還款負擔</span><span>${item.interestRatio.toFixed(1)}%</span></div>
+                    </div>
+                </div>`;
+        }
+
+        function renderIncomeCharts(processedIncome, latestIncome, selectedMembers = getSelectedMembers()) {
             const money = (value) => '$' + value.toLocaleString();
             let trendConfig = null;
             let structureConfig = null;
@@ -3564,42 +3618,89 @@
                     data: {
                         labels: processedIncome.map(item => item.month),
                         datasets: [
-                            { type: 'bar', label: '流入', data: processedIncome.map(item => item.income.total), backgroundColor: 'rgba(16, 185, 129, 0.85)', borderRadius: 4, yAxisID: 'y' },
-                            { type: 'bar', label: '流出', data: processedIncome.map(item => item.expense.total), backgroundColor: 'rgba(244, 63, 94, 0.80)', borderRadius: 4, yAxisID: 'y' },
-                            { type: 'line', label: '淨現金流', data: processedIncome.map(item => item.netSavings), borderColor: '#1e3a8a', backgroundColor: '#1e3a8a', tension: 0.2, yAxisID: 'y' }
+                            ...CASHFLOW_INFLOW_SERIES.map(series => ({
+                                type: 'bar', label: series.label, stack: 'inflow', yAxisID: 'y', order: 1,
+                                data: processedIncome.map(item => item.income[series.key]),
+                                backgroundColor: series.color
+                            })),
+                            ...CASHFLOW_OUTFLOW_SERIES.map(series => ({
+                                type: 'bar', label: series.label, stack: 'outflow', yAxisID: 'y', order: 1,
+                                data: processedIncome.map(item => item.expense[series.key]),
+                                backgroundColor: series.color
+                            })),
+                            // order 0 draws the line above the bars (higher order = drawn first)
+                            { type: 'line', label: '淨現金流', stack: 'net', order: 0, data: processedIncome.map(item => item.netSavings), borderColor: '#1e3a8a', backgroundColor: '#1e3a8a', tension: 0.2, pointHitRadius: 8, yAxisID: 'y' }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        // Whole-month hover: anywhere in a month's column updates the fixed panel below the chart
                         interaction: { mode: 'index', intersect: false },
+                        onHover: (event, elements) => {
+                            if (!elements.length) return; // Leaving the bars keeps the last month shown
+                            const item = processedIncome[elements[0].index];
+                            if (item && item.month !== cashFlowPanelMonth) renderCashFlowMonthPanel(item, selectedMembers);
+                        },
+                        plugins: {
+                            // Keep the legend in dataset order even though `order` changes the draw order
+                            legend: { labels: { sort: (a, b) => a.datasetIndex - b.datasetIndex } },
+                            tooltip: { enabled: false }
+                        },
                         scales: {
-                            y: { ticks: { callback: money } }
+                            x: { stacked: true },
+                            y: { stacked: true, ticks: { callback: money } }
                         }
                     }
                 };
+                // Re-render the panel with fresh numbers (member filter may have changed); fall back to the latest month
+                const panelItem = processedIncome.find(item => item.month === cashFlowPanelMonth) || latestIncome;
+                renderCashFlowMonthPanel(panelItem, selectedMembers);
+            } else {
+                cashFlowPanelMonth = null;
+                renderCashFlowMonthPanel(null, selectedMembers);
             }
 
             if (latestIncome && latestIncome.expense.total > 0) {
                 const expTotal = latestIncome.expense.total;
                 const pct = (value) => ((value / expTotal) * 100).toFixed(1);
                 // Largest share first so it takes the darkest colour, matching the asset pie
-                const expenseEntries = [
-                    ['借貸還款', latestIncome.expense.interest],
-                    ['信用卡費1', latestIncome.expense.creditCard],
-                    ['信用卡費2', latestIncome.expense.creditCard2],
-                    ['其他流出', latestIncome.expense.variable]
-                ].filter(([, value]) => value > 0).sort((a, b) => b[1] - a[1]);
+                const expenseEntries = CASHFLOW_OUTFLOW_SERIES
+                    .map(series => ({ series, value: latestIncome.expense[series.key] }))
+                    .filter(({ value }) => value > 0)
+                    .sort((a, b) => b.value - a.value);
                 structureConfig = {
                     type: 'pie',
                     data: {
-                        labels: expenseEntries.map(([label, value]) => `${label} (${pct(value)}%)`),
+                        labels: expenseEntries.map(({ series, value }) => `${series.label} (${pct(value)}%)`),
                         datasets: [{
-                            data: expenseEntries.map(([, value]) => value),
+                            data: expenseEntries.map(({ value }) => value),
                             backgroundColor: pieRankColors(expenseEntries.length)
                         }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    // Slice amount and share, then the merged per-item details for detail-bearing categories
+                                    label: (ctx) => {
+                                        const entry = expenseEntries[ctx.dataIndex];
+                                        if (!entry) return '';
+                                        const lines = [`${entry.series.label}: ${money(entry.value)} (${pct(entry.value)}%)`];
+                                        if (entry.series.hasDetails) {
+                                            const details = getIncomeStatementDetails(latestIncome, 'expense', entry.series.key, selectedMembers);
+                                            [...details].sort((a, b) => b[1] - a[1]).forEach(([name, value]) => {
+                                                lines.push(`  · ${name}: ${money(value)}`);
+                                            });
+                                        }
+                                        return lines;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 };
             }
             incomeExpenseChart = upsertChart(incomeExpenseChart, 'income-expense-chart', trendConfig);
@@ -3630,9 +3731,9 @@
         }
 
         // Loan repayment items grouped by name across the selected members; unnamed remainders become 未分類
-        function getLoanRepaymentEntries(latestIncome, selectedMembers) {
+        // Merge one income-statement field's per-member details (name-keyed) across the selected members
+        function mergeMemberDetails(raw, selectedMembers) {
             const grouped = new Map();
-            const raw = latestIncome && latestIncome.originalItem && latestIncome.originalItem.incomeStatement && latestIncome.originalItem.incomeStatement.expense && latestIncome.originalItem.incomeStatement.expense.interest;
             if (!raw) return grouped;
             selectedMembers.forEach(member => {
                 const v = raw[member];
@@ -3652,6 +3753,16 @@
                 if (rest > 0) grouped.set('未分類', (grouped.get('未分類') || 0) + rest);
             });
             return grouped;
+        }
+
+        // Details of a cash-flow field: section 'income' | 'expense', field e.g. 'other' | 'interest' | 'variable'
+        function getIncomeStatementDetails(processedItem, section, field, selectedMembers) {
+            const is = processedItem && processedItem.originalItem && processedItem.originalItem.incomeStatement;
+            return mergeMemberDetails(is && is[section] && is[section][field], selectedMembers);
+        }
+
+        function getLoanRepaymentEntries(latestIncome, selectedMembers) {
+            return getIncomeStatementDetails(latestIncome, 'expense', 'interest', selectedMembers);
         }
 
         function updateIncomeTextSummary(latestIncome, selectedMembers = getSelectedMembers()) {
